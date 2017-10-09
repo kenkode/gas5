@@ -3718,8 +3718,9 @@ Route::get('api/dropdown', function(){
                                $query->whereNull('erporders.is_paid')
                                      ->orWhere('erporders.is_paid', 0);
                              })
+                             ->groupBy('erporders.id')
                              ->where('erporders.status','new')
-                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", (price * item_size * quantity),")") AS erporder'))
+                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * item_size * quantity),")") AS erporder'))
                    ->get('erporder', 'id');
     return $erporderitems;
 });
@@ -3734,8 +3735,9 @@ Route::get('api/salesdropdown', function(){
                                $query->whereNull('erporders.is_paid')
                                      ->orWhere('erporders.is_paid', 0);
                              })
+                             ->groupBy('erporders.id')
                              ->where('erporders.status','new')
-                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", (price * quantity),")") AS erporder'))
+                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * quantity),")") AS erporder'))
                    ->get('erporder', 'id');
     return $erporderitems;
 });
@@ -3794,18 +3796,18 @@ Route::get('api/getpurchaseorders', function(){
 
 Route::get('api/total', function(){
     $id = Input::get('option');
-    $erporderitem = Erporderitem::where('erporder_id',$id)->first();
-    $item = Item::find($erporderitem->item_id);
+    $price = Erporderitem::join('items','erporderitems.item_id','=','items.id')
+           ->where('erporder_id',$id)->select(DB::raw('sum(price * quantity * item_size) AS total'))->first();
     $payment = Payment::where('erporder_id',$id)->sum('amount_paid');
-    return ($erporderitem->price * $erporderitem->quantity * $item->item_size) - $payment;
+    return ($price->total) - $payment;
 });
 
 Route::get('api/totalsales', function(){
     $id = Input::get('option');
-    $erporderitem = Erporderitem::where('erporder_id',$id)->first();
-    $item = Item::find($erporderitem->item_id);
+    $price = Erporderitem::where('erporder_id',$id)->select(DB::raw('sum(price * quantity) AS total'))->first();
     $payment = Payment::where('erporder_id',$id)->sum('amount_paid');
-    return ($erporderitem->price * $erporderitem->quantity ) - $payment;
+    //dd($price);
+    return ($price->total ) - $payment;
 });
 
 
