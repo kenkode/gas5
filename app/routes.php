@@ -3735,7 +3735,7 @@ Route::get('api/salesdropdown', function(){
                                      ->orWhere('erporders.is_paid', 0);
                              })
                              ->where('erporders.status','new')
-                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", price,")") AS erporder'))
+                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", (price * quantity),")") AS erporder'))
                    ->get('erporder', 'id');
     return $erporderitems;
 });
@@ -3805,7 +3805,7 @@ Route::get('api/totalsales', function(){
     $erporderitem = Erporderitem::where('erporder_id',$id)->first();
     $item = Item::find($erporderitem->item_id);
     $payment = Payment::where('erporder_id',$id)->sum('amount_paid');
-    return $erporderitem->price - $payment;
+    return ($erporderitem->price * $erporderitem->quantity ) - $payment;
 });
 
 
