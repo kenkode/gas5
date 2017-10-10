@@ -42,6 +42,12 @@ class Erporder extends \Eloquent {
 
 		return $payments;
 	}
+	public static function getDiscount($client,$item){
+		$discount = 0;
+		$discount = DB::table('prices')->where('client_id', '=', $client)->where('Item_id', '=', $item)->sum('Discount');
+
+		return $discount;
+	}
 	public static function getBalance($order){
 		//$payments = 0;
 		$amount_charged = DB::table('erporders')->$order->total_amount;
