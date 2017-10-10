@@ -149,6 +149,11 @@ class ItemsController extends \BaseController {
 		}else{
 		$size = $size;
 		}
+		if($description == ""){
+		$description = "null";
+		}else{
+		$description = $description;
+		}
 
 		$users = DB::table('roles')
 		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
