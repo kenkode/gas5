@@ -128,7 +128,7 @@ img#watermark{
         <th width='20'><strong># </strong></th>
         
         <th><strong>Name </strong></th>
-        <th><strong>Description </strong></th>
+        <th><strong>Opening Stock </strong></th>
         <th><strong>Cost price </strong></th>
         <th><strong>Selling Price</strong></th>
         <!-- <td><strong>Opening Stock </strong></td> -->
@@ -137,7 +137,7 @@ img#watermark{
         <td><strong>Quantity Sold</strong></td>
         <td><strong>Amount Sold</strong></td>                
         <!-- <th><strong>Store Keeping Unit </strong></th> -->
-        <th align="right"><strong>Stock Level</strong></th>
+        <th align="right"><strong>Closing Stock Level</strong></th>
         <th align="right"><strong>Stock Value </strong></th>
       </tr>
       <?php $i =1; 

@@ -163,8 +163,8 @@ if($(this).val() == "CREDIT"){
         </div>
         
         <div class="form-group">
-            <label>Category</label><span style="color:red;">*</span>
-            <select name="category" class="form-control" required>
+            <label>Category</label>
+            <select name="category" class="form-control">
                 <option value="">----Select a category----</option>
                 <option value="Institutional">Institutional</option>
                 <option value="Domestic">Domestic</option>
