@@ -2728,7 +2728,8 @@ Route::get('notificationshowstock/{id}/{client}/{erporder_id}/{confirmer}/{key}'
 
   return View::make('stocks.showstock', compact('stock','client','item','erporder_id','confirmer','key','erporder'));
 }else{
-  return Redirect::to('notifications/index')->withDeleteMessage("Stock for item ".$name." already received!");
+  $item = Item::find($stock->itm_id);
+  return Redirect::to('notifications/index')->withDeleteMessage("Stock for item ".$item->item_make." already received!");
 }
 });
 
