@@ -189,7 +189,7 @@ img#watermark{
             <td>{{ $orderitem->quantity}}</td>
             <td>{{ asMoney($orderitem->price)}}</td>
             
-             <td> {{asMoney($orderitem->price * $orderitem->quantity)}}</td>
+             <td> {{asMoney($orderitem->price * $orderitem->quantity * $orderitem->item->item_size)}}</td>
           </tr>
 
 
