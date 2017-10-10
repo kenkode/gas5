@@ -137,7 +137,7 @@ function asMoney($value) {
       @foreach($sales as $sales)
       
       <?php
-      $total = $total + ($sales->price * $sales->quantity)
+      $total = $total + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)))
 
       ?>
 
