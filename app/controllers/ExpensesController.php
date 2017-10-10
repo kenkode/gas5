@@ -49,6 +49,27 @@ class ExpensesController extends \BaseController {
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
+		if (! Entrust::can('approve_expense') ) // Checks the current user
+        {
+
+        $username = Confide::user()->username;
+
+		$users = DB::table('roles')
+		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
+		->join('users', 'assigned_roles.user_id', '=', 'users.id')
+		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
+		->select("users.id","email","username")
+		->where("permission_id",141)->get();
+
+        $key = md5(uniqid());
+
+		foreach ($users as $user) {
+
+		Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"expense","notificationshowexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".$key,$key);
+     	}
+        return Redirect::to('expenses')->with('notice', 'Admin approval is needed to insert this expense');
+        }else{
+
 		$expense = new Expense;
 
 		$expense->name = Input::get('name');
@@ -56,6 +77,8 @@ class ExpensesController extends \BaseController {
 		$expense->amount = Input::get('amount');		
 		$expense->date = date("Y-m-d",strtotime(Input::get('date')));
 		$expense->account_id = Input::get('account');
+		$expense->receiver_id = Confide::user()->id;
+        $expense->confirmed_id = Confide::user()->id;
 		$expense->save();
 
         DB::table('accounts')
@@ -64,6 +87,7 @@ class ExpensesController extends \BaseController {
             ->decrement('accounts.balance', Input::get('amount'));
 
 		return Redirect::route('expenses.index')->withFlashMessage('Expense successfully created!');
+	}
 	}
 
 	/**

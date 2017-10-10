@@ -100,8 +100,8 @@ public function kenya($id){
 
     public function payments(){
 
-       /* $from = Input::get("from");
-        $to= Input::get("to");*/
+        $from = date("Y-m-d");
+        $to= date("Y-m-d");
 
         $payments = Payment::whereNotNull('confirmed_id')->whereNotNull('is_approved')->get();
 
@@ -372,7 +372,7 @@ public function kenya($id){
         $from = Input::get("from");
         $to= Input::get("to");
 
-        $items = DB::table('items')
+        $items = DB::table('stocks')
                     ->whereBetween('date', array(Input::get("from"), Input::get("to")))->get();
 
 
@@ -1542,7 +1542,7 @@ public function kenya($id){
 
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
-    $time1 = strtotime(date('Y-m-d').' 7:59:59');
+    $time1 = strtotime(date('Y-m-d').' 8:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
@@ -1944,7 +1944,7 @@ public function kenya($id){
     $message->from('info@lixnet.net', 'Gas Express');
 
     
-    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('wangoken2@gmail.com', 'Ken Wango')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->subject('Daily Payments Report!');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Payments Report!');
     //$message->to('stephen.mangi@lixnet.net', 'Gas Express')->subject('Daily Payments Report!');
 
     
@@ -1973,7 +1973,7 @@ public function kenya($id){
                     ->whereBetween('date', array($from, $to))->get();*/
         
         $time = strtotime(date('Y-m-d').' 20:00:00');
-    $time1 = strtotime(date('Y-m-d').' 7:59:59');
+    $time1 = strtotime(date('Y-m-d').' 8:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
@@ -2030,9 +2030,8 @@ public function kenya($id){
     $from = $sdate;
     $to= $stime;
      
-        $items = DB::table('items')
-                    ->whereBetween('created_at', array($from, $to))
-                    ->get();
+    $items = DB::table('stocks')
+                    ->whereBetween('created_at', array($from, $to))->get();
 
 
         $organization = Organization::find(1);
@@ -2047,7 +2046,7 @@ public function kenya($id){
     $message->from('info@lixnet.net', 'Gas Express');
 
     
-    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Stock Report!');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('wangoken2@gmail.com', 'Ken Wango')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->subject('Daily Stock Report!');
 
     
     $message->attach($filePath.$fileName);
@@ -2067,7 +2066,7 @@ public function kenya($id){
     $filePath = 'app/views/temp/';
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
-    $time1 = strtotime(date('Y-m-d').' 7:59:59');
+    $time1 = strtotime(date('Y-m-d').' 8:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
@@ -2076,9 +2075,8 @@ public function kenya($id){
     $from = $sdate;
     $to= $stime;
      
-        $items = DB::table('items')
-                    ->whereBetween('created_at', array($from, $to))
-                    ->get();
+    $items = DB::table('stocks')
+                    ->whereBetween('created_at', array($from, $to))->get();
 
 
         $organization = Organization::find(1);

@@ -117,7 +117,7 @@ img#watermark{
 
 	<div class="content" style='margin-top:0px;'>   
 
-   <div align="center"><strong>Stock Movement Schedule as at {{date('d-M-Y')}}</strong></div><br>
+   <div align="center"><strong>Stock Movement Schedule as at {{$from}} to {{$to}}</strong></div><br>
 
     <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
 
@@ -149,25 +149,23 @@ img#watermark{
 
       <?php
 
-      $totalSales = $totalSales + (Stock::totalSales($item)) * $item->selling_price;
-      $totalCostprice = $totalCostprice + (Stock::totalSales($item)) * $item->purchase_price;
+      $totalSales = $totalSales + (Stock::totalSales($item->itm_id)) * Stock::getItem($item->itm_id)->selling_price;
+      $totalCostprice = $totalCostprice + (Stock::totalSales($item->itm_id)) * Stock::getItem($item->itm_id)->purchase_price;
       $profit_margin = $totalSales -$totalCostprice;
       ?>
       <tr>
 
        <td td width='20' valign="top">{{$i}}</td>        
-        <td valign="top"> {{ $item->item_make }}</td>
-        <td valign="top"> {{ $item->description }}</td>
-        <td valign="top" align="right"> {{ asMoney($item->purchase_price) }}</td>
-        <td valign="top" align="right"> {{ asMoney($item->selling_price) }}</td>
-        <!-- <td valign="top" align="center"> {{ (Stock::getOpeningStock($item)) }}</td> -->
-        <td valign="top" align="center"> {{ (Stock::totalPurchases($item)) }}</td>
-       <!--  <td valign="top" align="center">{{ (Stock::getOpeningStock($item)) + (Stock::totalPurchases($item)) }} </td>  -->
-        <td valign="top" align="center">{{ (Stock::totalSales($item)) }} </td>
-        <td valign="top" align="right">{{ asMoney((Stock::totalSales($item)) * $item->selling_price) }} </td>                
-        <!-- <td valign="top"> {{ $item->sku }}</td> -->
-        <td valign="top" align="center"> {{(Stock::getStockAmount($item))}}</td>
-        <td valign="top" align="right"> {{ asMoney(Stock::getStockAmount($item) * $item->purchase_price)}}</td>
+        <td valign="top"> {{ Stock::getItem($item->itm_id)->item_make }}</td>
+        <td valign="top"> {{ Stock::getItem($item->itm_id)->description }}</td>
+        <td valign="top" align="right"> {{ asMoney(Stock::getItem($item->itm_id)->purchase_price) }}</td>
+        <td valign="top" align="right"> {{ asMoney(Stock::getItem($item->itm_id)->selling_price) }}</td>
+        <td valign="top" align="center"> {{ (Stock::totalPurchases($item->itm_id)) }}</td>
+       
+        <td valign="top" align="center">{{ (Stock::totalSales($item->itm_id)) }} </td>
+        <td valign="top" align="right">{{ asMoney((Stock::totalSales($item->itm_id)) * Stock::getItem($item->itm_id)->selling_price) }} </td>                
+        <td valign="top" align="center"> {{(Stock::getStockAmountNew(Stock::getItem($item->itm_id)))}}</td>
+        <td valign="top" align="right"> {{ asMoney(Stock::getStockAmountNew(Stock::getItem($item->itm_id)) * Stock::getItem($item->itm_id)->purchase_price)}}</td>
         </tr>
       <?php $i++; ?>
    

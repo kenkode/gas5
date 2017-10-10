@@ -30,6 +30,13 @@ class Stock extends \Eloquent {
 		return $stock;
 	}
 
+	public static function getItem($itm_id){
+
+		$item = Item::find($itm_id);
+
+		return $item;
+	}
+
 	public static function getStockAmountNew($item){
 
 		$qin = DB::table('stocks')
@@ -64,7 +71,7 @@ class Stock extends \Eloquent {
 
 	public static function totalPurchases($item){
 
-		$qin = DB::table('stocks')->where('item_id', '=', $item->id)->sum('quantity_in');
+		$qin = DB::table('stocks')->where('itm_id', '=', $item)->sum('quantity_in');
 		
 
 		return $qin;
@@ -73,7 +80,7 @@ class Stock extends \Eloquent {
 	public static function totalsales($item){
 
 		
-		$qout = DB::table('stocks')->where('item_id', '=', $item->id)->sum('quantity_out');
+		$qout = DB::table('stocks')->where('itm_id', '=', $item)->sum('quantity_out');
 
 		
 

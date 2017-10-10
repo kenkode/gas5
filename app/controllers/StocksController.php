@@ -94,7 +94,7 @@ class StocksController extends \BaseController {
 
        
 
-        //print_r($order);
+        //print_r($id);
 
         //return $order;
         $total = 0;        
@@ -114,10 +114,10 @@ class StocksController extends \BaseController {
         //return $total;
 		//return $total;
 
-		/*if(Input::get('lease_qty') > $total){
+		if(Input::get('lease_qty') > $total){
 		  
           return Redirect::route('stocks.index')->withDeleteMessage('Quantity inputed exceeds stock available!');
-		}else{*/
+		}else{
 
 		$erporder_id = $id[0];
 		$location_id = Input::get('location');
@@ -141,7 +141,7 @@ class StocksController extends \BaseController {
 
 		return Redirect::route('stocks.index')->withFlashMessage('stock has been successfully updated!');
 	}
-   // }
+    }
 	}
 
 	/**

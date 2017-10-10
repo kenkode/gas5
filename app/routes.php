@@ -2733,6 +2733,21 @@ Route::get('notificationshowstock/{id}/{client}/{erporder_id}/{confirmer}/{key}'
 }
 });
 
+Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{account}/{receiver}/{confirmer}/{key}', function($name,$type,$amount,$date,$account,$receiver,$confirmer,$key){
+  $expense = Expense::where('confirmation_code',$key)->count();
+  if($expense == 0){
+  $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
+  $notification->is_read = 1;
+  $notification->update();
+
+  $acc = Account::find($account);
+
+  return View::make('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
+}else{
+  return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already approved!");
+}
+});
+
 Route::post('notificationconfirmstock', function(){
   $stock = Stock::find(Input::get("id"));
   $stock->is_confirmed = 1;
@@ -2745,6 +2760,32 @@ Route::post('notificationconfirmstock', function(){
   $order->update();*/
 
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
+});
+
+Route::post('notificationapproveexpense', function(){
+
+  $expense = new Expense;
+
+    $expense->name = Input::get('name');
+    $expense->type = Input::get('type');
+    $expense->amount = Input::get('amount');    
+    $expense->date = date("Y-m-d",strtotime(Input::get('date')));
+    $expense->account_id = Input::get('account');
+    $expense->receiver_id = Input::get("receiver");
+    $expense->confirmed_id = Input::get("confirmer");
+    $expense->confirmation_code = Input::get("key");
+    $expense->save();
+
+        DB::table('accounts')
+            ->join('expenses','accounts.id','=','expenses.account_id')
+            ->where('accounts.id', Input::get('account'))
+            ->decrement('accounts.balance', Input::get('amount'));
+
+  /*$order = Erporder::findorfail(Input::get("erporder_id"));
+  $order->status = 'delivered';
+  $order->update();*/
+
+  return Redirect::to('notifications/index')->withFlashMessage("Expense for item ".Input::get('item')." confirmed as approved!");
 });
 
 

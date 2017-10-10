@@ -127,7 +127,11 @@ body {
 
 	<div class="content" style='margin-top:0px;'>
    <!-- <div align="center"><strong>Payment Report as at {{date('d-M-Y')}}</strong></div><br> -->
-   <div align="center"><strong>Payments Report as at {{date('d-M-Y')}} </strong></div><br>
+   @if($from != null)
+   <div align="center"><strong>Payments Report as at {{$from}} To:  {{$to}} </strong></div><br>
+   @else
+   <div align="center"><strong>Payment Report as at {{date('d-M-Y')}}</strong></div><br>
+   @endif
 
     <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
 
@@ -139,14 +143,18 @@ body {
         <th align="center"><strong>Date </strong></th>
         <th align="center"><strong>Client</strong></th>
         <th align="center"><strong>Type </strong></th>
-        <th align="right"><strong>Amount</strong></th>        
-        <th align="center"><strong>User </strong></th>
+        <th align="right"><strong>Amount</strong></th> 
         
       </tr>
      
 
-       <?php $i = 1; ?>
+       <?php $i = 1; $total = 0;?>
         @foreach($payments as $payment)
+
+        <?php
+        $total = $total + ($payment->amount_paid)
+
+       ?>
 
         <tr>
 
@@ -156,13 +164,27 @@ body {
           <td>{{ $payment->client->name }}</td>  
           <td align="right">{{ $payment->client->type }}</td>
           <td align="right">{{ asMoney($payment->amount_paid) }}</td>
-          <td align="center"> {{ $payment->received_by }}</td>
                
 
         </tr>
       <?php $i++; ?>
    
     @endforeach
+
+    <tr>
+           <td></td>
+            <td></td>
+            <td></td>
+            <td><strong>Grand Total</strong></td>
+            <td align = "right"><strong>{{asMoney($total)}}</strong></td>
+
+
+            
+
+            
+            
+          
+        </tr>
 
      
 

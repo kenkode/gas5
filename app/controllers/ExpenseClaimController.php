@@ -263,7 +263,7 @@ class ExpenseClaimController extends \BaseController {
 		ClaimReceipt::where('claim_id', $id)->update(array('status'=>'Declined'));
 		ExpenseClaim::where('id', $id)->update(array('status'=>'Declined'));
 
-		return Redirect::action('ExpenseClaimController@index')->with('error', 'Claim Declined!!!');
+		return Redirect::action('ExpenseClaimController@index')->with('success', 'Claim Declined!!!');
 	}
 
 
