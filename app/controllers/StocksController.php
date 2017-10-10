@@ -83,10 +83,10 @@ class StocksController extends \BaseController {
 		$id = explode(" : ",Input::get('item'));
 
         $order = Erporderitem::join('erporders','erporderitems.erporder_id','=','erporders.id')
-                   ->join('items','erporderitems.item_id','=','items.id')
                    ->join('stocks','erporders.id','=','stocks.item_id')
                    ->where('stocks.item_id',$id[0])
                    ->where('stocks.itm_id',$id[1])
+                   ->where('erporderitems.item_id',$id[1])
                    ->where('erporders.status','new')
                    ->whereNotNull('authorized_by')
                    ->select(DB::raw('(quantity-sum(quantity_in)) AS total'))
@@ -94,9 +94,9 @@ class StocksController extends \BaseController {
 
        
 
-        //print_r($id);
+        //print_r($order);
 
-        //return $order;
+        //return $id[1];
         $total = 0;        
 
         if($order->total == null){

@@ -268,12 +268,13 @@ class PettyCashController extends BaseController{
 		$journal = new Journal;
 
 		$trId = $acTransaction->createTransaction($data);
+		$accTr = AccountTransaction::orderBy('id','DESC')->first();
 		$journal->journal_entry($data);
 
 		foreach($trItems as $trItem){
 			$pettyCashItem = new PettycashItem;
 
-			$pettyCashItem->ac_trns = $trId;
+			$pettyCashItem->ac_trns = $accTr->id;
 			$pettyCashItem->item_name = $trItem['item_name'];
 			$pettyCashItem->description = $trItem['description'];
 			$pettyCashItem->quantity = $trItem['quantity'];

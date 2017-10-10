@@ -176,7 +176,7 @@ img#watermark{
 
           <?php
 
-            $amount = $orderitem['price'] * $orderitem['quantity'];
+            $amount = $orderitem['price'] * $orderitem['quantity'] * $orderitem->item->item_size;
             /*$total_amount = $amount * $orderitem['duration'];*/
             $total = $total + $amount;
 
