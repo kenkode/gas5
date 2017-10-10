@@ -110,12 +110,13 @@ if($(this).val()){
 
         <div class="form-group">
             <label for="username">Order Number:</label>
-            <input class="form-control" placeholder="" type="text" name="item" id="item" value="{{$erporderitem->order_number}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="item" id="item" value="{{$erporder->order_number}}" readonly>
         </div>
+
 
         <div class="form-group">
             <label for="username">Item:</label>
-            <input class="form-control" placeholder="" type="text" name="item" id="item" value="{{$erporderitem->item_make}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="item" id="item" value="{{$item->item_make}}" readonly>
         </div>
 
         <div class="form-group">

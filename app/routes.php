@@ -2722,12 +2722,11 @@ Route::get('notificationshowstock/{id}/{client}/{erporder_id}/{confirmer}/{key}'
   $notification->is_read = 1;
   $notification->update();
 
-  $erporderitem = Erporder::join('erporderitems','erporders.id','=','erporderitems.erporder_id')
-                   ->join('items','erporderitems.item_id','=','items.id')
-                   ->where('erporders.id',$erporder_id)
-                   ->first();
+  $item = Item::find($stock->itm_id);
 
-  return View::make('stocks.showstock', compact('stock','client','erporderitem','erporder_id','confirmer','key'));
+  $erporder = Erporder::find($erporder_id);
+
+  return View::make('stocks.showstock', compact('stock','client','item','erporder_id','confirmer','key','erporder'));
 }else{
   return Redirect::to('notifications/index')->withDeleteMessage("Stock for item ".$name." already received!");
 }
