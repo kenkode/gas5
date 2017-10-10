@@ -130,7 +130,7 @@ th,td{
   						@endforeach
               @endif
               <?php 
-                if($monthlySalesTotal !== 0 || $compareToTotal !== 0){
+                if($monthlySalesTotal != 0 && $compareToTotal != 0){
                   $totalPercentAge = (($monthlySalesTotal-$compareToTotal)/$compareToTotal)*100;
                 } else{
                   $totalPercentAge = NULL;
