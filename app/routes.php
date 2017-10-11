@@ -3818,7 +3818,8 @@ Route::get('api/dropdown', function(){
                              })
                              ->groupBy('erporders.id')
                              ->where('erporders.status','new')
-                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * item_size * quantity),")") AS erporder'))
+                             ->havingRaw('balance > 0 or balance is null')
+                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * item_size * quantity),")") AS erporder'), DB::raw('(SELECT (sum(price * quantity * item_size) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'))
                    ->get('erporder', 'id');
     return $erporderitems;
 });
@@ -3834,8 +3835,9 @@ Route::get('api/salesdropdown', function(){
                                      ->orWhere('erporders.is_paid', 0);
                              })
                              ->groupBy('erporders.id')
+                             ->havingRaw('balance > 0 or balance is null')
                              ->where('erporders.status','new')
-                             ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * quantity),")") AS erporder'))
+                             ->select('erporders.id', DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * quantity),")") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'))
                    ->get('erporder', 'id');
     return $erporderitems;
 });
