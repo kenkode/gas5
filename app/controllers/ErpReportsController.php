@@ -1133,6 +1133,8 @@ public function kenya($id){
                             ->get();
 
         $pdf = PDF::loadView('erpreports.dailyPaymentsReport', compact('payments'))->setPaper('a4', 'portrait');
+
+        Audit::logaudit('Payments', 'viewed daily payments report', 'viewed daily payments report in the system');
         return $pdf->stream('Daily Collections Report');
 
     }

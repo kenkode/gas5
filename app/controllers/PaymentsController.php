@@ -25,7 +25,8 @@ class PaymentsController extends \BaseController {
 		$erporderitems = Erporderitem::all();		
 		$paymentmethods = Paymentmethod::all();
 		$payments = Payment::where("is_approved",1)->orderBy("id","DESC")->get();
-		
+
+		Audit::logaudit('Payments', 'viewed payments', 'viewed payments in the system');
 
 		return View::make('payments.index', compact('erporderitems','erporders','paymentmethods','payments'));
 	}
@@ -130,6 +131,16 @@ class PaymentsController extends \BaseController {
 		}
 	    }
 
+	    $order_number = '';
+
+	    if(Input::get('type') === 'Customer'){
+        $erporder = Erporder::find(Input::get('invoice'));
+        $order_number = $erporder->order_number;
+	    }else{
+        $erporder = Erporder::find(Input::get('order'));
+        $order_number = $erporder->order_number;
+	    }
+
 		
 		if(Input::get('type') === 'Customer'){
 			Account::where('id', Input::get('paymentmethod'))->increment('balance', Input::get('amountdue'));	
@@ -159,6 +170,8 @@ class PaymentsController extends \BaseController {
         	Notification::notifyUser($user->id,"Hello, Approval for purchase payment is required","payment","notificationshowpayment/".$prepared_by."/".$user->id."/".$key."/".$id,$key);
         }
         }
+
+        Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', order number '.$order_number.', amount '.Input::get('amountdue').' but awaiting approval in the system');
         return Redirect::to('payments')->with('notice', 'Admin approval is needed for this payment');
         }else{
 
@@ -166,6 +179,8 @@ class PaymentsController extends \BaseController {
         $p->confirmed_id = Confide::user()->id;
         $p->is_approved = 1;
         $p->update();
+
+        Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', order number '.$order_number.', amount '.Input::get('amountdue').' in the system');
 
 		return Redirect::route('payments.index')->withFlashMessage('Payment successfully created!');
         }
@@ -279,6 +294,11 @@ class PaymentsController extends \BaseController {
 		$payment->payment_date = date("Y-m-d",strtotime(Input::get('pay_date')));
 		$payment->update();
 
+		$erporder = Erporder::find(Input::get('order'));
+		$client = Client::find($erporder->client_id);
+
+		Audit::logaudit('Payments', 'updated payment', 'updated payment for client '.$client->name.', order number '.$$erporder->order_number.', amount '.Input::get('amount').' in the system');
+
 		return Redirect::route('payments.index')->withFlashMessage('Payment successfully updated!');
 	}
 
@@ -290,7 +310,12 @@ class PaymentsController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
+		$payment = Payment::findOrFail($id);
+		$erporder = Erporder::find($payment->erporder_id);
+		$client = Client::find($erporder->client_id);
 		Payment::destroy($id);
+
+		Audit::logaudit('Payments', 'deleted payment', 'deleted payment for client '.$client->name.', order number '.$$erporder->order_number.', amount '.$payment->amount_paid.' in the system');
 
 		return Redirect::route('payments.index')->withDeleteMessage('Payment successfully deleted!');
 	}
@@ -309,6 +334,8 @@ class PaymentsController extends \BaseController {
 							->get();
 
 							//return $payments;
+
+	    Audit::logaudit('Payments', 'viewed daily payments', 'viewed daily payments in the system');
 
 		return View::make('payments.dailyPayments', compact('payments'));
 	}

@@ -56,7 +56,7 @@
             <div class="col-lg-12">
     <a href="{{ URL::to('payments/create') }}" class="btn btn-info btn-sm"><i class="fa fa-plus fa-fw"></i> New Receivable Payment</a>&emsp;
     <!-- <a href="" class="btn btn-warning btn-sm"> Run Depreciation</a>&emsp; -->
-    <a href="{{ URL::to('daily_payments/today') }}" class="btn btn-info btn-sm"> Daily Receivable Payment</a>&emsp;
+    <a target="_blank" href="{{ URL::to('daily_payments/today') }}" class="btn btn-info btn-sm"> Daily Receivable Payment</a>&emsp;
     <hr>
   </div><!-- ./END -->
             <tr>
