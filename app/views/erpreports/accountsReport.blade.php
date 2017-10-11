@@ -134,8 +134,9 @@ function asMoney($value) {
         <th align="right"><strong>Balance </strong></th>
         
       </tr>
-      <?php $i =1; ?>
+      <?php $i =1; $total = 0;?>
       @foreach($accounts as $account)
+      <?php $total = $total + $account->balance; ?>
       <tr>
 
 
@@ -149,7 +150,15 @@ function asMoney($value) {
    
     @endforeach
 
-     
+     <tr>
+
+
+       <td td width='20'></td>
+        <td></td>
+        <td align="center"> <strong>Total</strong></td>
+        <td align="right"> <strong>{{ asMoney($total) }}</strong></td>
+        
+        </tr>
 
     </table>
 

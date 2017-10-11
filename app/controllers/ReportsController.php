@@ -1002,6 +1002,8 @@ class ReportsController extends \BaseController {
 		if($report == 'balancesheet'){
 
 			$pdf = PDF::loadView('pdf.financials.balancesheet', compact('accounts', 'date', 'organization'))->setPaper('a4');
+
+            Audit::logaudit('Account', 'viewed balance sheet report', 'viewed balance sheet report in the system');
  	
 			return $pdf->stream('Balance Sheet.pdf');
 
@@ -1011,6 +1013,8 @@ class ReportsController extends \BaseController {
 		if($report == 'income'){
 
 			$pdf = PDF::loadView('pdf.financials.incomestatement', compact('accounts', 'date', 'organization'))->setPaper('a4');
+
+            Audit::logaudit('Account', 'viewed income report', 'viewed income report in the system');
  	
 			return $pdf->stream('Income Statement.pdf');
 
@@ -1020,6 +1024,8 @@ class ReportsController extends \BaseController {
 		if($report == 'trialbalance'){
 
 			$pdf = PDF::loadView('pdf.financials.trialbalance', compact('accounts', 'date', 'organization'))->setPaper('a4');
+
+            Audit::logaudit('Account', 'viewed trial balance report', 'viewed trial balance report in the system');
  	
 			return $pdf->stream('Trial Balance.pdf');
 

@@ -14,6 +14,8 @@ class ErpReportsController extends \BaseController {
         ini_set("max_execution_time", "-1");
 
         $pdf = PDF::loadView('erpreports.clientsReport', compact('clients', 'organization'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Client', 'viewed clients report', 'viewed clients report in the system');
     
         return $pdf->stream('Client List.pdf');
         
@@ -67,6 +69,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.itemsReport', compact('items', 'organization','from','to'))->setPaper('a4');
+
+        Audit::logaudit('Item', 'viewed items report', 'viewed items report in the system');
     
         return $pdf->stream('Item List.pdf');
         
@@ -81,6 +85,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.expensesReport', compact('expenses', 'organization','from','to'))->setPaper('a4');
+
+        Audit::logaudit('Client', 'viewed expenses report', 'viewed expenses report in the system');
     
         return $pdf->stream('Expense List.pdf');
         
@@ -93,6 +99,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.paymentmethodsReport', compact('paymentmethods', 'organization'))->setPaper('a4');
+
+        Audit::logaudit('Payment Method', 'viewed payment methods report', 'viewed payment methods report in the system');
     
         return $pdf->stream('Payment Method List.pdf');
         
@@ -118,6 +126,8 @@ public function kenya($id){
         //return View::make('erpreports.paymentsReport', compact('payments','erporders', 'erporderitems', 'organization','from','to'));
 
         $pdf = PDF::loadView('erpreports.paymentsReport', compact('payments','erporders', 'erporderitems', 'organization','from','to'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Payment', 'viewed payments report', 'viewed payments report in the system');
 
         return $pdf->stream('Payment List.pdf');
         
@@ -363,6 +373,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.locationsReport', compact('locations', 'organization'))->setPaper('a4');
+
+        Audit::logaudit('Stores', 'viewed stores report', 'viewed stores report in the system');
     
         return $pdf->stream('Stores List.pdf');
         
@@ -383,6 +395,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.stockReport', compact('items', 'organization','from','to'))->setPaper('a4')->setOrientation('landscape');
+
+        Audit::logaudit('Stock', 'viewed stock movement report', 'viewed stock movement report in the system');
     
         return $pdf->stream('Stock Report.pdf');
         
@@ -445,6 +459,8 @@ public function kenya($id){
   $accounts = Account::all();
 
         $pdf = PDF::loadView('erpreports.salesReport', compact('sales', 'total_sales_todate','total_payment','discount_amount_todate','discount_amount','percentage_discount','accounts','organization','from','to'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Sales Order', 'viewed sales order report', 'viewed sales order report in the system');
     
         return $pdf->stream('Sales List.pdf');
 
@@ -530,6 +546,7 @@ public function kenya($id){
         $pdf = PDF::loadView('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'))->setPaper('a4', 'landscape');
         //return View::make('erpreports.salesSummaryReport', compact('sales','accounts','discount_amount','total_sales_todate','discount_amount_todate','total_payment','clients_customer','target','organization','percentage_discount','from','to','sales_target','discount_amount_target','from_target','to_target'));
 
+        Audit::logaudit('Sales Order', 'viewed sales summary report', 'viewed sales summary report in the system');
         return $pdf->stream('Summary Report.pdf');
     }
 
@@ -565,6 +582,8 @@ public function kenya($id){
       //return $organization;
 
             $pdf = PDF::loadView('erpreports.purchasesReport', compact('purchases', 'organization','from','to'))->setPaper('a4');
+
+            Audit::logaudit('Purchase Order', 'viewed purchase orders report', 'viewed purchase orders report in the system');
         
             return $pdf->stream('Purchases List.pdf');
 
@@ -582,6 +601,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.pricelist', compact('pricelist', 'organization'))->setPaper('a4');
+
+        Audit::logaudit('Prices', 'viewed client prices report', 'viewed client prices report in the system');
     
         return $pdf->stream('Price List.pdf');
         
@@ -998,6 +1019,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.vehiclesReport', compact('assigndrivers', 'organization','from','to'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Vehicle', 'viewed vehicles report', 'viewed vehicles report in the system');
     
         return $pdf->stream('Vehicles Report.pdf');
         
@@ -1059,6 +1082,8 @@ public function kenya($id){
 
         $summary = Session::get('summary');
         $pdf = PDF::loadView('erpreports.clientSalesComparison', compact('month', 'compareTo', 'summary'))->setPaper('a4');
+
+        Audit::logaudit('Sales Report', 'viewed sales comparison report', 'viewed sales comparison report in the system');
         
         return $pdf->stream('Customer Sales Comparison Report');
         //return View::make('erpreports.clientSalesComparison', compact('month', 'compareTo', 'summary'));
@@ -1352,6 +1377,9 @@ public function kenya($id){
         $pdf = PDF::loadView('erpreports.mergedReport', compact('clients', 'accounts', 'organization', 
                      'dailyCollections', 'iSubTotal', 'dSubTotal', 'sales', 'expenses', 
                      'totalSales', 'monthlyTarget', 'lastMonthSales'))->setPaper('a4');
+
+        Audit::logaudit('Merged Report', 'viewed merged report report', 'viewed merged report in the system');
+
         return $pdf->stream('General Report');
     }
 
@@ -1426,6 +1454,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.accountsReport', compact('accounts', 'organization'))->setPaper('a4');
+
+        Audit::logaudit('Account', 'viewed account balances report', 'viewed account balances report in the system');
     
         return $pdf->stream('Account Balances.pdf');
         

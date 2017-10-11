@@ -54,7 +54,7 @@
                     </li>
 
                     <li>
-                        <a href="{{ URL::to('erpReports/accounts') }}" target="_blank"><i class="glyphicon glyphicon-file fa-fw"></i> Bank Balances</a>
+                        <a href="{{ URL::to('erpReports/accounts') }}" target="_blank"><i class="glyphicon glyphicon-file fa-fw"></i> Account Balances</a>
                     </li>      
 
                      <li>
