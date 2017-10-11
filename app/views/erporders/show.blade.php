@@ -69,7 +69,7 @@ $(document).ready(function(){
 <div class="row">
     <div class="col-lg-12">
 
-        <form class="form-inline" action="{{URL::to('erpReports/receipt/'.$order->id)}}" method="POST">
+        <form target="_blank" class="form-inline" action="{{URL::to('erpReports/receipt/'.$order->id)}}" method="POST">
             
           @if($order->status != "cancelled")
             <div class="form-group">

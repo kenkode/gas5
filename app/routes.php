@@ -2326,6 +2326,8 @@ if (! Entrust::can('view_purchase_order') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+ Audit::logaudit('Purchase Order', 'viewed purchase orders', 'viewed purchase orders in the system');
+
   return View::make('erppurchases.index', compact('items', 'locations', 'purchases'));
 }
 });
@@ -2810,6 +2812,7 @@ Route::post('stock/lease', function(){
   $quantity = Input::get('lease_qty');
 
   $item = Item::findOrfail($item_id);
+  $client = Client::find($client_id);
   $timestamp = date("Y-m-d H:i:s");
   $location = Location::findorfail($location_id);
 
@@ -2837,6 +2840,7 @@ Route::post('stock/lease', function(){
     ->first();
 
     Stock::removeStock($track->id,$item_id, $location, $quantity, $timestamp);
+    Audit::logaudit('Lease Item', 'leased item', 'leased item '.$item->item_make.' to customer '.$client->name.' in the system');
     return Redirect::back()->with('message', 'Item(s) successfully leased.');
   }
 
@@ -2862,7 +2866,8 @@ Route::post('stock/return', function(){
   $returned->date_returned = date("Y-m-d");
   $returned->update();
 
-  $items = Item::findOrfail($returned->item_id);
+  $item = Item::findOrfail($returned->item_id);
+  $client = Client::find($client_id);
 
   $stock = DB::table('stocks')
     ->join("erporderitems","erporderitems.erporder_id","=","stocks.item_id")
@@ -2873,6 +2878,8 @@ Route::post('stock/return', function(){
     ->first();
 
   Stock::addStock($client_id, $returned->item_id, $erporder_id, $location, $qty, $timestamp);
+
+  Audit::logaudit('Return Item', 'returned item', 'returned item '.$item->item_make.' leased to customer '.$client->name.' in the system');
   return Redirect::back()->with('message', 'Item(s) successfully returned.');
 
 });
@@ -2908,6 +2915,8 @@ Route::post('erporder/commit', function(){
   $order->type = 'sales';  
   $order->payment_type = array_get($erporder, 'payment_type');
   $order->save();
+
+  $client = Client::find(array_get($erporder, 'client'));
   
 
   foreach($erporderitems as $item){
@@ -2971,7 +2980,7 @@ Route::post('erporder/commit', function(){
 //Session::flush('orderitems');
 //Session::flush('erporder');  
  
-    
+Audit::logaudit('Sales Order', 'created sales order', 'created a sales order with order number '.array_get($erporder, 'order_number').' for client '.$client->name.' in the system');
 
 return Redirect::to('salesorders')->withFlashMessage('Order Successfully Placed!');
 
@@ -2994,6 +3003,7 @@ Route::get('erppurchase/commit', function(){
 
  // print_r($total);
 
+  $client = Client::find(array_get($erporder, 'client'));
 
   $order = new Erporder;
   $order->order_number = array_get($erporder, 'order_number');
@@ -3004,6 +3014,7 @@ Route::get('erppurchase/commit', function(){
   $order->type = 'purchases';
   $order->save();
   
+
 
   foreach($orderitems as $item){
 
@@ -3024,6 +3035,8 @@ Route::get('erppurchase/commit', function(){
  
 //Session::flush('orderitems');
 //Session::flush('erporder');
+Audit::logaudit('Purchase Order', 'created purchase order', 'created a purchase order with order number '.array_get($erporder, 'order_number').' for client '.$client->name.' in the system');
+
 return Redirect::to('purchaseorders');
 
 
@@ -3052,6 +3065,8 @@ Route::post('erpquotation/commit', function(){
   $order->discount_amount = array_get($total, 'discount');
   $order->type = 'quotations';  
   $order->save();
+
+  $client = Client::find(array_get($erporder, 'client'));
   
 
   foreach($erporderitems as $item){
@@ -3102,7 +3117,7 @@ Route::post('erpquotation/commit', function(){
 //Session::flush('orderitems');
 //Session::flush('erporder');  
  
-    
+Audit::logaudit('Quotation', 'created quotation', 'created a quotation with order number '.array_get($erporder, 'order_number').' for client '.$client->name.' in the system');
 
 return Redirect::to('quotationorders');
 
@@ -3155,6 +3170,8 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
   Notification::notifyUser($user->id,"Hello, Please approve cancellation of Sale order ".$order->order_number,"cancel sale order","erporders/notifyshow/".$key."/".$user->id."/".$id,$key);
   } 
 
+  Audit::logaudit('Cancel Sale Order', 'cancelled sale order', 'cancelled sale order, order number '.$order->order_number.' but awaiting approval in the system');
+
   return Redirect::to('erporders/show/'.$id)->with('notice', 'Please await approval to complete cancellation');
   }else{
 
@@ -3163,6 +3180,8 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
   $order->is_cancelled = 1;
   $order->status = 'cancelled';
   $order->update();
+
+  Audit::logaudit('Cancel Sale Order', 'cancelled sale order', 'cancelled sale order, order number '.$order->order_number.' in the system');
 
   return Redirect::to('salesorders');
 }
@@ -3181,6 +3200,8 @@ $order = Erporder::findorfail($id);
   $order->is_pending = null;
   $order->status = 'cancelled';
   $order->update();
+
+  Audit::logaudit('Approve Cancel Sale Order', 'approved cancellation of sale order', 'approved cancellation of sale order '.$order->order_number.' in the system');
 
   return Redirect::to('salesorders');
 
@@ -3233,6 +3254,8 @@ Route::get('erporders/delivered/{id}', function($id){
   $order->status = 'delivered';
   $order->update();
 
+  Audit::logaudit('Sales Order', 'delivered sales order', 'delivered sales order, order number '.$order->order_number.' in the system');
+
   return Redirect::to('salesorders');
   }
 });
@@ -3248,6 +3271,8 @@ Route::get('erppurchases/cancel/{id}', function($id){
         }else{
   $order->status = 'cancelled';
   $order->update();
+
+  Audit::logaudit('Purchase Order', 'cancelled purchase order', 'cancelled purchase order, order number '.$order->order_number.' in the system');
 
   return Redirect::to('purchaseorders');
   }
@@ -3265,6 +3290,8 @@ Route::get('erppurchases/delivered/{id}', function($id){
         }else{
   $order->status = 'delivered';
   $order->update();
+
+  Audit::logaudit('Purchase Order', 'delivered purchase order', 'delivered purchase order, order number '.$order->order_number.' in the system');
 
   return Redirect::to('purchaseorders');
   }
@@ -3312,6 +3339,8 @@ Route::get('erporders/show/{id}', function($id){
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+  Audit::logaudit('Sales Order', 'viewed a sales order', 'viewed a sale order for customer '.$client->name.' order number '.$order->order_number.' in the system');
+
   return View::make('erporders.show', compact('order', 'driver', 'orders','id','client','items','location','leased'));
   }
 });
@@ -3321,11 +3350,14 @@ Route::get('erporders/show/{id}', function($id){
 Route::get('erppurchases/show/{id}', function($id){
 
   $order = Erporder::findorfail($id);
+  $client = Client::find($order->client_id);
 
   if (! Entrust::can('view_purchase_order') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+  Audit::logaudit('Purchase Order', 'viewed a purchase order', 'viewed a purchase order for supplier '.$client->name.' order number '.$order->order_number.' in the system');
 
   return View::make('erppurchases.show', compact('order'));
 }  
@@ -3392,10 +3424,14 @@ Route::get('erpquotations/show/{id}', function($id){
 
   $order = Erporder::findorfail($id);
 
+  $client = Client::findorfail($order->client_id);
+
   if (! Entrust::can('view_quotation') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+  Audit::logaudit('Quotation', 'viewed quotation', 'viewed quotation for customer '.$client->name.' order number '.$order->order_number.' in the system');
 
   return View::make('erpquotations.show', compact('order'));
 }
@@ -3572,6 +3608,7 @@ Route::post('/erpquotations/approve', function(){
   $comment = Input::get('comment');
 
   $order = Erporder::findorfail($id);
+  $client = Client::find($order->client_id);
 
   $order->status = 'APPROVED';
   if($comment === ''){
@@ -3581,6 +3618,8 @@ Route::post('/erpquotations/approve', function(){
   }
 
   $order->update();
+
+  Audit::logaudit('Quotation', 'approved quotation', 'approved quotation for client '.$client->name.' order number '.$order->order_number.' in the system');
 
   return Redirect::to('erpquotations/show/'.$id);
 });
@@ -3594,6 +3633,7 @@ Route::post('/erpquotations/reject', function(){
   $comment = Input::get('comment');
 
   $order = Erporder::findorfail($id);
+  $client = Client::find($order->client_id);
 
   $order->status = 'REJECTED';
   if($comment === ''){
@@ -3603,6 +3643,8 @@ Route::post('/erpquotations/reject', function(){
   }
 
   $order->update();
+
+  Audit::logaudit('Quotation', 'rejected quotation', 'rejected quotation for client '.$client->name.' order number '.$order->order_number.' in the system');
 
   return Redirect::to('erpquotations/show/'.$id);
 });
@@ -3636,6 +3678,10 @@ Route::post('erpquotations/edit/add', function(){
     $order_id = Input::get('order_id');
     $item_id = Input::get('item_id');
     $quantity = Input::get('quantity');
+
+    $order = Erporder::find($order_id);
+
+    $client = Client::find($order->client_id);
     
     $item = Item::findorfail($item_id);
     $item_price = $item->selling_price;
@@ -3652,6 +3698,8 @@ Route::post('erpquotations/edit/add', function(){
         $order_item->erporder_id = $order_id;   
         $order_item->price = $item_price;
         $order_item->save();
+
+        Audit::logaudit('Quotation', 'edit quotation', 'edited quotation for client '.$client->name.' order number '.$order->order_number.' in the system');
 
         return Redirect::back(); 
     }

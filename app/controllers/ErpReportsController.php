@@ -146,10 +146,13 @@ public function kenya($id){
 
         $erporder = Erporder::findorfail($id);
 
+        $client = Client::find($erporder->client_id);
 
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.invoice', compact('orders','erporder','txorders','count' ,'organization'))->setPaper('a4');
+
+        Audit::logaudit('Invoice', 'viewed invoice', 'viewed invoice for client '.$client->name.' order number '.$erporder->order_number.' in the system');
     
         return $pdf->stream('Invoice.pdf');
         
@@ -345,6 +348,8 @@ public function kenya($id){
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.receipt', compact('orders','erporder','txorders','count','organization','driver','leased'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Delivery Note', 'viewed delivery note', 'viewed delivery note for order '.$erporder->order_number.' assigned to driver '.$driver.' in the system');
     
         return $pdf->stream('Receipt.pdf');
         
@@ -605,10 +610,13 @@ public function kenya($id){
 
         $erporder = Erporder::findorfail($id);
 
+        $client = Client::find($erporder->client_id);
 
         $organization = Organization::find(1);
 
         $pdf = PDF::loadView('erpreports.quotation', compact('orders','erporder','txorders','count' ,'organization'))->setPaper('a4');
+
+        Audit::logaudit('Quotation', 'viewed quotation', 'viewed quotation for client '.$client->name.' order number '.$erporder->order_number.' in the system');
     
         return $pdf->stream('quotation.pdf');
         
@@ -648,6 +656,8 @@ public function kenya($id){
 
         $erporder = Erporder::findorfail($id);
 
+        $client = Client::find($erporder->client_id);
+
 
         $organization = Organization::find(1);
 
@@ -674,6 +684,7 @@ public function kenya($id){
             return Redirect::back()->with('fail', $fail);
         } else{
             $success = "Email successfully sent";
+            Audit::logaudit('Quotation', 'email quotation', 'emailed quotation for client '.$client->name.' order number '.$erporder->order_number.' in the system');
             return Redirect::back()->with('success', $success);
         }
 
@@ -740,6 +751,7 @@ public function kenya($id){
             return Redirect::back()->with('fail', $fail);
         } else{
             $success = "Email successfully sent";
+            Audit::logaudit('Purchase Order', 'emailed purchase order', 'emailed purchase order ,order number '.$erporder->order_number.' in the system');
             return Redirect::back()->with('success', $success);
         }
 
@@ -801,6 +813,8 @@ public function kenya($id){
     
         });*/
         }
+
+        Audit::logaudit('Purchase Order', 'submit purchase order for review', 'submitted purchase order, order number '.$erporder->order_number.' for review in the system');
     
         return Redirect::to('erppurchases/show/'.$id)->with('notice', 'Successfully submited approval');
         
@@ -861,6 +875,8 @@ public function kenya($id){
 
     
         });*/
+
+        Audit::logaudit('Purchase Order', 'authorized purchase order', 'authorized purchase order, order number '.$erporder->order_number.' in the system');
     
         return Redirect::to('erppurchases/show/'.$id)->with('notice', 'Successfully authorized purchase order');
         
@@ -922,6 +938,8 @@ public function kenya($id){
     
         });*/
     }
+
+    Audit::logaudit('Purchase Order', 'reviewed purchase order and submitted for authorization', 'reviewed purchase order, order number '.$erporder->order_number.' and submitted it for authorization in the system');
     
         return Redirect::to('erppurchases/show/'.$id)->with('notice', 'Successfully reviewed purchase order');
         
@@ -958,6 +976,7 @@ public function kenya($id){
         if($erporder->prepared_by ==null || $erporder->reviewed_by == null || $erporder->authorized_by == null){
         return Redirect::to('erppurchases/show/'.$id)->with('notice', 'This purchase order has not been authorized');
         }else{
+        Audit::logaudit('Purchase Order', 'viewed a purchase order', 'viewed purchase order, order number '.$order->order_number.' in the system');
         return $pdf->stream('Purchase Order.pdf');
         }
     }
