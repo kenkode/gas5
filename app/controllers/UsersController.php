@@ -348,10 +348,15 @@ class UsersController extends Controller
         else
         {
 
-            $user->password = Hash::make($password);
+            /*$user->password = Hash::make($password);
             $user->update();
+            return Hash::make($password);*/
 
-            return Redirect::to('users/profile/'.$user->id);
+            DB::table('users')
+            ->where('id', $user)
+            ->update(array('password' => Hash::make($password)));
+
+            return Redirect::to('users/profile/'.$user->id)->with('success', 'passwords successfully updated');
         }
 
 
@@ -426,7 +431,7 @@ class UsersController extends Controller
 
         DB::table('users')->where('id', $user_id)->update(array('password' => $pass));
 
-        return Redirect::to('users/logout');
+        return Redirect::to('users/profile/'.$user_id)->with('success', 'password successfully updated');
 
 
 

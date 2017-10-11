@@ -4,6 +4,14 @@
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
 
+                @if (Session::has('success'))
+            <div class="alert alert-error alert-success">
+                
+                    {{ Session::get('success') }}
+               
+            </div>
+        @endif
+
                 <div class="login-panel panel panel-default">
                       
                     <div class="panel-body">

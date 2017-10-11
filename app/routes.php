@@ -94,7 +94,7 @@ Route::get('users/activate/{user}', 'UsersController@activate');
 Route::get('users/deactivate/{user}', 'UsersController@deactivate');
 Route::get('users/destroy/{user}', 'UsersController@destroy');
 Route::get('users/password/{user}', 'UsersController@Password');
-Route::post('users/password/{user}', 'UsersController@changePassword');
+Route::post('users/password/{user}', 'UsersController@changePassword2');
 Route::get('users/profile/{user}', 'UsersController@profile');
 Route::get('users/show/{user}', 'UsersController@show');
 
