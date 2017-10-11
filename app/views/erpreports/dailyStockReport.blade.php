@@ -153,10 +153,10 @@ img#watermark{
 
       <?php
 
-      $openstock = $openstock + Stock::getOpeningStock($item->id,$from,$to);
-      $stockin = $stockin + Stock::getStockIn($item->id,$from,$to);
-      $stockout = $stockout + Stock::getStockOut($item->id,$from,$to);
-      $closingout = $closingout + Stock::getClosingStock($item->id,$from,$to);
+      $openstock = $openstock + Stock::dailyOpeningStock($item->id,$from,$to);
+      $stockin = $stockin + Stock::dailyStockIn($item->id,$from,$to);
+      $stockout = $stockout + Stock::dailyStockOut($item->id,$from,$to);
+      $closingout = $closingout + Stock::dailyClosingStock($item->id,$from,$to);
 
       /*$totalSales = $totalSales + (Stock::totalSales($item->itm_id)) * Stock::getItem($item->itm_id)->selling_price;
       $totalCostprice = $totalCostprice + (Stock::totalSales($item->itm_id)) * Stock::getItem($item->itm_id)->purchase_price;
@@ -166,10 +166,10 @@ img#watermark{
 
         <td td width='20' valign="top">{{$i}}</td>        
         <td valign="top"> {{ $item->item_make }}</td>
-        <td valign="top"> {{ Stock::getOpeningStock($item->id,$from,$to) }}</td>
-        <td valign="top" align="right"> {{ Stock::getStockIn($item->id,$from,$to) }}</td>
-        <td valign="top" align="right"> {{ Stock::getStockOut($item->id,$from,$to) }}</td>
-        <td valign="top" align="center"> {{ Stock::getClosingStock($item->id,$from,$to) }}</td>
+        <td valign="top"> {{ Stock::dailyOpeningStock($item->id,$from,$to) }}</td>
+        <td valign="top" align="right"> {{ Stock::dailyStockIn($item->id,$from,$to) }}</td>
+        <td valign="top" align="right"> {{ Stock::dailyStockOut($item->id,$from,$to) }}</td>
+        <td valign="top" align="center"> {{ Stock::dailyClosingStock($item->id,$from,$to) }}</td>
        
 
         </tr>

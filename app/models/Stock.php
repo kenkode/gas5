@@ -56,16 +56,123 @@ class Stock extends \Eloquent {
 
 	
 
-	public static function getOpeningStock($item){
+	public static function getOpeningStock($id,$from,$to){
 
-		$qin = DB::table('stocks')->where('item_id', '=', $item->id)->sum('quantity_in');
-		$qout = DB::table('stocks')->where('item_id', '=', $item->id)->sum('quantity_out');
+		$qin = DB::table('stocks')
+		     ->where('itm_id', '=', $id)
+		     ->whereBetween('date', array($from, $to))
+		     ->where('date','!=',$to)
+             ->whereBetween('date', array($from, $to))
+		     ->sum('quantity_in');
+		$qout = DB::table('stocks')
+		      ->where('itm_id', '=', $id)
+		      ->whereBetween('date', array($from, $to))
+		      ->where('date','!=',$to)
+		      ->sum('quantity_out');
 
 		$stock = $qin - $qout;
 		
 		$opening = $stock;
 
 		return $opening;
+	}
+
+	public static function getClosingStock($id,$from,$to){
+
+		$qin = DB::table('stocks')->where('itm_id', '=', $id)
+		     ->whereBetween('date', array($from, $to))
+		     ->sum('quantity_in');
+		$qout = DB::table('stocks')->where('itm_id', '=', $id)
+		      ->whereBetween('date', array($from, $to))
+		      ->sum('quantity_out');
+
+		$stock = $qin - $qout;
+		
+		$opening = $stock;
+
+		return $opening;
+	}
+
+	public static function getStockIn($id,$from,$to){
+
+		$qin = DB::table('stocks')
+		    ->where('itm_id', '=', $id)
+            ->where('date','=',$to)
+		    ->sum('quantity_in');
+
+		return $qin;
+	}
+
+	public static function getStockOut($id,$from,$to){
+
+		$qout = DB::table('stocks')
+		      ->where('itm_id', '=', $id)
+		      ->where('date','=',$to)
+		      ->sum('quantity_out');
+
+		return $qout;
+	}
+
+
+	public static function dailyOpeningStock($id,$from,$to){
+
+		$qin = DB::table('stocks')
+		     ->where('itm_id', '=', $id)
+		     ->whereBetween('created_at', array($from, $to))
+		     ->where('date','!=',date('Y-m-d'))
+             ->whereBetween('date', array($from, $to))
+		     ->sum('quantity_in');
+		$qout = DB::table('stocks')
+		      ->where('itm_id', '=', $id)
+		      ->whereBetween('created_at', array($from, $to))
+		      ->where('date','!=',date('Y-m-d'))
+		      ->sum('quantity_out');
+
+		$stock = $qin - $qout;
+		
+		$opening = $stock;
+
+		return $opening;
+	}
+
+	public static function dailyClosingStock($id,$from,$to){
+
+		$qin = DB::table('stocks')->where('itm_id', '=', $id)
+		     ->whereBetween('created_at', array($from, $to))
+		     ->where('date','=',date('Y-m-d'))
+		     ->sum('quantity_in');
+		$qout = DB::table('stocks')->where('itm_id', '=', $id)
+		      ->whereBetween('created_at', array($from, $to))
+		      ->where('date','=',date('Y-m-d'))
+		      ->sum('quantity_out');
+
+		$stock = $qin - $qout;
+		
+		$opening = $stock;
+
+		return $opening;
+	}
+
+	public static function dailyStockIn($id,$from,$to){
+
+		$qin = DB::table('stocks')
+		    ->where('itm_id', '=', $id)
+		    ->whereBetween('created_at', array($from, $to))
+		    ->where('date','=',date('Y-m-d'))
+		    ->sum('quantity_in');
+
+		return $qin;
+	}
+
+	public static function dailyStockOut($id,$from,$to){
+
+		$qout = DB::table('stocks')
+		      ->where('itm_id', '=', $id)
+		      ->whereBetween('created_at', array($from, $to))
+		      ->where('date','=',date('Y-m-d'))
+		      ->sum('quantity_out');
+
+		return $qout;
 	}
 
 

@@ -2,16 +2,16 @@
 
 class Audit extends \Eloquent {
 
-	use \Traits\Encryptable;
+	//use \Traits\Encryptable;
 
 
-	protected $encryptable = [
+	/*protected $encryptable = [
 
 		'description',
 		'entity',
 		'action',
 		'user',
-	];
+	];*/
 
 	// Add your validation rules here
 	public static $rules = [

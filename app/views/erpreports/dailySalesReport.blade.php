@@ -127,6 +127,7 @@ function asMoney($value) {
         <th><strong>Item Name </strong></th>
         <th align="center"><strong>Quantity </strong></th>
         <th align="right"><strong>Price </strong></th>
+        <th align="right"><strong>Discount </strong></th>
         <th align="right"><strong>Total Amount </strong></th>
         
       </tr>
@@ -136,7 +137,7 @@ function asMoney($value) {
       @foreach($sales as $sales)
       
       <?php
-      $total = $total + ($sales->price * $sales->quantity)
+      $total = $total + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)))
 
       ?>
 
@@ -149,7 +150,8 @@ function asMoney($value) {
         <td> {{ $sales->item }}</td>
         <td align = "center"> {{ $sales->quantity }}</td>
         <td align = "right"> {{asMoney($sales->price)}}</td>
-        <td align = "right"> {{ asMoney($sales->price * $sales->quantity)}}</td>
+        <td align = "right"> {{asMoney(Erporder::getDiscount($sales->clientid,$sales->itemid))}}</td>
+        <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)))}}</td>
                      
         
         </tr>
@@ -161,6 +163,7 @@ function asMoney($value) {
 
     <tr>
            <td></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>

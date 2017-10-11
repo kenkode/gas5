@@ -372,8 +372,7 @@ public function kenya($id){
         $from = Input::get("from");
         $to= Input::get("to");
 
-        $items = DB::table('stocks')
-                    ->whereBetween('date', array(Input::get("from"), Input::get("to")))->get();
+        $items = DB::table('items')->get();
 
 
         $organization = Organization::find(1);
@@ -2030,13 +2029,12 @@ public function kenya($id){
     $from = $sdate;
     $to= $stime;
      
-    $items = DB::table('stocks')
-                    ->whereBetween('created_at', array($from, $to))->get();
+    $items = DB::table('items')->get();
 
 
         $organization = Organization::find(1);
 
-        $pdf = PDF::loadView('erpreports.stockReport', compact('items', 'organization','from','to'))->setPaper('a4', 'landscape');   
+        $pdf = PDF::loadView('erpreports.dailyStockReport', compact('items', 'organization','from','to'))->setPaper('a4', 'landscape');   
         
 
     $pdf->save($filePath.$fileName);
@@ -2075,13 +2073,12 @@ public function kenya($id){
     $from = $sdate;
     $to= $stime;
      
-    $items = DB::table('stocks')
-                    ->whereBetween('created_at', array($from, $to))->get();
+    $items = DB::table('items')->get();
 
 
         $organization = Organization::find(1);
 
-        $pdf = PDF::loadView('erpreports.stockReport', compact('items', 'organization','from','to'))->setPaper('a4', 'landscape');   
+        $pdf = PDF::loadView('erpreports.dailyStockReport', compact('items', 'organization','from','to'))->setPaper('a4', 'landscape');   
         
 
     $pdf->save($filePath.$fileName);
