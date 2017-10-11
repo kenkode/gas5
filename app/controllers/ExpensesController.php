@@ -15,6 +15,8 @@ class ExpensesController extends \BaseController {
         }else{
 		$expenses = Expense::all();
 
+		Audit::logaudit('Expenses', 'viewed expenses', 'viewed expenses in the system');
+
 		return View::make('expenses.index', compact('expenses'));
 	    }
 	}
@@ -67,6 +69,7 @@ class ExpensesController extends \BaseController {
 
 		Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"expense","notificationshowexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".$key,$key);
      	}
+     	Audit::logaudit('Expenses', 'created an expense', 'created expense '.Input::get('name').' in the system and awaiting approval');
         return Redirect::to('expenses')->with('notice', 'Admin approval is needed to insert this expense');
         }else{
 
@@ -86,6 +89,8 @@ class ExpensesController extends \BaseController {
             ->where('accounts.id', Input::get('account'))
             ->decrement('accounts.balance', Input::get('amount'));
 
+        Audit::logaudit('Expenses', 'created an expense', 'created expense '.Input::get('name').' in the system');
+
 		return Redirect::route('expenses.index')->withFlashMessage('Expense successfully created!');
 	}
 	}
@@ -103,6 +108,8 @@ class ExpensesController extends \BaseController {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 		$expense = Expense::findOrFail($id);
+
+		Audit::logaudit('Expenses', 'viewed expense details', 'viewed expense details for expense '.$expense->name.' in the system');
 
 		return View::make('expenses.show', compact('expense'));
 	}
@@ -153,6 +160,8 @@ class ExpensesController extends \BaseController {
 
 		$expense->update();
 
+		Audit::logaudit('Expenses', 'updated an expense', 'updated expense '.Input::get('name').' in the system');
+
 		return Redirect::route('expenses.index')->withFlashMessage('Expense successfully updated!');;
 	}
 
@@ -168,7 +177,11 @@ class ExpensesController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        $expense = Expense::find($id);
+
 		Expense::destroy($id);
+
+		Audit::logaudit('Expenses', 'deleted an expense', 'deleted expense '.$expense->name.' from the system');
 
 		return Redirect::route('expenses.index')->withDeleteMessage('Expense successfully deleted!');
 	}

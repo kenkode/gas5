@@ -21,6 +21,7 @@ class StocksController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        Audit::logaudit('Stocks', 'viewed stocks', 'viewed stocks in the system');
 		return View::make('stocks.index', compact('stocks', 'items','stock_in'));
 	}
 	}
@@ -135,9 +136,13 @@ class StocksController extends \BaseController {
 
 		if (! Entrust::can('confirm_stock') ) // Checks the current user
         {
+        Audit::logaudit('Stocks', 'receive stocks', 'received stock for item '.$item->item_make.' quantity received '.$quantity.' from supplier '.$client->name.' but awaiting approval in the system');
+
         return Redirect::to('stocks')->with('notice', 'Stock has been successfully updated! Please wait for admin confirmation....');
 
         }else{
+
+        Audit::logaudit('Stocks', 'receive stocks', 'received stock for item '.$item->item_make.' quantity received '.$quantity.' from supplier '.$client->name.' in the system');
 
 		return Redirect::route('stocks.index')->withFlashMessage('stock has been successfully updated!');
 	}

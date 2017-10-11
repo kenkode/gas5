@@ -14,10 +14,10 @@ class AccountsController extends \BaseController {
         {
 		$accounts = DB::table('accounts')->orderBy('code', 'asc')->get();
 
+		Audit::logaudit('Accounts', 'viewed accounts', 'viewed chart of accounts in the system');
+
 		return View::make('accounts.index', compact('accounts'));
-
-
-		Audit::logaudit('Accounts', 'view', 'view chart of accounts');
+		
 	    }else{
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
 	    }
@@ -81,7 +81,7 @@ class AccountsController extends \BaseController {
 
 		}
 
-		Audit::logaudit('Accounts', 'create', 'created: '.$account->name.' '.$account->code);
+		Audit::logaudit('Accounts', 'created an account', 'created account  '.$account->name.' '.$account->code.' in the system');
 
 		return Redirect::route('accounts.index');
 	}
@@ -99,7 +99,7 @@ class AccountsController extends \BaseController {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 		$account = Account::findOrFail($id);
-
+        Audit::logaudit('Accounts', 'viewed account details', 'viewed account details for account '.$account->name.' '.$account->code.' in the system');
 		return View::make('accounts.show', compact('account'));
 	}
 	}
@@ -184,7 +184,7 @@ class AccountsController extends \BaseController {
 
 		}
 		
-		Audit::logaudit('Accounts', 'update', 'updated: '.$account->name.' '.$account->code);
+		Audit::logaudit('Accounts', 'updated an account', 'updated account '.$account->name.' '.$account->code.' in the system');
 
 
 		return Redirect::route('accounts.index');
@@ -208,7 +208,7 @@ class AccountsController extends \BaseController {
 		Account::destroy($id);
 
 
-		Audit::logaudit('Accounts', 'delete', 'deleted:'.$account->name.' '.$account->code);
+		Audit::logaudit('Accounts', 'deleted an account', 'deleted account '.$account->name.' '.$account->code.' from the system');
 
 
 		return Redirect::route('accounts.index');

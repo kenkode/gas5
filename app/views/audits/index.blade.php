@@ -38,7 +38,7 @@
     <tbody>
 @foreach($audits as $audit)
         <tr>
-            <td>{{date('d-M-Y', strtotime($audit->date))}}</td>
+            <td>{{$audit->created_at}}</td>
             <td>{{$audit->user}}</td>
             <td>{{$audit->entity}}</td>
             <td>{{$audit->action}}</td>

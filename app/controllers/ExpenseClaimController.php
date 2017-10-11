@@ -23,6 +23,8 @@ class ExpenseClaimController extends \BaseController {
 
 		$receipts = ClaimReceipt::where('status', 'New')->get();
 
+		Audit::logaudit('Expense Claims', 'viewed expense claims', 'viewed expense claims in the system');
+
 		return View::make('expense_claims.index', compact('receipts', 'waitingClaims', 'paymentClaims', 'settledClaims', 'declinedClaims'));
 	}
 	}
@@ -65,6 +67,8 @@ class ExpenseClaimController extends \BaseController {
         }else{
 		$receiptItems = Session::get('receiptItems');
 		$receiptDetails = Session::get('receiptDetails');
+
+		Audit::logaudit('Expense Claims', 'viewed expense claim details', 'viewed expense claim details in the system');
 
 		return View::make('expense_claims.newReceipt', compact('receiptDetails', 'receiptItems'));
 	}
@@ -179,6 +183,11 @@ class ExpenseClaimController extends \BaseController {
 		if(count($items) <= 0){
 			return Redirect::action('ExpenseClaimController@show')->with('error', 'Please add receipt items');
 		}
+
+		$total = 0;
+		foreach($items as $trItem){
+			$total += ($trItem['quantity'] * $trItem['unit_price']);
+		}
 		
 		$claimReceipt = new ClaimReceipt;
 
@@ -201,6 +210,9 @@ class ExpenseClaimController extends \BaseController {
 
 		Session::forget('receiptDetails');
 		Session::forget('receiptItems');
+
+
+		Audit::logaudit('Expense Claims', 'added expense claim receipt', 'added expense claims receipt from user '.$receipt['receiptFrom'].' total amount '.$total.' in the system');
 
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Receipt successfully created and saved');
 		
@@ -228,6 +240,8 @@ class ExpenseClaimController extends \BaseController {
 			 	DB::table('claim_receipts')->whereIn('id', $receipts_checked)
 			 	    ->update(array('claim_id'=>$claimID, 'status'=>'Awaiting Review'));
 
+			 	Audit::logaudit('Expense Claims', 'submitted expense claim for review', 'submitted expense claim for review for claimer '.Confide::user()->username.' in the system');
+
 			 	return Redirect::action('ExpenseClaimController@index')->with('success', 'Successfully submitted for review.');
 
 			}
@@ -252,6 +266,8 @@ class ExpenseClaimController extends \BaseController {
 		ClaimReceipt::where('claim_id', $id)->update(array('status'=>'Awaiting Payment'));
 		ExpenseClaim::where('id', $id)->update(array('status'=>'Approved'));
 
+		Audit::logaudit('Expense Claims', 'approved expense claim', 'approved expense claim for claimer '.Confide::user()->username.' in the system');
+
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Claim successfully Approved, Awaiting payment.');
 	}
 
@@ -262,6 +278,8 @@ class ExpenseClaimController extends \BaseController {
 	public function declineClaim($id){
 		ClaimReceipt::where('claim_id', $id)->update(array('status'=>'Declined'));
 		ExpenseClaim::where('id', $id)->update(array('status'=>'Declined'));
+
+		Audit::logaudit('Expense Claims', 'declined expense claim', 'declined expense claim for claimer '.Confide::user()->username.' in the system');
 
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Claim Declined!!!');
 	}
@@ -319,6 +337,12 @@ class ExpenseClaimController extends \BaseController {
 
 		$journal->journal_entry($data);
 		$acTransaction->createTransaction($data);
+
+		$credit = Account::find($data['credit_account']);
+		$debit = Account::find($data['debit_account']);
+
+
+		Audit::logaudit('Expense Claims', 'paid expense claim', 'paid expense claim for claimer '.Confide::user()->username.' amount '.array_get($input, 'claim_amount').' credited to account '.$credit->name.' and debited to account '.$debit->name.' in the system');
 
 		return Redirect::action('ExpenseClaimController@index')->with('success', 'Expense Claim successfully paid');
 	}

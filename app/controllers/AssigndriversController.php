@@ -24,6 +24,8 @@ class AssigndriversController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        Audit::logaudit('Assign Drivers', 'viewed assigned drivers', 'viewed assigned drivers in the system');
 		return View::make('assigndrivers.index', compact('assigndrivers'));
 	}
 	}
@@ -83,6 +85,10 @@ class AssigndriversController extends \BaseController {
 
 		$assigndriver->save();
 
+		$driver = Driver::find(Input::get('driver_name'));
+
+		Audit::logaudit('Assign Drivers', 'assigned a driver a vehicle', 'assigned driver '.$driver->first_name.' '.$driver->other_names.' '.$driver->surname.' driver number '.$driver->employee_no.' vehicle '.Input::get('reg_no').' model '.Input::get('model').' in the system');
+
 		return Redirect::route('assigndrivers.index');
 	}
 
@@ -105,6 +111,7 @@ class AssigndriversController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        Audit::logaudit('Assign Drivers', 'viewed assigned driver detaild', 'viewed assigned driver details for driver '.$driver->first_name.' '.$driver->other_names.' '.$driver->surname.' driver number '.$driver->employee_no.' vehicle '.Input::get('reg_no').' model '.Input::get('model').' in the system');
 	return View::make('assigndrivers.show', compact('drivers'));
     }
 	}
@@ -169,6 +176,10 @@ class AssigndriversController extends \BaseController {
 
 		$assigndriver->update();
 
+		$driver = Driver::find(Input::get('driver_name'));
+
+		Audit::logaudit('Assign Drivers', 'updated assignment of vehicle to driver', 'updated details assigned to driver '.$driver->first_name.' '.$driver->other_names.' '.$driver->surname.' driver number '.$driver->employee_no.' vehicle '.Input::get('reg_no').' model '.Input::get('model').' in the system');
+
 		return Redirect::route('assigndrivers.index');
 	}
 
@@ -180,12 +191,20 @@ class AssigndriversController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Assigndriver::destroy($id);
+		
 
         if (! Entrust::can('remove_assigned_driver') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $assign = Assigndriver::find($id);
+
+        Assigndriver::destroy($id);
+
+        $driver = Driver::find($assign->driver);
+
+		Audit::logaudit('Assign Drivers', 'deleted assignment of vehicle to driver', 'deleted details assigned to driver '.$driver->first_name.' '.$driver->other_names.' '.$driver->surname.' driver number '.$driver->employee_no.' vehicle '.Input::get('reg_no').' model '.Input::get('model').' from the system');
 		return Redirect::route('assigndrivers.index');
 	}
 	}

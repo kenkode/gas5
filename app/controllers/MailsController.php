@@ -48,6 +48,8 @@ class MailsController extends \BaseController {
 		$mail->encryption = Input::get('encryption');
 		$mail->update();
 
+		Audit::logaudit('Mail Configuration', 'updated mail configuration', 'mail configuration details in the system');
+
 		return Redirect::to('mail');
 	}
 

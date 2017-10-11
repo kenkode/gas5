@@ -18,6 +18,8 @@ class RolesController extends Controller
 
         $roles = Role::all();
 
+        Audit::logaudit('Roles', 'viewed user roles', 'viewed user roles in the system');
+
         return View::make('roles.index')->with('roles', $roles);
     }
 
@@ -55,7 +57,7 @@ class RolesController extends Controller
         
         $role->perms()->sync($perms);
 
-        
+        Audit::logaudit('Roles', 'updated a user role', 'updated user role '.Input::get('name').' in the system');
 
         return Redirect::to('roles/show/'.$role->id);
     }
@@ -100,6 +102,8 @@ class RolesController extends Controller
 
         $role->perms()->sync($perms);
 
+        Audit::logaudit('Roles', 'created a user role', 'created user role '.Input::get('name').' in the system');
+
         return Redirect::route('roles.index');
 
         
@@ -125,6 +129,8 @@ class RolesController extends Controller
         
         $role->delete();
 
+        Audit::logaudit('Roles', 'deleted a user role', 'deleted user role '.$role->name.' in the system');
+
         return Redirect::to('roles');
     }
 
@@ -140,6 +146,7 @@ class RolesController extends Controller
             $roleperm[] = $p->name;
         }
         
+       Audit::logaudit('Roles', 'viewed a user role', 'viewed user role '.$role->name.' in the system');
        return View::make('roles.show', compact('role', 'permissions', 'categories', 'roleperm'));
     }
 

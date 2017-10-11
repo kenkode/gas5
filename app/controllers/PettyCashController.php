@@ -34,6 +34,8 @@ class PettyCashController extends BaseController{
 
 		//return $ac_transactions;
 
+		Audit::logaudit('Petty Cash', 'viewed petty cash', 'viewed petty cash in the system');
+
 		return View::make('petty_cash.index', compact('accounts', 'assets', 'liabilities', 'petty', 'petty_account', 'ac_transactions'));
 	}
 }
@@ -144,6 +146,11 @@ class PettyCashController extends BaseController{
 		$acTransaction->createTransaction($data);
 		$journal->journal_entry($data);
 
+		$credit = Account::find(Input::get('ac_from'));
+		$debit = Account::find(Input::get('ac_to'));
+
+		Audit::logaudit('Petty Cash', 'transfered funds to petty cash account', 'transfered funds to petty cash account amount '.Input::get('amount').' from account '.$credit->name.' to account '.$debit->name.' in the system');
+
 		return Redirect::action('PettyCashController@index')->with('success', "KES. $amount Successfully Transferred from $ac_name->name to Petty Cash!");
 	
 	}
@@ -174,6 +181,11 @@ class PettyCashController extends BaseController{
 
 		$acTransaction->createTransaction($data);
 		$journal->journal_entry($data);
+
+		$credit = Account::find(Input::get('cont_acFrom'));
+		$debit = Account::find(Input::get('cont_acTo'));
+
+		Audit::logaudit('Petty Cash', 'received money for petty cash account', 'received money for petty cash account amount '.Input::get('cont_amount').' from account '.$credit->name.' to account '.$debit->name.' contributor '.Input::get('cont_name').' in the system');
 
 		return Redirect::action('PettyCashController@index')->with('success', "KES. $contAmount Transferred to Petty Cash Account from $contName");
 	
@@ -264,6 +276,9 @@ class PettyCashController extends BaseController{
 		DB::table('accounts')->where('id', $newTr['credit_ac'])->decrement('balance', $total);
 		DB::table('accounts')->where('id', $newTr['expense_ac'])->increment('balance', $total);
 
+		$credit = Account::find($newTr['credit_ac']);
+		$debit = Account::find($newTr['expense_ac']);
+
 		$acTransaction = new AccountTransaction;
 		$journal = new Journal;
 
@@ -285,6 +300,8 @@ class PettyCashController extends BaseController{
 
 		Session::forget('newTransaction');
 		Session::forget('trItems');
+
+        Audit::logaudit('Petty Cash', 'created petty cash transaction', 'created petty cash transaction total amount '.$total.' from account '.$credit->name.' to account '.$debit->name.' contributor '.Input::get('cont_name').' in the system');
 
 		return Redirect::action('PettyCashController@index');
 	}

@@ -15,6 +15,7 @@ class TaxController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        Audit::logaudit('Taxes', 'viewed taxes', 'viewed taxes in the system');
 		return View::make('taxes.index', compact('taxes'));
 	}
 	}
@@ -56,6 +57,8 @@ class TaxController extends \BaseController {
 
 		$tax->save();
 
+		Audit::logaudit('Taxes', 'created a tax', 'created tax type '.Input::get('name').' rate '.Input::get('rate').' in the system');
+
 		return Redirect::route('taxes.index')->withFlashMessage('Tax successfully created!');
 	}
 
@@ -73,6 +76,7 @@ class TaxController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        Audit::logaudit('Taxes', 'viewed tax details', 'viewed tax details for '.$tax->name.' rate '.$tax->rate.' in the system');
 		return View::make('taxes.show', compact('tax'));
 	}
 	}
@@ -116,6 +120,8 @@ class TaxController extends \BaseController {
 		$tax->rate = Input::get('rate');
 		$tax->update();
 
+        Audit::logaudit('Taxes', 'updated a tax', 'updated tax type '.Input::get('name').' rate '.Input::get('rate').' in the system');
+
 		return Redirect::route('taxes.index')->withFlashMessage('Tax successfully updated!');
 	}
 
@@ -127,12 +133,16 @@ class TaxController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Tax::destroy($id);
-
+		
         if (! Entrust::can('delete_tax') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $tax = Tax::find($id);
+        Tax::destroy($id);
+
+        Audit::logaudit('Taxes', 'created a tax', 'created tax type '.$tax->name.' rate '.$tax->rate.' from the system');
 		return Redirect::route('taxes.index')->withDeleteMessage('Tax successfully deleted!');
 	}
 	}

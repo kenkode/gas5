@@ -24,6 +24,9 @@ class BankAccountController extends \BaseController {
 						->select('id','category','name')
 						->get();
 
+
+		Audit::logaudit('Bank Accounts', 'viewed bank accounts', 'viewed bank accounts in the system');
+
 		return View::make('banking.index', compact('bnkAccount','bkAccounts'));
 	}
 
@@ -59,6 +62,8 @@ class BankAccountController extends \BaseController {
 		$bnkAccount->account_name = Input::get('acName');
 		$bnkAccount->account_number = Input::get('acNumber');
 		$bnkAccount->save();
+
+		Audit::logaudit('Bank Accounts', 'created a bank account', 'created bank account '.Input::get('bnkName').', account name '.Input::get('acName').', account number '.Input::get('acName').' in the system');
 
 		return Redirect::action('BankAccountController@index')->withSuccess('Bank Account successfully added');
 	}
@@ -161,8 +166,12 @@ class BankAccountController extends \BaseController {
 
 					  	$lastInsertID = $bnk_statement->id;
 
+					  	$bkacc = BankAccount::find($bnk_id);
+
 				      // UPLOAD FILE CONTENTS TO DB
 				      $this->importFileContents($moved_file,$lastInsertID);
+
+				      Audit::logaudit('Bank Statement', 'uploaded a bank statement', 'uploaded bank statement for bank account '.$bkacc->bank_name.', account number '.$bkacc->account_number.' balance brought down '.$bal_bd.' for month '.$stmt_month.' in the system');
 
 				      return Redirect::back()->withSuccess('Transactions successfully uploaded!');	
 
@@ -329,6 +338,12 @@ class BankAccountController extends \BaseController {
 				$bnkStatement->update();
 			}
 
+
+
+			$bkacc = BankAccount::find($bnkStatement->bank_account_id);
+
+			Audit::logaudit('Bank Reconciliation', 'reconciled a bank statement', 'reconciled bank statement for bank account '.$bkacc->bank_name.', account number '.$bkacc->account_number.' balance brought down '.$bnkStatement->bal_bd.' for month '.$bnkStatement->stmt_month.' in the system');
+
 			return Redirect::back();
 
 			//return $btn.' - '.$acTrans.' - '.$bnkTrans.' - '.$bnkStmt;
@@ -388,6 +403,12 @@ class BankAccountController extends \BaseController {
 		$stmtTrans = StmtTransaction::findOrfail($bnkTransID);
 		$stmtTrans->status = 'RECONCILED';
 		$stmtTrans->update();
+
+		$bnkStatement = BankStatement::findOrfail($bnkStmtID);
+
+		$bkacc = BankAccount::find($bnkStatement->bank_account_id);
+
+	    Audit::logaudit('Bank Reconciliation', 'reconciled missing bank statement', 'reconciled missing bank statement for bank account '.$bkacc->bank_name.', account number '.$bkacc->account_number.' balance brought down '.$bnkStatement->bal_bd.' for month '.$bnkStatement->stmt_month.' in the system');
 
 		return Redirect::action('BankAccountController@index');
 

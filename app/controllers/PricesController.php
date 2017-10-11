@@ -15,7 +15,7 @@ class PricesController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-
+        Audit::logaudit('Prices', 'viewed clients` discount prices', 'viewed clients` discount prices in the system');
 		return View::make('prices.index', compact('prices'));
 	}
 	}
@@ -58,6 +58,12 @@ class PricesController extends \BaseController {
 		$price->item_id = Input::get('item');
 		$price->Discount = Input::get('discount');		
 		$price->save();
+
+		$client = Client::find(Input::get('client'));
+		$i = Item::find(Input::get('item'));
+        
+        Audit::logaudit('Prices', 'created a client discount price', 'created a client discount price for client '.$client->name.' item '.$i->item_make.' amount '.Input::get('discount').' in the system');
+
 		return Redirect::route('prices.index')->withFlashMessage('Discount successfully Set!');
 	}
 
@@ -75,6 +81,10 @@ class PricesController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $client = Client::find(Input::get('client'));
+		$i = Item::find(Input::get('item'));	
+        Audit::logaudit('Prices', 'viewed a client discount price details', 'viewed client discount price details for '.$client->name.' item '.$i->item_make.' amount '.$price->Discount.' in the system');
 		return View::make('prices.show', compact('price'));
 	}
 	}
@@ -150,6 +160,12 @@ class PricesController extends \BaseController {
     
         });*/
 	    }
+
+	    $client = Client::find(Input::get('client'));
+		$i = Item::find(Input::get('item'));
+
+        Audit::logaudit('Prices', 'updated a client discount price', 'updated a client discount price for client '.$client->name.' item '.$i->item_make.' amount '.Input::get('discount').' awaiting approval in the system');
+
         return Redirect::to('prices')->with('notice', 'Admin approval is needed for this update');
         }else{
 
@@ -160,6 +176,11 @@ class PricesController extends \BaseController {
 		$price->confirmed_id = Confide::user()->id;
         $Price->receiver_id = Confide::user()->id;	
 		$price->update();
+
+		$client = Client::find(Input::get('client'));
+		$i = Item::find(Input::get('item'));
+
+		Audit::logaudit('Prices', 'updated a client discount price', 'updated a client discount price for client '.$client->name.' item '.$i->item_make.' amount '.Input::get('discount').' in the system');
 
 		return Redirect::route('prices.index')->withFlashMessage('Client Discount successfully updated!');
 	}
@@ -180,9 +201,13 @@ class PricesController extends \BaseController {
 
 		$i = Item::find($item);
 
+		$client = Client::find($client);
+
 		$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
 		$notification->is_read = 1;
 		$notification->update();
+
+		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->username.' in the system');
 
 		return "<strong><span style='color:green'>Price update for ".$i->item_make." successfully approved!</span></strong>";
 	}else{
@@ -233,6 +258,9 @@ class PricesController extends \BaseController {
 		$price->update();
 
 		$i = Item::find(Input::get('item'));
+        $client = Client::find(Input::get('client'));
+
+		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->username.' in the system');
 
 		return Redirect::to('notifications/index')->withFlashMessage("Price update for ".$i->item_make." successfully approved!");
 	
@@ -246,12 +274,18 @@ class PricesController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Price::destroy($id);
 
         if (! Entrust::can('delete_pricing') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $price = Price::find($id);
+        $item = Item::find($price->item_id);
+        $client = Client::find($price->client_id);
+        Price::destroy($id);
+
+        Audit::logaudit('Prices', 'deleted a client discount', 'deleted client discount for client '.$client->name.' item '.$item->item_make.' amount '.$price->Discount.' in the system');
 		return Redirect::route('prices.index')->withDeleteMessage('Client Discount successfully deleted!');
 	}
 	}

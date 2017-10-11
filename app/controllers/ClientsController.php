@@ -16,6 +16,8 @@ class ClientsController extends \BaseController {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
+        Audit::logaudit('Clients', 'viewed clients', 'viewed clients in the system');
+
 		return View::make('clients.index', compact('clients'));
 	}
 	}
@@ -66,6 +68,8 @@ class ClientsController extends \BaseController {
 		/*$client->percentage_discount = Input::get('percentage_discount');*/
 		$client->save();
 
+		Audit::logaudit('Clients', 'created a client', 'created client '.Input::get('name').' in the system');
+
 		return Redirect::route('clients.index')->withFlashMessage('Client successfully created!');
 	}
 
@@ -83,6 +87,8 @@ class ClientsController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        Audit::logaudit('Clients', 'viewed a client details', 'viewed client details for client '.$client->name.' in the system');
 
 		return View::make('clients.show', compact('client'));
 	}
@@ -139,6 +145,8 @@ class ClientsController extends \BaseController {
 
 		$client->update();
 
+		Audit::logaudit('Clients', 'updated a client', 'updated client '.Input::get('name').' in the system');
+
 		return Redirect::route('clients.index')->withFlashMessage('Client successfully updated!');
 	}
 
@@ -150,12 +158,14 @@ class ClientsController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Client::destroy($id);
 
         if (! Entrust::can('delete_client') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        $client = Client::find($id);
+        Client::destroy($id);
+        Audit::logaudit('Clients', 'deleted a client', 'deleted client '.$client->name.' from the system');
 		return Redirect::route('clients.index')->withDeleteMessage('Client successfully deleted!');
 	}
 	}

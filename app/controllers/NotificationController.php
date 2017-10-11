@@ -11,6 +11,8 @@ class NotificationController extends \BaseController {
 	{
 		$notifications = Notification::where("user_id",Confide::user()->id)->orderBy('id','DESC')->get();
 
+		Audit::logaudit('Notification', 'viewed notifications', 'viewed notifications in the system');
+
 		return View::make('notifications.index', compact('notifications'));
 	}
 

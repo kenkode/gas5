@@ -15,6 +15,8 @@ class SalestargetController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        Audit::logaudit('Sales Target', 'viewed sales targets', 'viewed sales targets in the system');
 		return View::make('salestargets.index', compact('salestargets'));
 	}
 	}
@@ -58,6 +60,8 @@ class SalestargetController extends \BaseController {
 
 		$salestarget->save();
 
+
+        Audit::logaudit('Sales Target', 'created sales targets', 'created sales targets for month '.Input::get('month').' target amount '.Input::get('target_amount').' target date '.date("Y-m-d",strtotime(Input::get('date'))).' in the system');
 		return Redirect::route('salestargets.index')->withFlashMessage('Sales Target successfully created!');
 	}
 
@@ -75,6 +79,8 @@ class SalestargetController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        Audit::logaudit('Sales Target', 'viewed sales targets', 'viewed sales targets in the system');	
 		return View::make('salestargets.show', compact('salestarget'));
 	}
 	}
@@ -119,6 +125,8 @@ class SalestargetController extends \BaseController {
 		$salestarget->target_date = date("Y-m-d",strtotime(Input::get('date')));
 		$salestarget->update();
 
+		Audit::logaudit('Sales Target', 'updated sales targets', 'updated sales targets for month '.Input::get('month').' target amount '.Input::get('target_amount').' target date '.date("Y-m-d",strtotime(Input::get('date'))).' in the system');
+
 		return Redirect::route('salestargets.index')->withFlashMessage('Target successfully updated!');
 	}
 
@@ -130,12 +138,17 @@ class SalestargetController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		SalesTarget::destroy($id);
 
         if (! Entrust::can('delete_sale_target') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $sales = SalesTarget::find($id);
+        SalesTarget::destroy($id);
+
+        Audit::logaudit('Sales Target', 'created sales targets', 'created sales targets for month '.$sales->month.' target amount '.$sales->target_amount.' target date '.$sales->target_date.' in the system');
+
 		return Redirect::route('salestargets.index')->withDeleteMessage('Target successfully removed!');
 	}
 	}

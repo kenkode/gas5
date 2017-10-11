@@ -15,7 +15,7 @@ class ItemsController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-
+        Audit::logaudit('Items', 'viewed items', 'viewed items in the system');
 		return View::make('items.index', compact('items'));
 	    }
 	}
@@ -62,6 +62,8 @@ class ItemsController extends \BaseController {
 		$item->reorder_level = Input::get('reorder');
 		$item->save();
 
+		Audit::logaudit('Items', 'created an item', 'created item '.Input::get('item_make').' in the system');
+
 		return Redirect::route('items.index')->withFlashMessage('Item successfully created!');
 	}
 
@@ -79,7 +81,7 @@ class ItemsController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-
+        Audit::logaudit('Items', 'viewed item details', 'viewed item details for item '.$item->item_make.' in the system');
 		return View::make('items.show', compact('item'));
 	}
 	}
@@ -178,7 +180,7 @@ class ItemsController extends \BaseController {
    
         });*/
         }
-
+        Audit::logaudit('Items', 'updated an item', 'updated item '.$name.' in the system and awaiting approval');
         return Redirect::to('items')->with('notice', 'Admin approval is needed for this update');
         }else{
 
@@ -194,7 +196,7 @@ class ItemsController extends \BaseController {
         $item->receiver_id = Confide::user()->id;
 		$item->update();
 
-
+        Audit::logaudit('Items', 'updated an item', 'updated item '.Input::get('item_make').' in the system');
 
 		return Redirect::route('items.index')->withFlashMessage('Item successfully updated!');
 	}
@@ -217,6 +219,10 @@ class ItemsController extends \BaseController {
         $item->receiver_id = $receiver;
         $item->confirmation_code = $key;
 		$item->update();
+
+		$user = DB::table("users")->where('id',$receiver)->first();
+
+		Audit::logaudit('Items', 'approved an item', 'approved update for item '.$name.' updated by user '.$user->username.' in the system');
 
 		$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
 		$notification->is_read = 1;
@@ -266,6 +272,10 @@ class ItemsController extends \BaseController {
         $item->confirmation_code = Input::get('key');
 		$item->update();
 
+		$user = DB::table("users")->where('id',$receiver)->first();
+
+        Audit::logaudit('Items', 'approved an item', 'approved update for item '.Input::get('name').' updated by user '.$user->username.' in the system');
+
 		return Redirect::to('notifications/index')->withFlashMessage("Item update for ".Input::get('name')." successfully approved!");
 	
 	}
@@ -278,12 +288,18 @@ class ItemsController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Item::destroy($id);
+		
 
 		if (! Entrust::can('delete_item') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $item = Item::find($id);
+
+        Item::destroy($id);
+
+        Audit::logaudit('Items', 'deleted an item', 'deleted item '.$item->item_make.' from the system');
 
 		return Redirect::route('items.index')->withDeleteMessage('Item successfully deleted!');
 	}

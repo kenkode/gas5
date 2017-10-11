@@ -11,6 +11,8 @@ class JournalsController extends \BaseController {
 	{
 		$journals = Journal::all();
 
+		Audit::logaudit('Journals', 'viewed journal entries', 'viewed journal entries in the system');
+
 		return View::make('journals.index', compact('journals'));
 	}
 
@@ -55,6 +57,11 @@ class JournalsController extends \BaseController {
 
 		$journal->journal_entry($data);
 
+		$debit  = Account::findOrFail(Input::get('debit_account'));
+		$credit = Account::findOrFail(Input::get('credit_account'));
+
+		Audit::logaudit('Journals', 'created a journal entry', 'created a journal entry for debit account '.$debit->name.', credit account '.$credit->name.', amount '.Input::get('amount').' in the system');
+
 		return Redirect::route('journals.index');
 	}
 
@@ -67,6 +74,10 @@ class JournalsController extends \BaseController {
 	public function show($id)
 	{
 		$journal = Journal::findOrFail($id);
+
+		$account = Account::findOrFail($journal->account_id);
+
+		Audit::logaudit('Journals', 'viewed journal entry details', 'viewed journal entry details for account '.$account->name.' in the system');
 
 		return View::make('journals.show', compact('journal'));
 	}
@@ -116,6 +127,11 @@ class JournalsController extends \BaseController {
 		$journal->description = Input::get('description');
 		$journal->update();
 
+		$debit  = Account::findOrFail(Input::get('debit_account'));
+		$credit = Account::findOrFail(Input::get('credit_account'));
+
+		Audit::logaudit('Journals', 'updated a journal entry', 'updated a journal entry for debit account '.$debit->name.', credit account '.$credit->name.', amount '.Input::get('amount').' in the system');
+
 		return Redirect::route('journals.index');
 	}
 
@@ -128,9 +144,12 @@ class JournalsController extends \BaseController {
 	public function destroy($id)
 	{
 		$journal = Journal::findOrFail($id);
+		$account = Account::findOrFail($journal->account_id);
 
 		$journal->void = TRUE;
 		$journal->update();
+
+		Audit::logaudit('Journals', 'voided a journal entry', 'voided a journal entry for account '.$account->name.', amount '.$journal->amount.' in the system');
 
 		return Redirect::route('journals.index');
 	}

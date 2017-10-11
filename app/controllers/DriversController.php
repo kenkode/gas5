@@ -16,6 +16,8 @@ class DriversController extends \BaseController {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
+        Audit::logaudit('Drivers', 'viewed drivers', 'viewed drivers in the system');
+
 		return View::make('drivers.index', compact('drivers'));
 	}
 	}
@@ -60,6 +62,8 @@ class DriversController extends \BaseController {
 		$driver->employee_no = Input::get('employee_no');					
 		$driver->save();
 
+		Audit::logaudit('Drivers', 'created a driver', 'created driver '.Input::get('first_name').' '.Input::get('other_names').' '.Input::get('surname').' driver number '.Input::get('employee_no').' in the system');
+
 		return Redirect::route('drivers.index');
 	}
 
@@ -77,6 +81,8 @@ class DriversController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        Audit::logaudit('Drivers', 'viewed a driver details', 'viewed driver details for driver '.$driver->first_name.' '.$driver->other_names.' '.$driver->surname.' driver number '.$driver->employee_no.' in the system');
 		return View::make('drivers.show', compact('driver'));
 	}
 	}
@@ -124,6 +130,8 @@ class DriversController extends \BaseController {
 		$driver->employee_no = Input::get('employee_no');	
 		$driver->update();
 
+		Audit::logaudit('Drivers', 'updated a driver', 'updated driver '.Input::get('first_name').' '.Input::get('other_names').' '.Input::get('surname').' driver number '.Input::get('employee_no').' in the system');
+
 		return Redirect::route('drivers.index');
 	}
 
@@ -135,12 +143,19 @@ class DriversController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Driver::destroy($id);
+		
 
         if (! Entrust::can('delete_driver') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+
+        $driver = Driver::find($id);
+
+        Driver::destroy($id);
+
+        Audit::logaudit('Drivers', 'created a driver', 'created driver '.$driver->first_name.' '.$driver->other_names.' '.$driver->surname.' driver number '.$driver->employee_no.' in the system');
+
 		return Redirect::route('drivers.index');
 	}
 	}

@@ -11,6 +11,8 @@ class AuditsController extends \BaseController {
 	{
 		$audits = Audit::all();
 
+		Audit::logaudit('Audit Trails', 'viewed audit trails', 'viewed audit trails in the system');
+
 		return View::make('audits.index', compact('audits'));
 	}
 

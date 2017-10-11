@@ -11,6 +11,8 @@ class CurrenciesController extends \BaseController {
 	{
 		$currencies = Currency::all();
 
+		Audit::logaudit('Currency', 'viewed currencies', 'viewed currencies in the system');
+
 		return View::make('currencies.index', compact('currencies'));
 	}
 
@@ -44,7 +46,7 @@ class CurrenciesController extends \BaseController {
 		$currency->shortname = Input::get('shortname');
 		$currency->save();
 
-		Audit::logaudit('Currency', 'create', 'created: '.$currency->name);
+		Audit::logaudit('Currency', 'created a currency', 'created currency '.$currency->name.' in the system');
 
 
 		return Redirect::route('currencies.index');
@@ -60,7 +62,7 @@ class CurrenciesController extends \BaseController {
 	{
 		$currency = Currency::findOrFail($id);
 
-		Audit::logaudit('Currency', 'view', 'viewed: '.$currency->name);
+		Audit::logaudit('Currency', 'viewed a currency details', 'viewed currency '.$currency->name.' in the system');
 
 		return View::make('currencies.show', compact('currency'));
 
@@ -100,7 +102,7 @@ class CurrenciesController extends \BaseController {
 		$currency->shortname = Input::get('shortname');
 		$currency->update();
 
-		Audit::logaudit('Currency', 'update', 'updated: '.$currency->name);
+		Audit::logaudit('Currency', 'updated a currency', 'updated currency '.$currency->name.' in the system');
 
 		return Redirect::route('currencies.index');
 	}
@@ -116,7 +118,7 @@ class CurrenciesController extends \BaseController {
 		$currency = Currency::findOrFail($id);
 		Currency::destroy($id);
 
-		Audit::logaudit('Currency', 'delete', 'deleted: '.$currency->name);
+		Audit::logaudit('Currency', 'deleted a currency', 'deleted currency '.$currency->name.' from the system');
 
 		return Redirect::route('currencies.index');
 	}

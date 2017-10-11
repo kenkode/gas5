@@ -1227,6 +1227,11 @@ public function kenya($id){
 
         $organization = Organization::find(1);
 
+        $bkacc = BankAccount::find($bankAcID);
+        $acc   = Account::find($bookAcID);
+
+        Audit::logaudit('Bank Reconciliation', 'viewed bank reconciliation report', 'viewed bank reconciliation report for bank account '.$bkacc->bank_name.', account number '.$bkacc->account_number.' reconciled against account '.$acc->name.' for month '.$recMonth.' in the system');
+
         $pdf = PDF::loadView('erpreports.bankReconciliationReport', compact('recMonth','organization','bnkStmtBal','bkTotal','add','less'))->setPaper('a4');
         return $pdf->stream('Reconciliation Reports');
 

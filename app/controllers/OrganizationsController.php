@@ -25,6 +25,8 @@ class OrganizationsController extends \BaseController {
 		->get();
 		$organization = DB::table('organizations')->where('id', '=', 1)->first();
 
+		Audit::logaudit('Organization', 'viewed organization details', 'viewed organization details in the system');
+
 		return View::make('organizations.index', compact('organization','banks','bbranches','banks_db','bbranches_db'));
 	
 	}
@@ -79,6 +81,8 @@ class OrganizationsController extends \BaseController {
 
 		$organization = Organization::findOrFail($id);
 
+		Audit::logaudit('Organization', 'viewed organization details', 'viewed organization details in the system');
+
 		return View::make('organizations.show', compact('organization','banks','bbranches'));
 	}
 
@@ -125,6 +129,8 @@ class OrganizationsController extends \BaseController {
 		$organization->bank_account_number = Input::get('acc');
 		$organization->swift_code = Input::get('code');
 		$organization->update();
+
+		Audit::logaudit('Organization', 'updated organization details', 'updated organization details in the system');
 
 		return Redirect::route('organizations.index');
 	}
@@ -237,6 +243,15 @@ public function language($lang){
 
 
    Session::put('lang', $lang);
+   $l = '';
+
+   if($lang == 'en'){
+   $l = 'english';
+   }else{
+   $l = 'kiswahili';
+   }
+
+   Audit::logaudit('Language', 'change system language', 'changed system language to '.$l);
 
     return Redirect::back();
 

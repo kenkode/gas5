@@ -66,6 +66,7 @@ Route::get('fpassword', function(){
 
 Route::get('mail', function(){
   $mail = Mailsender::find(1);  
+  Audit::logaudit('Mail Configuration', 'viewed mail configuration', 'viewed mail configuration in the system');
   return View::make('system.mail', compact('mail'));
 
 });
@@ -2307,6 +2308,8 @@ Route::get('salesorders', function(){
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
 
+  Audit::logaudit('Sales Orders', 'viewed sales orders', 'viewed sales orders in the system');
+
   return View::make('erporders.index', compact('items', 'locations', 'orders','erporders'));
 }
 });
@@ -2755,9 +2758,13 @@ Route::post('notificationconfirmstock', function(){
   $stock->confirmation_code = Input::get("key");
   $stock->update();
 
+  $user = DB::table("users")->where('id',$stock->receiver_id)->first();
+
   /*$order = Erporder::findorfail(Input::get("erporder_id"));
   $order->status = 'delivered';
   $order->update();*/
+
+  Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item->item_make.' quantity received '.$quantity.' from supplier '.$client->name.' received by user '.$user->username.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
 });
@@ -2784,6 +2791,8 @@ Route::post('notificationapproveexpense', function(){
   /*$order = Erporder::findorfail(Input::get("erporder_id"));
   $order->status = 'delivered';
   $order->update();*/
+
+  Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$user->username.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Expense for item ".Input::get('item')." confirmed as approved!");
 });

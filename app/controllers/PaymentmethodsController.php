@@ -15,7 +15,7 @@ class PaymentmethodsController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
-
+        Audit::logaudit('Payment Methods', 'viewed payment methods', 'viewed payment methods in the system');
 		return View::make('paymentmethods.index', compact('paymentmethods'));
 	}
 	}
@@ -57,6 +57,8 @@ class PaymentmethodsController extends \BaseController {
 		$paymentmethod->account_id = Input::get('account');
 		$paymentmethod->save();
 
+		Audit::logaudit('Payment Methods', 'created a payment method', 'created a payment method '.Input::get('name').' in the system');
+
 		return Redirect::route('paymentmethods.index')->withFlashMessage('Payment Method successfully created!');
 	}
 
@@ -74,6 +76,7 @@ class PaymentmethodsController extends \BaseController {
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        Audit::logaudit('Payment Methods', 'viewed a payment method details', 'viewed a payment method details for '.$paymentmethod->name.' in the system');
 		return View::make('paymentmethods.show', compact('paymentmethod'));
 	}
 	}
@@ -118,6 +121,8 @@ class PaymentmethodsController extends \BaseController {
 		$paymentmethod->account_id = Input::get('account');
 		$paymentmethod->update();
 
+		Audit::logaudit('Payment Methods', 'updated a payment method', 'updated a payment method '.Input::get('name').' in the system');
+
 		return Redirect::route('paymentmethods.index')->withFlashMessage('Payment Method successfully updated!');
 	}
 
@@ -129,12 +134,15 @@ class PaymentmethodsController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		Paymentmethod::destroy($id);
+		
 
         if (! Entrust::can('delete_payment_methods') ) // Checks the current user
         {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
+        $paymentmethod = Paymentmethod::find($id);
+         Paymentmethod::destroy($id);
+        Audit::logaudit('Payment Methods', 'deleted a payment method', 'deleted a payment method '.$paymentmethod->name.' from the system');
 		return Redirect::route('paymentmethods.index')->withDeleteMessage('Payment Method successfully deleted!');
 	}
 	}

@@ -11,6 +11,7 @@ class AssetMgmtController extends \BaseController {
 	{
 		// INDEX PAGE
 		$assets = Asset::all();
+		Audit::logaudit('Asset Management', 'viewed asset management', 'viewed asset management in the system');
 		return View::make('assets.index', compact('assets'));
 	}
 
@@ -57,6 +58,8 @@ class AssetMgmtController extends \BaseController {
 			Account::where('name', $assetAc)->increment('balance', $inputData['purchasePrice']);
 		}
 
+        Audit::logaudit('Asset Management', 'created asset management', 'created asset '.Input::get('assetName').' asset number '.Input::get('assetNumber').' in the system');
+
 		return Redirect::action('AssetMgmtController@index');
 	}
 
@@ -71,6 +74,7 @@ class AssetMgmtController extends \BaseController {
 	{
 		// DISPLAY ASSET INFORMATION
 		$asset = Asset::find($id);
+		Audit::logaudit('Items', 'viewed items', 'viewed items in the system');
 		return View::make('assets.show', compact('asset'));
 	}
 
@@ -118,6 +122,7 @@ class AssetMgmtController extends \BaseController {
 		Asset::updateAsset($inputData);
 		$this->depreciate($id);
 
+        Audit::logaudit('Asset Management', 'updated asset management', 'updated asset '.Input::get('assetName').' asset number '.Input::get('assetNumber').' in the system');
 		return Redirect::action('AssetMgmtController@index');
 	}
 
@@ -222,6 +227,8 @@ class AssetMgmtController extends \BaseController {
 
 			$acTransaction->createTransaction($data);
 			$journal->journal_entry($data);
+
+			Audit::logaudit('Asset Management', 'depreciated asset management', 'depreciated asset '.$item->asset_name.' asset number '.$item->asset_number.' in the system');
 
 			return Redirect::action('AssetMgmtController@index');
 		}
