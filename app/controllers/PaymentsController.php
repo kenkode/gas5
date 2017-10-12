@@ -257,16 +257,16 @@ class PaymentsController extends \BaseController {
 	public function edit($id)
 	{
 		$payment = Payment::find($id);
-		$erporders = Erporder::join('erporderitems','erporders.id','=','erporderitems.erporder_id')
+		$erporder = Erporder::join('erporderitems','erporders.id','=','erporderitems.erporder_id')
                              ->join('items','erporderitems.item_id','=','items.id')
                              ->where('client_id',$payment->client_id)
                              ->where('erporders.status','new')
                              ->select("erporders.id","item_make","order_number")
-                             ->get();
+                             ->first();
 		//$erporders = Erporder::all();
 		$erporderitems = Erporderitem::all();
 
-		return View::make('payments.edit', compact('payment','erporders','erporderitems'));
+		return View::make('payments.edit', compact('payment','erporder','erporderitems'));
 	}
 
 	/**
@@ -286,12 +286,12 @@ class PaymentsController extends \BaseController {
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
-		$payment->erporder_id = Input::get('order');
+		//$payment->erporder_id = Input::get('order');
 		$payment->amount_paid = Input::get('amount');
-		$payment->balance = Input::get('balance');
-		$payment->paymentmethod_id = Input::get('paymentmethod');
-		$payment->received_by = Input::get('received_by');
-		$payment->payment_date = date("Y-m-d",strtotime(Input::get('pay_date')));
+		//$payment->balance = Input::get('balance');
+		//$payment->paymentmethod_id = Input::get('paymentmethod');
+		//$payment->received_by = Input::get('received_by');
+		//$payment->payment_date = date("Y-m-d",strtotime(Input::get('pay_date')));
 		$payment->update();
 
 		$erporder = Erporder::find(Input::get('order'));

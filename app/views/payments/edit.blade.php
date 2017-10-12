@@ -40,15 +40,11 @@
     <fieldset>
         
 
+        
+
         <div class="form-group">
-            <label for="username">Order</label><span style="color:red">*</span> :
-           <select name="order" class="form-control" required>
-                           <option></option>
-                           @foreach($erporders as $erporder)
-                            <option value="{{$erporder->id}}"<?= ($payment->erporder_id==$erporder->id)?'selected="selected"':''; ?>> {{$erporder->order_number." : ".$erporder->item_make}}</option>
-                           
-                           @endforeach
-                        </select>
+            <label for="username">Order<span style="color:red">*</span> :</label>
+            <input class="form-control" placeholder="" type="text" name="order" id="order" value="{{$erporder->order_number.' : '.$erporder->item_make}}" readonly="" required>
         </div>
 
         <div class="form-group">
@@ -61,16 +57,16 @@
             <input class="form-control" placeholder="" type="text" name="receipt" id="receipt" value="{{$payment->receipt_no}}">
         </div> -->
 
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="username">Received By :</label>
             <input class="form-control" placeholder="" type="text" name="received_by" id="received_by" value="{{$payment->received_by}}">
-        </div>
+        </div> -->
 
          <div class="form-group">
                         <label for="username">Date<span style="color:red">*</span> :</label>
                         <div class="right-inner-addon ">
                         <i class="glyphicon glyphicon-calendar"></i>
-                        <input class="form-control datepicker"  readonly="readonly" placeholder="" type="text" name="pay_date" id="pay_date" value="{{date('d-M-Y',strtotime($payment->payment_date))}}" required>
+                        <input class="form-control"  readonly="readonly" placeholder="" type="text" name="pay_date" id="pay_date" value="{{date('d-M-Y',strtotime($payment->payment_date))}}" required>
                         </div>
           </div>
 
