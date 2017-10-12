@@ -2709,7 +2709,7 @@ Route::get('confirmstock/{id}/{name}/{confirmer}/{key}', function($id,$name,$con
   $order->status = 'delivered';
   $order->update();*/
 
-  $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
+  $notification = Notification::where('confirmation_code',$key)->first();
   $notification->is_read = 1;
   $notification->update();
 
@@ -2766,6 +2766,10 @@ Route::post('notificationconfirmstock', function(){
   $order->status = 'delivered';
   $order->update();*/
 
+    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notification->is_read = 1;
+    $notification->update();
+
   Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item->item_make.' quantity received '.$quantity.' from supplier '.$client->name.' received by user '.$user->username.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
@@ -2795,6 +2799,10 @@ Route::post('notificationapproveexpense', function(){
   /*$order = Erporder::findorfail(Input::get("erporder_id"));
   $order->status = 'delivered';
   $order->update();*/
+
+  $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notification->is_read = 1;
+    $notification->update();
 
   Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$user->username.' in the system');
 
@@ -3202,6 +3210,10 @@ $order = Erporder::findorfail($id);
   $order->status = 'cancelled';
   $order->update();
 
+    $notification = Notification::where('confirmation_code',$key)->first();
+    $notification->is_read = 1;
+    $notification->update();
+
   Audit::logaudit('Approve Cancel Sale Order', 'approved cancellation of sale order', 'approved cancellation of sale order '.$order->order_number.' in the system');
 
   return Redirect::to('salesorders');
@@ -3238,6 +3250,10 @@ Route::post('payment/approvepayment', function(){
         $p->is_approved = 1;
         $p->confirmation_code = Input::get("key");
         $p->update();
+
+    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notification->is_read = 1;
+    $notification->update();
 
 return Redirect::to('notifications/index')->withFlashMessage('Successfully approved payment!');
 
@@ -3368,7 +3384,7 @@ Route::get('erppurchases/show/{id}', function($id){
 
 Route::get('erppurchases/notifyshow/{key}/{user}/{id}', function($key,$user,$id){
 
-    $notification = Notification::where('confirmation_code',$key)->where('user_id',$user)->first();
+    $notification = Notification::where('confirmation_code',$key)->first();
     $notification->is_read = 1;
     $notification->update();
 

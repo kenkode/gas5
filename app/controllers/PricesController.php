@@ -203,7 +203,7 @@ class PricesController extends \BaseController {
 
 		$client = Client::find($client);
 
-		$notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
+		$notification = Notification::where('confirmation_code',$key)->first();
 		$notification->is_read = 1;
 		$notification->update();
 
@@ -259,6 +259,10 @@ class PricesController extends \BaseController {
 
 		$i = Item::find(Input::get('item'));
         $client = Client::find(Input::get('client'));
+
+        $notification = Notification::where('confirmation_code',$key)->first();
+		$notification->is_read = 1;
+		$notification->update();
 
 		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->username.' in the system');
 

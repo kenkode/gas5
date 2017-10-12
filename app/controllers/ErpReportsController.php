@@ -960,6 +960,8 @@ public function kenya($id){
         });*/
     }
 
+
+
     Audit::logaudit('Purchase Order', 'reviewed purchase order and submitted for authorization', 'reviewed purchase order, order number '.$erporder->order_number.' and submitted it for authorization in the system');
     
         return Redirect::to('erppurchases/show/'.$id)->with('notice', 'Successfully reviewed purchase order');
@@ -2144,7 +2146,7 @@ public function kenya($id){
 
         $pdf = PDF::loadView('erpreports.dailyStockReport', compact('items', 'organization','from','to'))->setPaper('a4', 'landscape');   
 
-        return $pdf->stream('Sales Reports');
+        //return $pdf->stream('Sales Reports');
         
 
     $pdf->save($filePath.$fileName);
