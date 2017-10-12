@@ -119,7 +119,6 @@ class Stock extends \Eloquent {
 		$qin = DB::table('stocks')
 		     ->where('itm_id', '=', $id)
 		     ->where('date','!=',date('Y-m-d'))
-             ->whereBetween('date', array($from, $to))
 		     ->sum('quantity_in');
 		$qout = DB::table('stocks')
 		      ->where('itm_id', '=', $id)
