@@ -147,7 +147,7 @@ class Stock extends \Eloquent {
 		
 		$opening = $stock;
 
-		return $opening;
+		return dailyOpeningStock($id,$from,$to)+$opening;
 	}
 
 	public static function dailyStockIn($id,$from,$to){
