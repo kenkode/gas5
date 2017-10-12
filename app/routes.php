@@ -2790,6 +2790,8 @@ Route::post('notificationapproveexpense', function(){
             ->where('accounts.id', Input::get('account'))
             ->decrement('accounts.balance', Input::get('amount'));
 
+            $user = DB::table('users')->where('id',Input::get("receiver"))->first();
+
   /*$order = Erporder::findorfail(Input::get("erporder_id"));
   $order->status = 'delivered';
   $order->update();*/
@@ -2916,7 +2918,7 @@ Route::post('erporder/commit', function(){
   $order->payment_type = array_get($erporder, 'payment_type');
   $order->save();
 
-  $client = Client::find(array_get($erporder, 'client'));
+  $client = Client::find($order->client_id);
   
 
   foreach($erporderitems as $item){
@@ -3003,8 +3005,6 @@ Route::get('erppurchase/commit', function(){
 
  // print_r($total);
 
-  $client = Client::find(array_get($erporder, 'client'));
-
   $order = new Erporder;
   $order->order_number = array_get($erporder, 'order_number');
   $order->client()->associate(array_get($erporder, 'client'));
@@ -3014,6 +3014,7 @@ Route::get('erppurchase/commit', function(){
   $order->type = 'purchases';
   $order->save();
   
+  $client = Client::find($order->client_id);
 
 
   foreach($orderitems as $item){
@@ -3066,7 +3067,7 @@ Route::post('erpquotation/commit', function(){
   $order->type = 'quotations';  
   $order->save();
 
-  $client = Client::find(array_get($erporder, 'client'));
+  $client = Client::find($order->client_id);
   
 
   foreach($erporderitems as $item){
