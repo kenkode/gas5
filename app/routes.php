@@ -3916,7 +3916,9 @@ Route::get('api/total', function(){
     $price = Erporderitem::join('items','erporderitems.item_id','=','items.id')
            ->where('erporder_id',$id)->select(DB::raw('sum(price * quantity * item_size) AS total'))->first();
     $payment = Payment::where('erporder_id',$id)->sum('amount_paid');
-    return ($price->total) - $payment;
+    $discount = Price::join('erporder','prices.client_id','=','erporders.client_id')
+                  ->where('erporder_id',$id)->sum('discount');
+    return ($price->total) - $payment - $discount;
 });
 
 Route::get('api/totalsales', function(){
