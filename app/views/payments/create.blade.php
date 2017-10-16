@@ -83,7 +83,7 @@ if($(this).val()){
             $('#invoice').empty(); 
             $('#invoice').append("<option>----------------Select Invoice--------------------</option>");
             for (var i = 0; i < data.length; i++) {
-            $('#invoice').append("<option value='" + data[i].id +"'>" + data[i].erporder + "</option>");
+            $('#invoice').append("<option value='" + data[i].id +"'>" + data[i].erporder + (data[i].total -data[i].discount) + ")" + "</option>");
             };
         });
     });
