@@ -56,9 +56,9 @@ return array(
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'gx3',
+			'database'  => 'gx',
 			'username'  => 'root',
-			'password'  => '',
+			'password'  => 'mysql',
 			'port' => '3306',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
