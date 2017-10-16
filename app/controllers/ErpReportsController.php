@@ -344,7 +344,7 @@ public function kenya($id){
                   'items.id as item_id')
                 ->first();
 
-        return $orders->client_id;
+        return $orders;
  
         $count = DB::table('prices')
                   ->where('client_id','=',$orders->client_id)
