@@ -344,10 +344,22 @@ public function kenya($id){
                   'items.id as item_id')
                 ->first();
 
+        $count = DB::table('prices')
+                  ->where('client_id','=',$orders->client_id)
+                  ->where('item_id','=',$orders->item_id)
+                  ->count('discount');
+
+
+        $discount = 0;
+
+        if($count == 0){
+        $discount = 0;
+        }else{
         $discount = DB::table('prices')
-               ->where('client_id','=',$orders->client_id)
-               ->where('item_id','=',$orders->item_id)
-               ->sum('discount_amount');
+                  ->where('client_id','=',$orders->client_id)
+                  ->where('item_id','=',$orders->item_id)
+                  ->sum('discount');
+        }
 
         $txorders = DB::table('tax_orders')
                 ->join('erporders', 'tax_orders.order_number', '=', 'erporders.order_number')
