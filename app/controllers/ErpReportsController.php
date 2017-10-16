@@ -344,6 +344,8 @@ public function kenya($id){
                   'items.id as item_id')
                 ->first();
 
+        return $orders->client_id;
+ 
         $count = DB::table('prices')
                   ->where('client_id','=',$orders->client_id)
                   ->where('item_id','=',$orders->item_id)
@@ -375,7 +377,7 @@ public function kenya($id){
 
         $organization = Organization::find(1);
 
-        $pdf = PDF::loadView('erpreports.receipt', compact('orders','erporder','txorders','count','organization','driver','leased'))->setPaper('a4', 'landscape');
+        $pdf = PDF::loadView('erpreports.receipt', compact('orders','erporder','txorders','count','organization','driver','discount','leased'))->setPaper('a4', 'landscape');
 
         Audit::logaudit('Delivery Note', 'viewed delivery note', 'viewed delivery note for order '.$erporder->order_number.' assigned to driver '.$driver.' in the system');
     
