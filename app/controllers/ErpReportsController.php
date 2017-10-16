@@ -340,7 +340,7 @@ public function kenya($id){
                 ->where('erporders.id','=',$id)
                 ->select('clients.name as client','items.item_make as item','quantity','clients.address as address',
                   'clients.phone as phone','clients.email as email','erporders.id as id',
-                  'erporders.order_number as order_number','price','description','clients.id as client_id',
+                  'erporders.order_number as order_number','price','description','client_id',
                   'items.id as item_id')
                 ->first();
 
