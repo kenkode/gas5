@@ -999,7 +999,7 @@ public function kenya($id){
         if($erporder->prepared_by ==null || $erporder->reviewed_by == null || $erporder->authorized_by == null){
         return Redirect::to('erppurchases/show/'.$id)->with('notice', 'This purchase order has not been authorized');
         }else{
-        Audit::logaudit('Purchase Order', 'viewed a purchase order', 'viewed purchase order, order number '.$order->order_number.' in the system');
+        Audit::logaudit('Purchase Order', 'viewed a purchase order', 'viewed purchase order, order number '.$erporder->order_number.' in the system');
         return $pdf->stream('Purchase Order.pdf');
         }
     }
