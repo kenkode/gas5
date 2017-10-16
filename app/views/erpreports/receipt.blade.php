@@ -225,8 +225,7 @@ img#watermark{
             
             <td style="border-top:1px solid #C0C0C0" ><strong>Subtotal</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($total)}}</td></tr><tr>
 
-           <!--  <td style="border-top:1px solid #C0C0C0" ><strong>Discount</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($orders->discount_amount)}}</td> -->
-           
+          
 <?php 
 $grandtotal = $grandtotal + $total;
 $payments = Erporder::getTotalPayments($erporder);
