@@ -3845,9 +3845,9 @@ Route::get('api/salesdropdown', function(){
     $id = Input::get('option');
     $erporderitems = Erporder::join('erporderitems','erporders.id','=','erporderitems.erporder_id')
                              ->join('items','erporderitems.item_id','=','items.id')
-                             ->join(DB::raw('(select sum(discount) as discount, prices.client_id from prices left join erporderitems on prices.item_id=erporderitems.item_id where prices.client_id='.$id.' and prices.item_id = erporderitems.item_id group by erporder_id) as p'), function($join){
+                             /*->join(DB::raw('(select sum(discount) as discount, prices.client_id from prices left join erporderitems on prices.item_id=erporderitems.item_id where prices.client_id='.$id.' and prices.item_id = erporderitems.item_id group by erporder_id) as p'), function($join){
                                  $join->on('erporders.client_id', '=', 'p.client_id');
-                            })
+                            })*/
                              ->where('erporders.client_id',$id)
                              ->where(function($query)
                              {
