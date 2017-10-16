@@ -3854,7 +3854,7 @@ Route::get('api/salesdropdown', function(){
                              ->groupBy('erporders.id')
                              ->havingRaw('balance > 0 or balance is null')
                              ->where('erporders.status','new')
-                             ->select('erporders.id', DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * quantity),")") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'))
+                             ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'), DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ", sum(price * quantity),")") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'))
                    ->get('erporder', 'id');
     return $erporderitems;
 });
@@ -3921,12 +3921,14 @@ Route::get('api/total', function(){
 });
 
 Route::get('api/totalsales', function(){
-    $id = Input::get('option');
-    $price = Erporderitem::where('erporder_id',$id)->select(DB::raw('sum(price * quantity) AS total'))->first();
-    $payment = Payment::where('erporder_id',$id)->sum('amount_paid');
+    //$id = Input::get('option');
+    $id = explode(" : ",Input::get('option'));
+    $price = Erporderitem::where('erporder_id',$id[0])->select(DB::raw('sum(price * quantity) AS total'))->first();
+    $payment = Payment::where('erporder_id',$id[0])->sum('amount_paid');
     $discount = Erporder::join('prices','erporders.client_id','=','prices.client_id')
-                  ->groupBy('prices.item_id')
-                  ->where('erporders.id',$id)->sum('discount');
+                  ->where('erporders.id',$id[0])
+                  ->where('item_id',$id[1])
+                  ->sum('discount');
     //dd($price);
     return ($price->total ) - $payment - $discount;
 });
