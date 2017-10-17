@@ -450,6 +450,7 @@ Received the above goods in good order and condition
 
 </div>
 </div>
+</div>
 
 
   <div class="content">
@@ -463,7 +464,7 @@ Received the above goods in good order and condition
 
   ?>
 
-      <table class="" style="border: 0px; width:100%">
+      <table class="" style="border: 0px; width:100%;">
 
           <tr>
             <td style="width:150px">
@@ -618,7 +619,7 @@ $payments = Erporder::getTotalPayments($erporder);
 
 <br><br>
    
-   </div>
+   
 
 
 </body>

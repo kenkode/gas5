@@ -112,7 +112,7 @@ th,td{
             <td>&nbsp;</td>
             
             <td colspan="2" >
-                  <strong>Invoice</strong>
+                  <strong>Invoice</strong><br><br>
                 <table class="demo" style="width:100%">
                   
                   <tr >
