@@ -48,6 +48,7 @@ function asMoney($value) {
       <thead>
 
         <th>#</th>
+        <th>Code</th>
         <th>Name</th>
         <th>Phone</th>
         <th>Email</th>
@@ -65,6 +66,7 @@ function asMoney($value) {
         <tr>
 
           <td> {{ $i }}</td>
+          <td>{{ $client->code }}</td>
           <td>{{ $client->name }}</td>
           <td>{{ $client->phone }}</td>
           <td>{{ $client->email }}</td>

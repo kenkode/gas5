@@ -70,6 +70,8 @@
                         </select>
         </div> -->
 
+        <label for="username">Client Type:</label><span style="color:red">*</span>
+
         <div class="radio">
           <label>
            @if($client->type == 'Customer')

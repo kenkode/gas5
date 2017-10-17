@@ -142,6 +142,8 @@ if($(this).val() == "CREDIT"){
                         </select>
         </div> -->
 
+        <label for="username">Client Type:</label><span style="color:red">*</span>
+
         <div class="radio">
           <label>
               <input type="radio" name="type" id="customer" value="Customer">

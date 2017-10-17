@@ -52,9 +52,13 @@ class ClientsController extends \BaseController {
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
+		$date=date('y-m-dh:i:s'); 
+		substr(md5($date),0,8);
+
 		$client = new Client;
 
 		$client->name = Input::get('name');
+		$client->code = mt_rand(10000000, 99999999);
 		$client->date = date('Y-m-d');
 		$client->contact_person = Input::get('cname');
 		$client->email = Input::get('email_office');
@@ -128,6 +132,12 @@ class ClientsController extends \BaseController {
 		if ($validator->fails())
 		{
 			return Redirect::back()->withErrors($validator)->withInput();
+		}
+
+		$date=date('y-m-dh:i:s'); 
+
+		if($client->code == null || $client->code == ''){
+          $client->code = mt_rand(10000000, 99999999);
 		}
 
 		$client->name = Input::get('name');
