@@ -52,13 +52,20 @@ class ClientsController extends \BaseController {
 			return Redirect::back()->withErrors($validator)->withInput();
 		}
 
-		$date=date('y-m-dh:i:s'); 
-		substr(md5($date),0,8);
+		$c = Client::orderBy("code","DESC")->first();
+
+        $accno = 111111;
+        if($c->code == null){
+        $accno = 111111;
+        }else{
+        $accno = $c->code + 1;	
+        }
+		
 
 		$client = new Client;
 
 		$client->name = Input::get('name');
-		$client->code = mt_rand(10000000, 99999999);
+		$client->code = $accno;
 		$client->date = date('Y-m-d');
 		$client->contact_person = Input::get('cname');
 		$client->email = Input::get('email_office');
@@ -136,8 +143,18 @@ class ClientsController extends \BaseController {
 
 		$date=date('y-m-dh:i:s'); 
 
+		$c = Client::orderBy("code","DESC")->first();
+
+        $accno = 111111;
+        if($c->code == null){
+        $accno = 111111;
+        }else{
+        $accno = $c->code + 1;	
+        }
+		
+
 		if($client->code == null || $client->code == ''){
-          $client->code = mt_rand(10000000, 99999999);
+          $client->code = $accno;
 		}
 
 		$client->name = Input::get('name');

@@ -62,11 +62,15 @@ function asMoney($value) {
 
         <?php $i = 1; ?>
         @foreach($clients as $client)
-
+         
         <tr>
 
           <td> {{ $i }}</td>
+          @if($client->code != null)
+          <td>GX{{ $client->code }}</td>
+          @else
           <td>{{ $client->code }}</td>
+          @endif
           <td>{{ $client->name }}</td>
           <td>{{ $client->phone }}</td>
           <td>{{ $client->email }}</td>

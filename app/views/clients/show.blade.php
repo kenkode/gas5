@@ -49,7 +49,11 @@ function asMoney($value) {
       <td colspan="2"><font color="green">Customer/Supplier Details</font></td>
     </tr>
     <tr>
-       <td>Account Number</td><td>{{$client->code}}</td>
+       <td>Account Number</td>@if($client->code != null)
+          <td>GX{{ $client->code }}</td>
+          @else
+          <td>{{ $client->code }}</td>
+          @endif
      </tr>
      <tr>
        <td>Client Name</td><td>{{$client->name}}</td>
