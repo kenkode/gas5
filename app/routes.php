@@ -2747,7 +2747,22 @@ Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{account}/{rec
 
   $acc = Account::find($account);
 
-  return View::make('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
+  return View::make('expenses.checkexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
+}else{
+  return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already checked!");
+}
+});
+
+Route::get('notificationshowapproveexpense/{name}/{type}/{amount}/{date}/{account}/{checker}/{confirmer}/{receiver}/{key}', function($name,$type,$amount,$date,$account,$checker,$confirmer,$receiver,$key){
+  $expense = Expense::where('approve_code',$key)->count();
+  if($expense == 0){
+  $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
+  $notification->is_read = 1;
+  $notification->update();
+
+  $acc = Account::find($account);
+
+  return View::make('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','checker','key','acc'));
 }else{
   return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already approved!");
 }
@@ -2775,6 +2790,34 @@ Route::post('notificationconfirmstock', function(){
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
 });
 
+Route::post('notificationcheckexpense', function(){
+
+    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notification->is_read = 1;
+    $notification->update();
+
+  $username = Confide::user()->username;
+
+  $u = DB::table("users")->where("id",Input::get("receiver"))->first();
+
+    $users = DB::table('roles')
+    ->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
+    ->join('users', 'assigned_roles.user_id', '=', 'users.id')
+    ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
+    ->select("users.id","email","username")
+    ->where("permission_id",141)->get();
+
+        $key = md5(uniqid());
+
+    foreach ($users as $user) {
+
+    Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"approve expense","notificationshowapproveexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".Input::get("receiver")."/".$key,$key);
+      }
+   Audit::logaudit('Expenses', 'checked an expense', 'checked expense '.Input::get('name').' created by user '.$u->username.' in the system');
+
+  return Redirect::to('notifications/index')->withFlashMessage("Expense for item ".Input::get('item')." confirmed as checked! A final approval is required");
+});
+
 Route::post('notificationapproveexpense', function(){
 
   $expense = new Expense;
@@ -2786,7 +2829,8 @@ Route::post('notificationapproveexpense', function(){
     $expense->account_id = Input::get('account');
     $expense->receiver_id = Input::get("receiver");
     $expense->confirmed_id = Input::get("confirmer");
-    $expense->confirmation_code = Input::get("key");
+    $expense->check_id = Input::get("checker");
+    $expense->approve_code = Input::get("key");
     $expense->save();
 
         DB::table('accounts')
@@ -2800,11 +2844,14 @@ Route::post('notificationapproveexpense', function(){
   $order->status = 'delivered';
   $order->update();*/
 
+  $u = DB::table("users")->where("id",Input::get("receiver"))->first();
+  $c = DB::table("users")->where("id",Input::get("checker"))->first();
+
   $notification = Notification::where('confirmation_code',Input::get("key"))->first();
     $notification->is_read = 1;
     $notification->update();
 
-  Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$user->username.' in the system');
+  Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$u->username.' and checked by '.$c->username.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Expense for item ".Input::get('item')." confirmed as approved!");
 });

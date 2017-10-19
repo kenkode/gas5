@@ -21,7 +21,7 @@
         </div>
         @endif
 
-         <form method="POST" action="{{{ URL::to('notificationapproveexpense') }}}" accept-charset="UTF-8">
+         <form method="POST" action="{{{ URL::to('notificationcheckexpense') }}}" accept-charset="UTF-8">
    
     <fieldset>
         <div class="form-group">
@@ -53,12 +53,11 @@
         <input class="form-control" placeholder="" type="hidden" name="account" id="account" value="{{$account}}" required>
         <input class="form-control" placeholder="" type="hidden" name="receiver" id="receiver" value="{{$receiver}}" required>
         <input class="form-control" placeholder="" type="hidden" name="confirmer" id="confirmer" value="{{$confirmer}}" required>
-        <input class="form-control" placeholder="" type="hidden" name="checker" id="checker" value="{{$checker}}" required>
         <input class="form-control" placeholder="" type="hidden" name="key" id="key" value="{{$key}}" required>
 
         <div class="form-actions form-group">
         
-          <button type="submit" class="btn btn-primary btn-sm">Approve Expense</button>
+          <button type="submit" class="btn btn-primary btn-sm">Check Expense</button>
         </div>
 
     </fieldset>

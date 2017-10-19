@@ -67,7 +67,7 @@ class ExpensesController extends \BaseController {
 
 		foreach ($users as $user) {
 
-		Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"expense","notificationshowexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".$key,$key);
+		Notification::notifyUser($user->id,"Hello, Please check expense inserted for item ".Input::get('name'),"check expense","notificationshowexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".$key,$key);
      	}
      	Audit::logaudit('Expenses', 'created an expense', 'created expense '.Input::get('name').' in the system and awaiting approval');
         return Redirect::to('expenses')->with('notice', 'Admin approval is needed to insert this expense');

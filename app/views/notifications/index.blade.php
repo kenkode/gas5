@@ -82,7 +82,9 @@
                     <li><a href="{{URL::to($notification->link)}}">Approve Cancel Sale Order</a></li>
                     @elseif($notification->type == 'payment')
                     <li><a href="{{URL::to($notification->link)}}">Approve Payment</a></li>
-                    @elseif($notification->type == 'expense')
+                    @elseif($notification->type == 'check expense')
+                    <li><a href="{{URL::to($notification->link)}}">Check Expense</a></li>
+                    @elseif($notification->type == 'approve expense')
                     <li><a href="{{URL::to($notification->link)}}">Approve Expense</a></li>
                     @endif
                     <li><a href="{{URL::to('notifications/markasread/'.$notification->id)}}">Mark As Read</a></li>
@@ -120,7 +122,9 @@
                     <li><a href="{{URL::to($notification->link)}}">Approve Cancel Sale Order</a></li>
                     @elseif($notification->type == 'payment')
                     <li><a href="{{URL::to($notification->link)}}">Approve Payment</a></li>
-                    @elseif($notification->type == 'expense')
+                    @elseif($notification->type == 'check expense')
+                    <li><a href="{{URL::to($notification->link)}}">Check Expense</a></li>
+                    @elseif($notification->type == 'approve expense')
                     <li><a href="{{URL::to($notification->link)}}">Approve Expense</a></li>
                     @endif
                   </ul>
