@@ -32,9 +32,9 @@
 			  background-color: transparent;
 			}
 
-table, tr, td, th, tbody, thead, tfoot {
+/*table, tr, td, th, tbody, thead, tfoot {
     page-break-inside: avoid !important;
-}
+}*/
 
 th,td{
   padding: 2px 7px !important;
@@ -180,11 +180,11 @@ th,td{
 						<?php
 		            $client_discount_amt = $client_discount_amt + $stmt['discount_amount'];
 		            $client_discount =  $stmt['client_discount']; 
-		            $amount = $stmt['item_price'] * $stmt['item_qty'];
+		            $amount = $stmt['item_price'] * $stmt['item_qty'] * $stmt['item_size'];
 		            /*$total_amount = $amount * $orderitem['duration'];*/
 		            $item_total = $item_total+($amount-$client_discount);
 		            //$total = $total + ($orderitem->price * $orderitem->quantity)-$client_discount;
-		            $total_discounted = $total_discounted + ($stmt['item_price'] * $stmt['item_qty'])-$client_discount-$stmt['discount_amount'];	
+		            $total_discounted = $total_discounted + ($stmt['item_price'] * $stmt['item_qty'] * $stmt['item_size'])-$client_discount-$stmt['discount_amount'];	
 	          ?>
 
 	          <tr>

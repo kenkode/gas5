@@ -223,7 +223,7 @@ public function kenya($id){
                 
                 ->where('clients.id','=',$id) 
                 ->whereBetween('erporders.date', array($from, $to))                                 
-                ->select('clients.name as client','items.item_make as item','quantity','clients.address as address',
+                ->select('clients.name as client','items.item_make as item','items.item_size','quantity','clients.address as address',
                   'clients.phone as phone','clients.email as email','erporders.id as id',
                   'discount_amount','erporders.id as erporderid','erporders.order_number as order_number',
                   'price','erporderitems.client_discount as client_discount','erporders.date as date')
@@ -253,6 +253,7 @@ public function kenya($id){
                     'payment_id'=>'',
                     'item'=>$order->item,
                     'item_price'=>$order->price,
+                    'item_size'=>$order->item_size,
                     'item_qty'=>$order->quantity,
                     'client_discount'=>$order->client_discount,
                     'discount_amount'=>$order->discount_amount,
@@ -271,6 +272,7 @@ public function kenya($id){
                     'item'=>'',
                     'item_price'=>'',
                     'item_qty'=>'',
+                    'item_size'=>'',
                     'client_discount'=>'',
                     'discount_amount'=>'',
                     'amount_paid'=>$payment->amount_paid,
