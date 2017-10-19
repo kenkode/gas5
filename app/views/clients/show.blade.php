@@ -49,7 +49,7 @@ function asMoney($value) {
       <td colspan="2"><font color="green">Customer/Supplier Details</font></td>
     </tr>
     <tr>
-       <td>Client Code</td><td>{{$client->code}}</td>
+       <td>Client Account Number</td><td>{{$client->code}}</td>
      </tr>
      <tr>
        <td>Client Name</td><td>{{$client->name}}</td>

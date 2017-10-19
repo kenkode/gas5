@@ -48,7 +48,7 @@ function asMoney($value) {
       <thead>
 
         <th>#</th>
-        <th>Code</th>
+        <th>Acc No.</th>
         <th>Name</th>
         <th>Phone</th>
         <th>Email</th>
