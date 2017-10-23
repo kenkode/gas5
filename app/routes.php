@@ -2775,6 +2775,8 @@ Route::post('notificationconfirmstock', function(){
   $stock->confirmation_code = Input::get("key");
   $stock->update();
 
+  $item = Item::find($stock->itm_id);
+
   $user = DB::table("users")->where('id',$stock->receiver_id)->first();
 
   /*$order = Erporder::findorfail(Input::get("erporder_id"));
