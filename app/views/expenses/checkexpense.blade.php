@@ -3,7 +3,7 @@
 
 <br><div class="row">
     <div class="col-lg-12">
-  <h3>Approve Expense</h3>
+  <h3>Check Expense</h3>
 
 <hr>
 </div>  
