@@ -2646,7 +2646,7 @@ Route::post('quotationitems/create', function(){
 
   $item = Item::findOrFail(array_get($data, 'item'));
 
-  $item_name = $item->name;
+  $item_name = $item->item_make;
   $price = $item->selling_price;
   $quantity = Input::get('quantity');
   $duration = Input::get('duration');
