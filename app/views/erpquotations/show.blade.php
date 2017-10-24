@@ -297,7 +297,7 @@ $(document).ready(function(){
             ?>
             <tr>
                 <!--<td><input type="checkbox" class="checkbox" name="{{$orderitem->item->id}}" value=""></td>-->
-                <td>{{$orderitem->item->name}}</td>
+                <td>{{$orderitem->item->item_make}}</td>
                 <td>{{$orderitem['quantity']}}</td>
                 <td>{{asMoney($orderitem['price'])}}</td>
                 <!-- <td>{{$amount}}</td>

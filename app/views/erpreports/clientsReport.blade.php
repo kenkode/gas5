@@ -138,8 +138,7 @@ body {
         <th><strong>Address </strong></th>
         <th><strong>Contact Person </strong></th>        
         <th><strong>Phone </strong></th>
-        <th><strong>Type </strong></th>
-        <th><strong>Client Discount </strong></th>
+        <!-- <th><strong>Type </strong></th> -->
         <th><strong>Balance </strong></th>
       </tr>
       <?php $i =1; ?>
@@ -152,8 +151,8 @@ body {
         <td> {{ $client->address}}</td>
         <td> {{ $client->contact_person }}</td>        
         <td> {{ $client->contact_person_phone }}</td>
-        <td> {{ $client->type}}</td>
-        <td align="center"> {{ asMoney($client->percentage_discount)}}</td>
+        <td> {{ $client->type}}</td><!-- 
+        <td align="center"> {{ asMoney($client->percentage_discount)}}</td> -->
         <td align="right"> {{ Client::due($client->id)}}</td>
         </tr>
       <?php $i++; ?>
