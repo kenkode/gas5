@@ -33,7 +33,7 @@
 	            <select id="itemName" name="item_id" class="form-control input-sm" required>
 	            <option value=""> ------- select item ------- </option>
 	                @foreach($items as $item)
-	                    <option value="{{$item->id}}">{{$item->name}}</option>
+	                    <option value="{{$item->id}}">{{$item->item_make}}</option>
 	                @endforeach
 	            </select>
 			</div>&emsp;
