@@ -82,7 +82,7 @@ Session::forget('error');
 						?>
 
 						<tr>
-							<td>{{$orderitem->item->name}}</td>
+							<td>{{$orderitem->item->item_make}}</td>
 							<td>
 								<input type="number" id="newQty{{$count}}" class="form-control input-sm" name="newQty{{$orderitem->item_id}}" value="{{$orderitem['quantity']}}" onkeyup="calculate({{$count}});" onblur="getTotal({{$count}});" onfocus="removeCount({{$count}})">
 							</td>
