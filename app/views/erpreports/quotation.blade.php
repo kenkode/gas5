@@ -163,12 +163,14 @@ img#watermark{
             <td style="border-bottom:1px solid #C0C0C0">Description</td>
             
             <td style="border-bottom:1px solid #C0C0C0">Qty</td>
-            <td style="border-bottom:1px solid #C0C0C0">Rate</td>
+            <td style="border-bottom:1px solid #C0C0C0">Price</td>
+            <td style="border-bottom:1px solid #C0C0C0">Total Amount</td>
+            <td style="border-bottom:1px solid #C0C0C0">Discount</td>
            
-            <td style="border-bottom:1px solid #C0C0C0">Amount</td>
+            <td style="border-bottom:1px solid #C0C0C0">Payable Amount</td>
           </tr>
 
-         <?php $total = 0; $i=1;  $grandtotal=0;
+          <?php $total = 0; $i=1;  $grandtotal=0;
          
          ?>
           @foreach($erporder->erporderitems as $orderitem)
@@ -177,23 +179,24 @@ img#watermark{
             $discount_amount = $orderitem['client_discount'];
             $amount = $orderitem['price'] * $orderitem['quantity'];
             /*$total_amount = $amount * $orderitem['duration'];*/
-            $total = $total + $orderitem->price * $orderitem['quantity']-$discount_amount;
+            $total = $total + $orderitem->price * $orderitem['quantity']-$discount_amount/$orderitem['quantity'];
 
 
             ?>
           <tr>
-            <td >{{ $orderitem->item->name}}</td>
+            <td >{{ $orderitem->item->item_make}}</td>
             <td>{{ $orderitem->item->description}}</td>
             
             <td>{{ $orderitem->quantity}}</td>
-            <td>{{ asMoney($orderitem->price-$discount_amount/$orderitem->quantity)}}</td>
-            
-             <td> {{asMoney(($orderitem->price * $orderitem->quantity)- $discount_amount)}}</td>
+            <td>{{ asMoney($orderitem->price)}}</td>
+            <td>{{ asMoney($orderitem['price'] * $orderitem['quantity'])}}</td>
+             <td>{{ asMoney($discount_amount/$orderitem['quantity'])}}</td>
+             <td> {{asMoney($amount- $discount_amount/$orderitem['quantity'])}}</td>
           </tr>
 
 
       @endforeach
-     <!--  @for($i=1; $i<15;$i++)
+      <!-- @for($i=1; $i<15;$i++)
        <tr>
             <td>&nbsp;</td>
             <td></td>
@@ -204,12 +207,13 @@ img#watermark{
           </tr>
           @endfor -->
           <tr>
-            <td style="border-top:1px solid #C0C0C0" rowspan="4" colspan="3">&nbsp;</td>
+            <td style="border-top:1px solid #C0C0C0" rowspan="4" colspan="5">&nbsp;</td>
             
-            <td style="border-top:1px solid #C0C0C0" ><strong>Total Amount</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($total)}}</td></tr><tr>
+            <td style="border-top:1px solid #C0C0C0;border-bottom:1px solid #C0C0C0" ><strong>Total Amount</strong> </td><td style="border-top:1px solid #C0C0C0;border-bottom:1px solid #C0C0C0" colspan="1">KES {{asMoney($total)}}</td></tr><tr>
 
-            <!-- <td style="border-top:1px solid #C0C0C0" ><strong>Discount</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($orders->discount_amount)}}</td> -->
-           
+            <!--<td style="border-top:1px solid #C0C0C0" ><strong>Discount</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($orders->discount_amount)}}</td>
+            -->
+
 <?php 
 $grandtotal = $grandtotal + $total;
 $payments = Erporder::getTotalPayments($erporder);
@@ -217,7 +221,7 @@ $payments = Erporder::getTotalPayments($erporder);
 
  ?>
            @foreach($txorders as $txorder)
-           <?php $grandtotal = $total; ?>
+           <?php $grandtotal = $total/*+ $txorder->amount*/;?>
            <tr>
             <td style="border-top:1px solid #C0C0C0" ><strong>{{$txorder->name}}</strong> ({{$txorder->rate.' %'}})</td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($txorder->amount)}}</td>
            </tr>

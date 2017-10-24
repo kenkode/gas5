@@ -138,7 +138,7 @@ body {
         <th><strong>Address </strong></th>
         <th><strong>Contact Person </strong></th>        
         <th><strong>Phone </strong></th>
-        <!-- <th><strong>Type </strong></th> -->
+        <th><strong>Type </strong></th>
         <th><strong>Balance </strong></th>
       </tr>
       <?php $i =1; ?>

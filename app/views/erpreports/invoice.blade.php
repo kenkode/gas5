@@ -149,16 +149,18 @@ th,td{
 
       <br>
 
-           <table class="inv" style="width:100%">
+          <table class="inv" style="width:100%">
           
            <tr>
             <td style="border-bottom:1px solid #C0C0C0">Item</td>
             <td style="border-bottom:1px solid #C0C0C0">Description</td>
             
             <td style="border-bottom:1px solid #C0C0C0">Qty</td>
-            <td style="border-bottom:1px solid #C0C0C0">Rate</td>
+            <td style="border-bottom:1px solid #C0C0C0">Price</td>
+            <td style="border-bottom:1px solid #C0C0C0">Total Amount</td>
+            <td style="border-bottom:1px solid #C0C0C0">Discount</td>
            
-            <td style="border-bottom:1px solid #C0C0C0">Amount</td>
+            <td style="border-bottom:1px solid #C0C0C0">Payable Amount</td>
           </tr>
 
           <?php $total = 0; $i=1;  $grandtotal=0;
@@ -170,18 +172,19 @@ th,td{
             $discount_amount = $orderitem['client_discount'];
             $amount = $orderitem['price'] * $orderitem['quantity'];
             /*$total_amount = $amount * $orderitem['duration'];*/
-            $total = $total + $orderitem->price * $orderitem['quantity']-$discount_amount;
+            $total = $total + $orderitem->price * $orderitem['quantity']-$discount_amount/$orderitem['quantity'];
 
 
             ?>
           <tr>
-            <td >{{ $orderitem->item->name}}</td>
+            <td >{{ $orderitem->item->item_make}}</td>
             <td>{{ $orderitem->item->description}}</td>
             
             <td>{{ $orderitem->quantity}}</td>
-            <td>{{ asMoney($orderitem->price-$discount_amount/$orderitem->quantity)}}</td>
-            
-             <td> {{asMoney(($orderitem->price * $orderitem->quantity)- $discount_amount)}}</td>
+            <td>{{ asMoney($orderitem->price)}}</td>
+            <td>{{ asMoney($orderitem['price'] * $orderitem['quantity'])}}</td>
+             <td>{{ asMoney($discount_amount/$orderitem['quantity'])}}</td>
+             <td> {{asMoney($amount- $discount_amount/$orderitem['quantity'])}}</td>
           </tr>
 
 
@@ -197,9 +200,9 @@ th,td{
           </tr>
           @endfor -->
           <tr>
-            <td style="border-top:1px solid #C0C0C0" rowspan="4" colspan="3">&nbsp;</td>
+            <td style="border-top:1px solid #C0C0C0" rowspan="4" colspan="5">&nbsp;</td>
             
-            <td style="border-top:1px solid #C0C0C0" ><strong>Total Amount</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($total)}}</td></tr><tr>
+            <td style="border-top:1px solid #C0C0C0;border-bottom:1px solid #C0C0C0" ><strong>Total Amount</strong> </td><td style="border-top:1px solid #C0C0C0;border-bottom:1px solid #C0C0C0" colspan="1">KES {{asMoney($total)}}</td></tr><tr>
 
             <!--<td style="border-top:1px solid #C0C0C0" ><strong>Discount</strong> </td><td style="border-top:1px solid #C0C0C0" colspan="1">KES {{asMoney($orders->discount_amount)}}</td>
             -->

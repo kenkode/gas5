@@ -10,7 +10,7 @@ class ErpReportsController extends \BaseController {
         $clients = Client::all();       
 
         $organization = Organization::find(1);
-        ini_set("memory_limit", "1599M");
+        ini_set("memory_limit", "-1");
         ini_set("max_execution_time", "-1");
 
         $pdf = PDF::loadView('erpreports.clientsReport', compact('clients', 'organization'))->setPaper('a4', 'landscape');
@@ -580,7 +580,7 @@ public function kenya($id){
         $from = Input::get("from");
         $to= Input::get("to");
 
-        ini_set("memory_limit", "1599M");
+        ini_set("memory_limit", "-1");
         ini_set("max_execution_time", "-1");
 
         $purchases = DB::table('erporders')
