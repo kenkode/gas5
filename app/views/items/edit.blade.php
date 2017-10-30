@@ -33,7 +33,7 @@
 
         <div class="form-group">
             <label for="username">Item Size (Kg)<span style="color:red">*</span> :</label>
-            <input class="form-control" placeholder="" type="text" name="item_size" id="item_size" value="{{$item->item_size}}" required>
+            <input class="form-control" placeholder="" type="text" name="item_size" id="item_size" value="{{$item->item_size}}" >
         </div>
 
          <div class="form-group">
