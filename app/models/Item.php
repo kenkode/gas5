@@ -5,14 +5,13 @@ class Item extends \Eloquent {
 	// Add your validation rules here
 	public static $rules = [
 	 'item_make' => 'required',
-	 'item_size' => 'required|numeric',
+	 'item_size' => 'nullable|numeric',
 	 'pprice' => 'required|regex:/^\d+(\.\d{2})?$/',
 	 'sprice' => 'required|regex:/^\d+(\.\d{2})?$/'
 	];
 
 	public static $messages = array(
     	'item_make.required'=>'Please insert item make!',
-    	'item_size.required'=>'Please insert item size!',
     	'item_size.numeric'=>'Please insert a number!',
     	'pprice.required'=>'Please insert item purchase price!',
     	'pprice.regex'=>'Please insert a valid amount!',
