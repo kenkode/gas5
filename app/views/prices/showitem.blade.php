@@ -50,12 +50,12 @@ $(document).ready(function() {
     <fieldset>
         <div class="form-group">
             <label for="username">Client:</label>
-            <input class="form-control" placeholder="" type="text" name="client" id="selling_price" value="{{$clientname}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="clientname" id="selling_price" value="{{$clientname}}" readonly>
         </div>
 
          <div class="form-group">
             <label for="username">Item</label>
-            <input class="form-control" placeholder="" type="text" name="item" id="item" value="{{$itemmake}}" readonly>
+            <input class="form-control" placeholder="" type="text" name="itemmake" id="item" value="{{$itemmake}}" readonly>
         </div>
 
         
