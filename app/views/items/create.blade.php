@@ -31,7 +31,7 @@
             <input class="form-control" placeholder="" type="text" name="item_make" id="item_make" value="{{{ Input::old('item_make') }}}" required>
         </div>
         <div class="form-group">
-            <label for="username">Item Size (Kg)
+            <label for="username">Item Size (Kg)</label>
             <input class="form-control" placeholder="" type="text" name="item_size" id="item_size" value="{{{ Input::old('item_size') }}}">
         </div>
 
