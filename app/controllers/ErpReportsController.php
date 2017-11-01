@@ -1604,7 +1604,7 @@ public function kenya($id){
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
-    $message->to('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Sales Report!');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Sales Report!');
     //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
 
