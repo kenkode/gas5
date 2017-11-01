@@ -1574,7 +1574,7 @@ public function kenya($id){
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
                 ->where('erporders.type','=','sales')                         
-                ->whereBetween('erporders.created_at', array($sdate, $stime))  
+                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
                 ->first();
 
@@ -1604,7 +1604,7 @@ public function kenya($id){
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@lixnet.net', 'Gas Express');
-    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Sales Report!');
+    $message->to('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Sales Report!');
     //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
 
@@ -1660,7 +1660,7 @@ public function kenya($id){
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
                 ->where('erporders.type','=','sales')                         
-                ->whereBetween('erporders.created_at', array($sdate, $stime))  
+                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
                 ->first();
 
