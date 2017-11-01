@@ -48,6 +48,7 @@ class Erporder extends \Eloquent {
 
 		return $discount;
 	}
+	
 	public static function getBalance($order){
 		//$payments = 0;
 		$amount_charged = DB::table('erporders')->$order->total_amount;

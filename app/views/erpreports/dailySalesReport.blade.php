@@ -133,11 +133,13 @@ function asMoney($value) {
       </tr>
 
      
-      <?php $i =1; $total = 0; ?>
+      <?php $i =1; $total = 0; $discount=0; ?>
       @foreach($sales as $sales)
       
       <?php
-      $total = $total + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)))
+
+      $total = $total + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)));
+      $discount = $discount + Erporder::getDiscount($sales->clientid,$sales->itemid);
 
       ?>
 
@@ -183,8 +185,14 @@ function asMoney($value) {
 
     </table>
 
-<br><br>
 
+<div align="center" style="font-size: 20px !important">
+<table align="center">
+  <tr>
+    <td style="font-size: 20px !important"><strong style="font-size: 20px !important">Cumulative Sales :</strong></td><td style="font-size: 20px !important"><strong style="font-size: 20px !important">{{asMoney($total_sales_todate->total_sales - $discount)}}</strong></td>
+  </tr>
+</table>
+</div>
    
 </div>
 

@@ -469,10 +469,11 @@ public function kenya($id){
                 ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))               
                 ->first();
 
-    $discount_amount_todate = DB::table('erporders')
+    $discount_amount_todate = DB::table('prices')
+                ->join('erporders', 'prices.client_id', '=', 'erporders.client_id')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')            
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))              
-                ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))             
+                ->select(DB::raw('COALESCE(SUM(Discount),0) as discount_amount'))             
                 ->first();
 
   $items = Item::all();
