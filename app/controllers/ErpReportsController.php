@@ -1573,7 +1573,8 @@ public function kenya($id){
 
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
-                ->where('erporders.type','=','sales')                         
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                      
                 ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
                 ->first();
@@ -1659,7 +1660,8 @@ public function kenya($id){
 
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
-                ->where('erporders.type','=','sales')                         
+                ->where('erporders.type','=','sales')  
+                ->where('erporders.status','!=','cancelled')                        
                 ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
                 ->first();
