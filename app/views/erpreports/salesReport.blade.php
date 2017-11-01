@@ -188,7 +188,7 @@ function asMoney($value) {
 <div align="center" style="font-size: 20px !important">
 <table align="center">
   <tr>
-    <td style="font-size: 20px !important"><strong style="font-size: 20px !important">Cumulative Sales :</strong></td><td style="font-size: 20px !important"><strong style="font-size: 20px !important">{{asMoney($total_sales_todate->total_sales - $discount)}}</strong></td>
+    <td style="font-size: 20px !important"><strong style="font-size: 20px !important">Cumulative Sales :</strong></td><td style="font-size: 20px !important"><strong style="font-size: 20px !important">{{asMoney($total)}}</strong></td>
   </tr>
 </table>
 </div>
