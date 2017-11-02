@@ -33,6 +33,9 @@
        </li>
        <li>
             <a href="{{ URL::to('erpReports/selectSalesPeriod') }}">Sales Summary</a>
+       </li>    
+       <li>
+            <a href="{{ URL::to('erpReports/selectNetPeriod') }}"><i class="glyphicon glyphicon-file fa-fw"></i> Net Profit</a>
        </li>       
 
        <li>
