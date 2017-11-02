@@ -490,6 +490,69 @@ public function kenya($id){
   
 }
 
+public function net(){
+
+    $from = Input::get("from");
+    $to= Input::get("to");
+
+    //return $from.' - '.$to;
+
+    $sales = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                //->where('erporders.client_id', 17)
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
+                ->groupBy("items.id")
+                ->select(DB::raw('erporders.id,client_id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
+                  erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
+                
+                ->get();
+                //return $sales;
+    
+    $total_payment= DB::table('payments')
+                ->join('clients', 'payments.client_id', '=', 'clients.id')
+                ->where('clients.type','=','Customer')
+                ->whereBetween('payments.payment_date', array(Input::get("from"), Input::get("to")))
+                ->select(DB::raw('COALESCE(SUM(amount_paid),0) as amount_paid'))
+                
+                ->first();
+
+    $total_sales_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->where('erporders.type','=','sales')                         
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))  
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
+                ->first();
+
+    $discount_amount = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')        
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))                    
+                ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))               
+                ->first();
+
+    $discount_amount_todate = DB::table('prices')
+                ->join('erporders', 'prices.client_id', '=', 'erporders.client_id')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')            
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))              
+                ->select(DB::raw('COALESCE(SUM(Discount),0) as discount_amount'))             
+                ->first();
+
+  $items = Item::all();
+  $locations = Location::all();
+  $organization = Organization::find(1);
+  $accounts = Account::all();
+
+        $pdf = PDF::loadView('erpreports.netReport', compact('sales', 'total_sales_todate','total_payment','discount_amount_todate','discount_amount','percentage_discount','accounts','organization','from','to'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Sales Order', 'viewed sales order report', 'viewed sales order report in the system');
+    
+        return $pdf->stream('Sales List.pdf');
+
+  
+}
+
  public function sales_summary(){      
     $fileName = 'Summary Report.pdf';
 
@@ -1416,6 +1479,12 @@ public function kenya($id){
         return View::make('erpreports.selectSalesPeriod',compact('sales'));
     }
 
+    public function selectNetPeriod()
+    {
+        $sales = Erporder::all();
+        return View::make('erpreports.selectNetPeriod',compact('sales'));
+    }
+
     public function selectSalesComparisonPeriod(){
         $sales = Erporder::all();
         return View::make('erpreports.selectSalesComparisonPeriod', compact('sales'));
@@ -1576,7 +1645,7 @@ public function kenya($id){
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
                 ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
-                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount'))               
                 ->first();
 
     $discount_amount = DB::table('erporders')
@@ -1660,10 +1729,10 @@ public function kenya($id){
 
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
-                ->where('erporders.type','=','sales')  
-                ->where('erporders.status','!=','cancelled')                        
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                      
                 ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
-                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'))               
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount'))               
                 ->first();
 
     $discount_amount = DB::table('erporders')
@@ -1684,6 +1753,186 @@ public function kenya($id){
     $accounts = Account::all();
 
     $pdf = PDF::loadView('erpreports.dailySalesReport', compact('sales', 'total_sales_todate','total_payment','discount_amount_todate','discount_amount','percentage_discount','accounts','organization','from','to'))->setPaper('a4', 'landscape');
+
+    //return $pdf->stream('Sales Reports');
+
+
+    $pdf->save($filePath.$fileName);
+
+    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    {   
+    $message->from('info@lixnet.net', 'Gas Express');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Sales Report!');
+    $message->attach($filePath.$fileName);
+
+    
+});
+
+   unlink($filePath.$fileName);
+   echo 'Sales Report Successfully Sent!';
+    return $send_mail;
+    }
+
+public function sendMail_net(){
+        
+    $fileName = 'Net Profit Report.pdf';
+
+    $filePath = 'app/views/temp/';
+
+
+    $time = strtotime(date('Y-m-d').' 8:01:00');
+    $time1 = strtotime(date('Y-m-d').' 19:59:59');
+
+    $sdate = date('Y-m-d H:i:s',$time);
+
+    $stime = date('Y-m-d H:i:s',$time1);
+
+    $from = $sdate;
+    $to= $stime;
+
+    //echo $from.' - '.$to;
+
+
+   $sales = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                //->where('erporders.client_id', 17)
+                ->whereBetween('erporders.created_at', array($sdate, $stime))
+                ->groupBy("items.id")
+                ->select(DB::raw('erporders.id,client_id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
+                  erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
+                
+                ->get();
+
+
+                //return $sales;
+    
+    $total_payment= DB::table('payments')
+                ->join('clients', 'payments.client_id', '=', 'clients.id')
+                ->where('clients.type','=','Customer')
+                ->whereBetween('payments.created_at', array($sdate, $stime))
+                ->select(DB::raw('COALESCE(SUM(amount_paid),0) as amount_paid'))
+                
+                ->first();
+
+    $total_sales_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                      
+                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
+                ->first();
+
+    $discount_amount = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')        
+                ->whereBetween('erporders.created_at', array($sdate, $stime))                    
+                ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))               
+                ->first();
+
+    $discount_amount_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')            
+                ->whereBetween('erporders.created_at', array($sdate, $stime))              
+                ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))             
+                ->first();
+
+    $items = Item::all();
+    $locations = Location::all();
+    $organization = Organization::find(1);
+    $accounts = Account::all();
+
+    $pdf = PDF::loadView('erpreports.dailyNetReport', compact('sales', 'total_sales_todate','total_payment','discount_amount_todate','discount_amount','percentage_discount','accounts','organization','from','to'))->setPaper('a4', 'landscape');
+
+    //return $pdf->stream('Sales Reports');
+
+    $pdf->save($filePath.$fileName);
+
+    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    {   
+    $message->from('info@lixnet.net', 'Gas Express');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Net Profit Report!');
+    //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
+    $message->attach($filePath.$fileName);
+
+    
+});
+
+   unlink($filePath.$fileName);
+   echo 'Net Report Successfully Sent!';
+    return $send_mail;
+    }
+
+    public function sendMail_morning_net(){
+        
+    $fileName = 'Net Profit Report.pdf';
+
+    $filePath = 'app/views/temp/';
+
+
+    $time = strtotime(date('Y-m-d').' 20:00:00');
+    $time1 = strtotime(date('Y-m-d').' 8:00:00');
+
+    $sdate = date('Y-m-d H:i:s',$time);
+
+    $stime = date('Y-m-d H:i:s',$time1);
+
+    $from = $sdate;
+    $to= $stime;
+
+
+   $sales = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                //->where('erporders.client_id', 17)
+                ->whereBetween('erporders.created_at', array($sdate, $stime))
+                ->groupBy("items.id")
+                ->select(DB::raw('erporders.id,client_id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
+                  erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
+                
+                ->get();
+
+
+                //return $sales;
+    
+    $total_payment= DB::table('payments')
+                ->join('clients', 'payments.client_id', '=', 'clients.id')
+                ->where('clients.type','=','Customer')
+                ->whereBetween('payments.created_at', array($sdate, $stime))
+                ->select(DB::raw('COALESCE(SUM(amount_paid),0) as amount_paid'))
+                
+                ->first();
+
+    $total_sales_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                      
+                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
+                ->first();
+
+    $discount_amount = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')        
+                ->whereBetween('erporders.created_at', array($sdate, $stime))                    
+                ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))               
+                ->first();
+
+    $discount_amount_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')            
+                ->whereBetween('erporders.created_at', array($sdate, $stime))              
+                ->select(DB::raw('COALESCE(SUM(discount_amount),0) as discount_amount'))             
+                ->first();
+
+    $items = Item::all();
+    $locations = Location::all();
+    $organization = Organization::find(1);
+    $accounts = Account::all();
+
+    $pdf = PDF::loadView('erpreports.dailyNetReport', compact('sales', 'total_sales_todate','total_payment','discount_amount_todate','discount_amount','percentage_discount','accounts','organization','from','to'))->setPaper('a4', 'landscape');
 
     //return $pdf->stream('Sales Reports');
 

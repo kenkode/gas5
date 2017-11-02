@@ -113,7 +113,7 @@ function asMoney($value) {
 
   <div class="content" style='margin-top:70px;'>
    <!-- <div align="center"><strong>Sales Report as at {{date('d-M-Y')}}</strong></div><br> -->
-   <div align="center"><strong>Sales Report as from:  {{$from}} To:  {{$to}}</strong></div><br>
+   <div align="center"><strong>Net Profit as from:  {{$from}} To:  {{$to}}</strong></div><br>
 
     <table class="table table-bordered" border='1' cellspacing='0' cellpadding='0'>
 
@@ -122,39 +122,35 @@ function asMoney($value) {
 
 
         <th width='20'><strong># </strong></th>
-        <th><strong>Order Number </strong></th>
-        <th><strong>Customer Name </strong></th>
         <th><strong>Item Name </strong></th>
-        <th align="center"><strong>Quantity </strong></th>
-        <th align="right"><strong>Price </strong></th>
-        <th align="right"><strong>Discount </strong></th>
-        <th align="right"><strong>Total Amount </strong></th>
+        <th><strong>Quantity </strong></th>
+        <th><strong>Purchase Price </strong></th>
+        <th><strong>Selling Price </strong></th>
+        <th align="right"><strong>Profit </strong></th>
         
       </tr>
 
      
-      <?php $i =1; $total = 0; $discount=0; ?>
+      <?php $i =1; $total = 0; $discount=0; $profit = 0;$purchase_price=0; ?>
       @foreach($sales as $sales)
       
       <?php
 
       $total = $total + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)));
       $discount = $discount + Erporder::getDiscount($sales->clientid,$sales->itemid);
-
+      $profit = $profit + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid))-($sales->purchase_price * $sales->quantity));
+      $purchase_price = $purchase_price + ($sales->purchase_price * $sales->quantity);
       ?>
 
       <tr>
 
 
        <td td width='20'>{{$i}}</td>
-        <td> {{ $sales->order_number }}</td>
-        <td> {{ $sales->client }}</td>
         <td> {{ $sales->item }}</td>
-        <td align = "center"> {{ $sales->quantity }}</td>
-        <td align = "right"> {{asMoney($sales->price)}}</td>
-        <td align = "right"> {{asMoney(Erporder::getDiscount($sales->clientid,$sales->itemid))}}</td>
+        <td> {{ $sales->quantity }}</td>
+        <td align = "right"> {{ asMoney($sales->purchase_price * $sales->quantity) }}</td>
         <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)))}}</td>
-                     
+        <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid))-($sales->purchase_price * $sales->quantity))}}</td>    
         
         </tr>
       <?php $i++; ?>
@@ -164,14 +160,13 @@ function asMoney($value) {
 
 
     <tr>
-           <td></td>
+           
             <td></td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td><strong>Grand Total</strong></td>
-            <td align = "right"><strong>{{asMoney($total)}}</strong></td>
+            <td><strong>Net Profit</strong></td>
+            <td align = "right"><strong>{{asMoney($profit)}}</strong></td>
 
 
             
@@ -185,11 +180,10 @@ function asMoney($value) {
 
     </table>
 
-
 <div align="center" style="font-size: 20px !important">
 <table align="center">
   <tr>
-    <td style="font-size: 20px !important"><strong style="font-size: 20px !important">Cumulative Sales :</strong></td><td style="font-size: 20px !important"><strong style="font-size: 20px !important">{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount)}}</strong></td>
+    <td style="font-size: 20px !important"><strong style="font-size: 20px !important">Cumulative Net Profit :</strong></td><td style="font-size: 20px !important"><strong style="font-size: 20px !important">{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount - $total_sales_todate->total_purchase)}}</strong></td>
   </tr>
 </table>
 </div>
