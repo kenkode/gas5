@@ -3222,6 +3222,7 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
 
         $key = md5(uniqid());
 
+  $order->status = "cancelled";
   $order->cancelled_by = Confide::user()->id;
   $order->is_pending = 1;
   $order->update();
