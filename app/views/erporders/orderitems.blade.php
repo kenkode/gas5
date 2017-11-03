@@ -27,7 +27,7 @@ $(document).ready(function() {
              var rem = $("#qty").val()-$("#quantity").val();
              console.log(rem);
              if(rem<0){
-                //alert('We only have ' + data + ' of this item in stock');
+                alert('We only have ' + data + ' of this item in stock');
                 $(this).val(0);
              }else{
 
