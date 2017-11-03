@@ -138,8 +138,8 @@ function asMoney($value) {
       
       <?php
 
-      $total = $total + (($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)));
-      $discount = $discount + Erporder::getDiscount($sales->clientid,$sales->itemid);
+      $total = $total + (($sales->price * $sales->quantity)-($sales->client_discount));
+      $discount = $discount + $sales->client_discount;
 
       ?>
 
@@ -152,8 +152,8 @@ function asMoney($value) {
         <td> {{ $sales->item }}</td>
         <td align = "center"> {{ $sales->quantity }}</td>
         <td align = "right"> {{asMoney($sales->price)}}</td>
-        <td align = "right"> {{asMoney(Erporder::getDiscount($sales->clientid,$sales->itemid))}}</td>
-        <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-(Erporder::getDiscount($sales->clientid,$sales->itemid)))}}</td>
+        <td align = "right"> {{asMoney($sales->client_discount)}}</td>
+        <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-($sales->client_discount))}}</td>
                      
         
         </tr>

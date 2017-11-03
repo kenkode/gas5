@@ -441,7 +441,7 @@ public function kenya($id){
                 //->where('erporders.client_id', 17)
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -505,7 +505,7 @@ public function net(){
                 //->where('erporders.client_id', 17)
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
                 ->groupBy("items.id")
-                ->select(DB::raw('erporders.id,client_id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
+                ->select(DB::raw('erporders.id,client_id as clientid,COALESCE(SUM((erporderitems.client_discount/quantity)),0) as client_discount ,items.item_make as item,items.id as itemid,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
                 ->get();
@@ -1604,10 +1604,12 @@ public function net(){
 
     $time = strtotime(date('Y-m-d').' 8:01:00');
     $time1 = strtotime(date('Y-m-d').' 19:59:59');
+    $time2 = strtotime(date('Y-m-01').' 8:01:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
     $stime = date('Y-m-d H:i:s',$time1);
+    $stime1 = date('Y-m-d H:i:s',$time2);
 
     $from = $sdate;
     $to= $stime;
@@ -1623,7 +1625,7 @@ public function net(){
                 ->where('erporders.status','!=','cancelled') 
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -1644,7 +1646,7 @@ public function net(){
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
-                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
+                ->whereBetween('erporders.created_at', array($stime1, $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount'))               
                 ->first();
 
@@ -1695,10 +1697,12 @@ public function net(){
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
     $time1 = strtotime(date('Y-m-d').' 8:00:00');
+    $time2 = strtotime(date('Y-m-01').' 20:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
     $stime = date('Y-m-d H:i:s',$time1);
+    $stime1 = date('Y-m-d H:i:s',$time2);
 
     $from = $sdate;
     $to= $stime;
@@ -1712,7 +1716,7 @@ public function net(){
                 ->where('erporders.status','!=','cancelled') 
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -1731,7 +1735,7 @@ public function net(){
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
-                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
+                ->whereBetween('erporders.created_at', array($stime1, $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount'))               
                 ->first();
 
@@ -1782,10 +1786,13 @@ public function sendMail_net(){
 
     $time = strtotime(date('Y-m-d').' 8:01:00');
     $time1 = strtotime(date('Y-m-d').' 19:59:59');
+    $time2 = strtotime(date('Y-m-01').' 8:01:00');
+ 
 
     $sdate = date('Y-m-d H:i:s',$time);
 
     $stime = date('Y-m-d H:i:s',$time1);
+    $stime1 = date('Y-m-d H:i:s',$time2);
 
     $from = $sdate;
     $to= $stime;
@@ -1801,7 +1808,7 @@ public function sendMail_net(){
                 //->where('erporders.client_id', 17)
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->groupBy("items.id")
-                ->select(DB::raw('erporders.id,client_id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
+                ->select(DB::raw('erporders.id,client_id as clientid,COALESCE(SUM((erporderitems.client_discount/quantity)),0) as client_discount ,items.item_make as item,items.id as itemid,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
                 ->get();
@@ -1822,9 +1829,11 @@ public function sendMail_net(){
                 ->join('items', 'erporderitems.item_id', '=', 'items.id')
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
-                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
+                ->whereBetween('erporders.created_at', array($stime1, $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
                 ->first();
+
+    //return $total_sales_todate->total_purchase;
 
     $discount_amount = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')        
@@ -1873,10 +1882,12 @@ public function sendMail_net(){
 
     $time = strtotime(date('Y-m-d').' 20:00:00');
     $time1 = strtotime(date('Y-m-d').' 8:00:00');
+    $time2 = strtotime(date('Y-m-01').' 20:00:00');
 
     $sdate = date('Y-m-d H:i:s',$time);
 
     $stime = date('Y-m-d H:i:s',$time1);
+    $stime1 = date('Y-m-d H:i:s',$time2);
 
     $from = $sdate;
     $to= $stime;
@@ -1890,7 +1901,7 @@ public function sendMail_net(){
                 //->where('erporders.client_id', 17)
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->groupBy("items.id")
-                ->select(DB::raw('erporders.id,client_id as clientid,erporderitems.client_discount as percentage_discount,items.item_make as item,items.id as itemid,quantity,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
+                ->select(DB::raw('erporders.id,client_id as clientid,COALESCE(SUM((erporderitems.client_discount/quantity)),0) as client_discount ,items.item_make as item,items.id as itemid,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
                 ->get();
@@ -1911,7 +1922,7 @@ public function sendMail_net(){
                 ->join('items', 'erporderitems.item_id', '=', 'items.id')
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
-                ->whereBetween('erporders.created_at', array(date('Y-m-01'), $stime))  
+                ->whereBetween('erporders.created_at', array($stime2, $stime))  
                 ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
                 ->first();
 
