@@ -203,7 +203,7 @@ function asMoney($value) {
             <td></td>
             <td></td>
             <td></td>
-            <td align = "right" colspan="3"><strong>Cumulative Net Profit :</strong></td>
+            <td align = "right" colspan="3"><strong>Cumulative Gross Profit :</strong></td>
             <td align = "right"><strong>{{asMoney($profit)}}</strong></td>
         </tr>
        

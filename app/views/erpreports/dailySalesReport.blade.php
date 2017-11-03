@@ -203,7 +203,7 @@ function asMoney($value) {
             <td></td>
             <td></td>
             <td></td>
-            <td align = "right" colspan="3"><strong>Cumulative Net Profit :</strong></td>
+            <td align = "right" colspan="3"><strong>Cumulative Gross Profit :</strong></td>
             <td align = "right"><strong>{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount - $total_sales_todate->total_purchase)}}</strong></td>
         </tr>
        
