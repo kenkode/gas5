@@ -34,9 +34,7 @@
        <li>
             <a href="{{ URL::to('erpReports/selectSalesPeriod') }}">Sales Summary</a>
        </li>    
-       <li>
-            <a href="{{ URL::to('erpReports/selectNetPeriod') }}"> Net Profit</a>
-       </li>       
+             
 
        <li>
          <a href="{{ URL::to('erpReports/selectSalesComparisonPeriod') }}">Monthly Sales Comparison</a>

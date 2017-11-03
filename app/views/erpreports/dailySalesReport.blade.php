@@ -126,21 +126,24 @@ function asMoney($value) {
         <th><strong>Customer Name </strong></th>
         <th><strong>Item Name </strong></th>
         <th align="center"><strong>Quantity </strong></th>
-        <th align="right"><strong>Price </strong></th>
+        <th align="right"><strong>Purchase Price/Item </strong></th>
+        <th align="right"><strong>Selling Price/Item </strong></th>
         <th align="right"><strong>Discount </strong></th>
-        <th align="right"><strong>Total Amount </strong></th>
-        
+        <th align="right"><strong>Purchase Price </strong></th>
+        <th align="right"><strong>Selling Price </strong></th>
+        <th align="right"><strong>Net Profit </strong></th>
       </tr>
 
      
-      <?php $i =1; $total = 0; $discount=0; ?>
+      <?php $i =1; $total = 0; $discount=0; $profit=0; $purchase=0;?>
       @foreach($sales as $sales)
       
       <?php
 
       $total = $total + (($sales->price * $sales->quantity)-($sales->client_discount));
       $discount = $discount + $sales->client_discount;
-
+      $profit = $profit + (($sales->price * $sales->quantity)-($sales->client_discount)) - ($sales->purchase_price * $sales->quantity);
+      $purchase = $purchase + ($sales->purchase_price * $sales->quantity);
       ?>
 
       <tr>
@@ -151,11 +154,12 @@ function asMoney($value) {
         <td> {{ $sales->client }}</td>
         <td> {{ $sales->item }}</td>
         <td align = "center"> {{ $sales->quantity }}</td>
+        <td align = "right"> {{asMoney($sales->purchase_price)}}</td>
         <td align = "right"> {{asMoney($sales->price)}}</td>
         <td align = "right"> {{asMoney($sales->client_discount)}}</td>
+        <td align = "right"> {{asMoney($sales->purchase_price* $sales->quantity)}}</td>
         <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-($sales->client_discount))}}</td>
-                     
-        
+        <td align = "right"> {{ asMoney(($sales->price * $sales->quantity)-($sales->client_discount) - ($sales->purchase_price* $sales->quantity))}}</td>    
         </tr>
       <?php $i++; ?>
    
@@ -170,29 +174,51 @@ function asMoney($value) {
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
             <td><strong>Grand Total</strong></td>
+            <td align = "right"><strong>{{asMoney($purchase)}}</strong></td>
             <td align = "right"><strong>{{asMoney($total)}}</strong></td>
+            <td align = "right"><strong>{{asMoney($profit)}}</strong></td>
 
 
-            
-
-            
-            
-          
         </tr>
 
+        <tr>
+          <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td align = "right" colspan="3"><strong>Cumulative Sales :</strong></td>
+            <td align = "right"><strong>{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount)}}</strong></td>
+        </tr>
+
+         <tr>
+          <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td align = "right" colspan="3"><strong>Cumulative Net Profit :</strong></td>
+            <td align = "right"><strong>{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount - $total_sales_todate->total_purchase)}}</strong></td>
+        </tr>
        
 
     </table>
 
 
-<div align="center" style="font-size: 20px !important">
+
+<!-- <div align="center" style="font-size: 20px !important">
 <table align="center">
   <tr>
     <td style="font-size: 20px !important"><strong style="font-size: 20px !important">Cumulative Sales :</strong></td><td style="font-size: 20px !important"><strong style="font-size: 20px !important">{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount)}}</strong></td>
   </tr>
 </table>
-</div>
+</div> -->
    
 </div>
 

@@ -442,7 +442,7 @@ public function kenya($id){
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
                 ->orderBy('erporders.order_number', 'Desc')
                 ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
-                  clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,
+                  clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
                 ->get();
@@ -1626,7 +1626,7 @@ public function net(){
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
                 ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
-                  clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,
+                  clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
                 ->get();
@@ -1644,10 +1644,11 @@ public function net(){
 
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
                 ->whereBetween('erporders.created_at', array($stime1, $stime))  
-                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount'))               
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
                 ->first();
 
     $discount_amount = DB::table('erporders')
@@ -1717,7 +1718,7 @@ public function net(){
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
                 ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
-                  clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,
+                  clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
                 ->get();
@@ -1733,10 +1734,11 @@ public function net(){
 
     $total_sales_todate = DB::table('erporders')
                 ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
                 ->where('erporders.type','=','sales')    
                 ->where('erporders.status','!=','cancelled')                      
                 ->whereBetween('erporders.created_at', array($stime1, $stime))  
-                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount'))               
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
                 ->first();
 
     $discount_amount = DB::table('erporders')
