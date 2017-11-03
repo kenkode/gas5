@@ -3996,16 +3996,12 @@ Route::get('api/getmax', function(){
     $id = Input::get('option');
 
     $stock_in = DB::table('stocks')
-    ->join("erporderitems","erporderitems.erporder_id","=","stocks.item_id")
-    ->join("items","erporderitems.item_id","=","items.id")
-    ->where('items.id', $id)
+    ->where('itm_id', $id)
     ->where('stocks.is_confirmed', '=', 1)
     ->sum('quantity_in');
 
     $stock_out = DB::table('stocks')
-    ->join("erporderitems","erporderitems.erporder_id","=","stocks.item_id")
-    ->join("items","erporderitems.item_id","=","items.id")
-    ->where('items.id', $id)
+    ->where('itm_id', $id)
     ->where('stocks.is_confirmed', '=', 1)
     ->sum('quantity_out');
     return $stock_in-$stock_out;
