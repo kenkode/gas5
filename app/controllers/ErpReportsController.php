@@ -2397,7 +2397,7 @@ public function sendMail_net(){
     $message->from('info@lixnet.net', 'Gas Express');
 
     
-    $message->to('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Stock Report!');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('wangoken2@gmail.com', 'Ken Wango')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->subject('Daily Stock Report!');
 
     
     $message->attach($filePath.$fileName);
