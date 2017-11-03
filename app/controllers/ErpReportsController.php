@@ -504,7 +504,7 @@ public function net(){
                 ->where('erporders.status','!=','cancelled') 
                 //->where('erporders.client_id', 17)
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
-                ->groupBy("items.id")
+                ->groupBy("items.id","client_id")
                 ->select(DB::raw('erporders.id,client_id as clientid,COALESCE(SUM((erporderitems.client_discount/quantity)),0) as client_discount ,items.item_make as item,items.id as itemid,erporders.id as id,erporders.status,purchase_price,SUM(quantity) as quantity,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
