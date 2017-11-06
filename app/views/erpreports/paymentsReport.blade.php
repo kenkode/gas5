@@ -35,7 +35,7 @@ th,td{
 
 
 table, tr, td, th, tbody, thead, tfoot {
-    page-break-after: auto !important;
+    page-break-after: always !important;
 }
 
 th {
