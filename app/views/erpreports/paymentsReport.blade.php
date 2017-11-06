@@ -41,7 +41,7 @@ th,td{
 
 .table {
   width: 100%;
-   margin-bottom: 20px;
+   margin-bottom: 30px;
    page-break-inside:auto !important
 }
 hr {
@@ -119,7 +119,7 @@ body {
    </div>
 
 
-	<div class="content" style='margin-top:0px; page-break-after:always;'>
+	<div class="content" style='margin-top:0px;'>
    <!-- <div align="center"><strong>Payment Report as at {{date('d-M-Y')}}</strong></div><br> -->
    @if($from != null)
    <div align="center"><strong>Payments Report as at {{$from}} To:  {{$to}} </strong></div><br>
