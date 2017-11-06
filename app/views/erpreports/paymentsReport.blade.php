@@ -34,7 +34,9 @@ th,td{
 }
 
 
-
+table, tr, td, th, tbody, thead, tfoot {
+    page-break-inside: auto !important;
+}
 
 th {
   text-align: left;
@@ -46,7 +48,7 @@ th,td{
 
 .table {
   width: 100%;
-   margin-bottom: 50px;
+   margin-bottom: 20px;
 }
 hr {
   margin-top: 1px;
