@@ -25,8 +25,7 @@ table {
   background-color: transparent;
 }
 
-table { page-break-inside:auto !important}
-tr    { page-break-inside:avoid !important; page-break-after:auto !important }
+tr    { page-break-inside:avoid !important; page-break-after:always !important }
 
 th,td{
   padding: 2px 7px !important;
@@ -43,6 +42,7 @@ th,td{
 .table {
   width: 100%;
    margin-bottom: 20px;
+   page-break-inside:auto !important
 }
 hr {
   margin-top: 1px;
