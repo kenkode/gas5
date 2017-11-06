@@ -119,7 +119,7 @@ body {
    </div>
 
 
-	<div class="content" style='margin-top:0px;'>
+	<div class="content" style='margin-top:0px; page-break-after:always;'>
    <!-- <div align="center"><strong>Payment Report as at {{date('d-M-Y')}}</strong></div><br> -->
    @if($from != null)
    <div align="center"><strong>Payments Report as at {{$from}} To:  {{$to}} </strong></div><br>
