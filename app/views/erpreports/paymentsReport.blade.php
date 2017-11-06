@@ -25,8 +25,8 @@ table {
   background-color: transparent;
 }
 
-table { page-break-inside:auto }
-tr    { page-break-inside:avoid; page-break-after:auto }
+table { page-break-inside:auto !important}
+tr    { page-break-inside:avoid !important; page-break-after:auto !important }
 
 th,td{
   padding: 2px 7px !important;
