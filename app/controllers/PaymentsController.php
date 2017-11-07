@@ -279,12 +279,12 @@ class PaymentsController extends \BaseController {
 	{
 		$payment = Payment::findOrFail($id);
 
-		$validator = Validator::make($data = Input::all(), Payment::$rules, Payment::$messages);
+		/*$validator = Validator::make($data = Input::all(), Payment::$rules, Payment::$messages);
 
 		if ($validator->fails())
 		{
 			return Redirect::back()->withErrors($validator)->withInput();
-		}
+		}*/
 
 		//$payment->erporder_id = Input::get('order');
 		$payment->amount_paid = Input::get('amount');
@@ -295,10 +295,16 @@ class PaymentsController extends \BaseController {
 		$payment->update();
 
 		$erporder = Erporder::find(Input::get('order'));
-		$client = Client::find($erporder->client_id);
+		$client = Client::find($payment->client_id);
 
-		Audit::logaudit('Payments', 'updated payment', 'updated payment for client '.$client->name.', order number '.$$erporder->order_number.', amount '.Input::get('amount').' in the system');
-
+        if(count($erporder) > 0){
+        $erporder = Erporder::find(Input::get('order'));
+		$client = Client::find($payment->client_id);
+		Audit::logaudit('Payments', 'updated payment', 'updated payment for client '.$client->name.', order number '.$erporder->order_number.', amount '.Input::get('amount').' in the system');
+        }else{
+		$client = Client::find($payment->client_id);
+        	Audit::logaudit('Payments', 'updated payment', 'updated payment for client '.$client->name.', amount '.Input::get('amount').' in the system');
+        }
 		return Redirect::route('payments.index')->withFlashMessage('Payment successfully updated!');
 	}
 

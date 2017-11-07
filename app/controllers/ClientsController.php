@@ -79,6 +79,74 @@ class ClientsController extends \BaseController {
 		/*$client->percentage_discount = Input::get('percentage_discount');*/
 		$client->save();
 
+        if(Input::get('balance') > 0 && Input::get('balance') != ""){
+		$payment = new Payment;
+        if(Input::get('type') === 'Customer'){
+		$client = Client::findOrFail($client->id);
+     	}else{
+     	$client = Client::findOrFail($client->id);	
+     	}
+		if(Input::get('type') === 'Customer'){
+		$payment->client_id = $client->id;
+	    }else{
+        $payment->client_id = $client->id;
+	    }
+		$payment->amount_paid = Input::get('balance');
+		$payment->paymentmethod_id = 1;
+		$payment->account_id = 1;
+		$payment->prepared_by = Confide::user()->id;
+		$payment->payment_date = date("Y-m-d");
+		$prepared_by = Confide::user()->id;
+
+		$payment->save();
+
+		$id= $payment->id;
+
+		$client = Client::findOrFail($client->id);
+		$client->payment_id = $payment->id;
+		$client->update();
+ 		
+		if(Input::get('type') === 'Customer'){
+			Account::where('id', Input::get('paymentmethod'))->increment('balance', Input::get('balance'));	
+		} else{
+			Account::where('id', Input::get('paymentmethod'))->decrement('balance', Input::get('balance'));
+		}
+
+		if (! Entrust::can('confirm_payments') ) // Checks the current user
+        {
+
+        $users = DB::table('roles')
+		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
+		->join('users', 'assigned_roles.user_id', '=', 'users.id')
+		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
+		->select("users.id","email","username")
+		->where("permission_id",29)->get();
+
+		$key = md5(uniqid());
+
+		
+
+		foreach ($users as $user) {
+
+        if(Input::get('type') === 'Customer'){
+		Notification::notifyUser($user->id,"Hello, Approval to receive payment is required","payment","notificationshowpayment/".$prepared_by."/".$user->id."/".$key."/".$id,$key);
+        }else{
+        	Notification::notifyUser($user->id,"Hello, Approval for purchase payment is required","payment","notificationshowpayment/".$prepared_by."/".$user->id."/".$key."/".$id,$key);
+        }
+        }
+
+        Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', amount '.Input::get('balance').' but awaiting approval in the system');
+        }else{
+
+        $p = Payment::find($id);
+        $p->confirmed_id = Confide::user()->id;
+        $p->is_approved = 1;
+        $p->update();
+
+        Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', amount '.Input::get('balance').' in the system');
+        }
+        }
+
 		Audit::logaudit('Clients', 'created a client', 'created client '.Input::get('name').' in the system');
 
 		return Redirect::route('clients.index')->withFlashMessage('Client successfully created!');
@@ -171,6 +239,76 @@ class ClientsController extends \BaseController {
 		// $client->save();
 
 		$client->update();
+
+		if(Input::get('balance') > 0 && Input::get('balance') != ""){
+		if($client->payment_id == 0 || $client->payment_id == null){
+		$payment = new Payment;
+        if(Input::get('type') === 'Customer'){
+		$client = Client::findOrFail($client->id);
+     	}else{
+     	$client = Client::findOrFail($client->id);	
+     	}
+		if(Input::get('type') === 'Customer'){
+		$payment->client_id = $client->id;
+	    }else{
+        $payment->client_id = $client->id;
+	    }
+		$payment->amount_paid = Input::get('balance');
+		$payment->paymentmethod_id = 1;
+		$payment->account_id = 1;
+		$payment->prepared_by = Confide::user()->id;
+		$payment->payment_date = date("Y-m-d");
+		$prepared_by = Confide::user()->id;
+
+		$payment->save();
+
+		$id= $payment->id;
+
+		$client = Client::findOrFail($client->id);
+		$client->payment_id = $payment->id;
+		$client->update();
+		
+		if(Input::get('type') === 'Customer'){
+			Account::where('id', Input::get('paymentmethod'))->increment('balance', Input::get('balance'));	
+		} else{
+			Account::where('id', Input::get('paymentmethod'))->decrement('balance', Input::get('balance'));
+		}
+
+		if (! Entrust::can('confirm_payments') ) // Checks the current user
+        {
+
+        $users = DB::table('roles')
+		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
+		->join('users', 'assigned_roles.user_id', '=', 'users.id')
+		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
+		->select("users.id","email","username")
+		->where("permission_id",29)->get();
+
+		$key = md5(uniqid());
+
+		
+
+		foreach ($users as $user) {
+
+        if(Input::get('type') === 'Customer'){
+		Notification::notifyUser($user->id,"Hello, Approval to receive payment is required","payment","notificationshowpayment/".$prepared_by."/".$user->id."/".$key."/".$id,$key);
+        }else{
+        	Notification::notifyUser($user->id,"Hello, Approval for purchase payment is required","payment","notificationshowpayment/".$prepared_by."/".$user->id."/".$key."/".$id,$key);
+        }
+        }
+
+        Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', amount '.Input::get('balance').' but awaiting approval in the system');
+        }else{
+
+        $p = Payment::find($id);
+        $p->confirmed_id = Confide::user()->id;
+        $p->is_approved = 1;
+        $p->update();
+
+        Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', amount '.Input::get('balance').' in the system');
+        }
+        }
+        }
 
 		Audit::logaudit('Clients', 'updated a client', 'updated client '.Input::get('name').' in the system');
 

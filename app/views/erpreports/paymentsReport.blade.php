@@ -41,7 +41,7 @@ th,td{
 
 .table {
   width: 100%;
-   margin-bottom: 30px;
+   margin-bottom: 20px;
    page-break-inside:auto !important
 }
 hr {

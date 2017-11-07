@@ -41,12 +41,12 @@
         
 
         
-
+        @if(count($erporder))
         <div class="form-group">
             <label for="username">Order<span style="color:red">*</span> :</label>
             <input class="form-control" placeholder="" type="text" name="order" id="order" value="{{$erporder->order_number.' : '.$erporder->item_make}}" readonly="" required>
         </div>
-
+        @endif
         <div class="form-group">
             <label for="username">Amount Paid<span style="color:red">*</span> :</label>
             <input class="form-control" placeholder="" type="text" name="amount" id="amount" value="{{$payment->amount_paid}}" required>
