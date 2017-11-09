@@ -259,8 +259,9 @@ class PricesController extends \BaseController {
 
 		$i = Item::find(Input::get('item'));
         $client = Client::find(Input::get('client'));
+        $user = DB::table("users")->where("id",Input::get('confirmer'))->first();
 
-        $notification = Notification::where('confirmation_code',$key)->first();
+        $notification = Notification::where('confirmation_code',Input::get('key'))->first();
 		$notification->is_read = 1;
 		$notification->update();
 

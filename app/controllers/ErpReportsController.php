@@ -2134,7 +2134,7 @@ public function sendMail_net(){
 
     
      
-     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('wangoken2@gmail.com', 'Victor Kotonya')->subject('Daily Summary Report');
+     $message->to('wangoken2@gmail.com', 'Victor Kotonya')->subject('Daily Summary Report');
 
     
     $message->attach($filePath.$fileName);

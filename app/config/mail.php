@@ -28,7 +28,7 @@ return array(
 	|
 	*/
 
-	'host' => 'mail.lixnet.net',
+	'host' => 'mail.gx.co.ke',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ return array(
 	|
 	*/
 
-	'from' => array('address' => 'info@lixnet.net', 'name' => 'Gas Express'), 
+	'from' => array('address' => 'info@gx.co.ke', 'name' => 'Gas Express'), 
 
 	/*
 	|--------------------------------------------------------------------------
@@ -80,7 +80,7 @@ return array(
 	|
 	*/
 
-	'username' => 'info@lixnet.net',
+	'username' => 'info@gx.co.ke',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -93,7 +93,7 @@ return array(
 	|
 	*/
 
-	'password' => 'lixnetco2015',
+	'password' => 'gasexpress2017',
 
 	/*
 	|--------------------------------------------------------------------------
