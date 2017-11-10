@@ -842,7 +842,7 @@ public function net(){
 
         // SEND MAIL
         $from_name = 'Gas Express';
-        $from_mail = "info@lixnet.net";
+        $from_mail = "info@gx.co.ke";
         $data = array('body'=>$mail_body, 'from'=>$from_name, 'subject'=>$subject);
         Mail::send('mails.mail_po', $data, function($message) use($subject, $mail_to, $from_name, $from_mail, $attach, $filePath, $fileName){
             $message->to($mail_to, '');
@@ -914,7 +914,7 @@ public function net(){
 
         $send_mail = Mail::send('emails.submitpurchase', array('name' => $user->username, 'username' => $username,'orders' => $orders,'txorders' => $txorders,'count' => $count,'erporder' => $erporder,'organization' => $organization,'id' => $id), function($message) use($email)
         {   
-            $message->from('info@lixnet.net', 'Gas Express');
+            $message->from('info@gx.co.ke', 'Gas Express');
             $message->to($email, 'Gas Express')->subject('Purchase Order Approval!');
 
     
@@ -977,7 +977,7 @@ public function net(){
         }
         /*$send_mail = Mail::send('emails.authorizepurchase', array('name' => 'Victor Kotonya', 'username' => $username,'orders' => $orders,'txorders' => $txorders,'count' => $count,'erporder' => $erporder,'organization' => $organization,'id' => $id), function($message)
         {   
-            $message->from('info@lixnet.net', 'Gas Express');
+            $message->from('info@gx.co.ke', 'Gas Express');
             $message->to('wangoken2@gmail.com', 'Gas Express')->subject('Purchase Order Authorization!');
 
     
@@ -1039,7 +1039,7 @@ public function net(){
 
         $send_mail = Mail::send('emails.reviewpurchase', array('name' => $user->username, 'username' => $username,'orders' => $orders,'txorders' => $txorders,'count' => $count,'erporder' => $erporder,'organization' => $organization,'id' => $id), function($message) use($email)
         {   
-            $message->from('info@lixnet.net', 'Gas Express');
+            $message->from('info@gx.co.ke', 'Gas Express');
             $message->to($email, 'Gas Express')->subject('Purchase Order Authorization!');
 
     
@@ -1577,7 +1577,7 @@ public function net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Price List Report!');
@@ -1676,7 +1676,7 @@ public function net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Sales Report!');
     //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
@@ -1767,7 +1767,7 @@ public function net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
 
@@ -1862,7 +1862,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Net Profit Report!');
     //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
@@ -1954,7 +1954,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Net Profit Report!');
     $message->attach($filePath.$fileName);
 
@@ -2031,7 +2031,7 @@ public function sendMail_net(){
         $pdf->save($filePath.$fileName);
 
         $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName){   
-            $message->from('info@lixnet.net', 'Gas Express');
+            $message->from('info@gx.co.ke', 'Gas Express');
             $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Daily General Report!');
             $message->attach($filePath.$fileName);
         });
@@ -2130,7 +2130,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
      
@@ -2187,11 +2187,11 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Daily Purchases Report!');
-   /* $message->to('info@lixnet.net', 'Gas Express')->subject('Daily Purchases Report!');*/
+   /* $message->to('info@gx.co.ke', 'Gas Express')->subject('Daily Purchases Report!');*/
     
     $message->attach($filePath.$fileName);
 
@@ -2230,7 +2230,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Daily Expenses Report!');
@@ -2292,7 +2292,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Payments Report!');
@@ -2348,7 +2348,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Payments Report!');
@@ -2394,7 +2394,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('wangoken2@gmail.com', 'Ken Wango')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->subject('Daily Stock Report!');
@@ -2440,7 +2440,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('wangoken2@gmail.com', 'Ken Wango')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->subject('Daily Stock Report!');
@@ -2481,7 +2481,7 @@ public function sendMail_net(){
 
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
-    $message->from('info@lixnet.net', 'Gas Express');
+    $message->from('info@gx.co.ke', 'Gas Express');
 
     
     $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->subject('Daily Accounts Report!');
