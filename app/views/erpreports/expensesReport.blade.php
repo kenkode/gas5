@@ -109,7 +109,7 @@ body {
      <p class="page">Page <?php $PAGE_NUM; ?></p>
    </div>
 
-
+ <br><br>
   <div class="content" style='margin-top:0px;'>
    <!-- <div align="center"><strong>Expenditure Report as at {{date('d-M-Y')}}</strong></div><br> -->
    <div align="center"><strong>Expense Report as from:  {{$from}} To:  {{$to}}</strong></div><br>
@@ -140,29 +140,32 @@ body {
         <td> {{ $expense->date }}</td>
         <td> {{ $expense->name }}</td>        
         <td> {{ $expense->type }}</td>
-        <td> {{ asMoney($expense->amount) }}</td>
+        <td align="right"> {{ asMoney($expense->amount) }}</td>
         <!-- <td> {{ $expense->account->name }}</td> -->        
         </tr>
       <?php $i++; $total=$total + $expense['amount'];?>
    
     @endforeach
 
-    <tr>
-    <td >  </td>
-    <td >  </td>
-    <td >  </td>
-    <td >  </td>
-    <td >  </td>
-
-    </tr>
+  
     <tr>
     <td colspan="3"></td>
     
     
     
     
-      <td><b>Total Expense: </td><td></b><b> {{asMoney($total)}}</b></td></tr>
-   
+      <td><b>Total Expense: </td><td align="right"></b><b> {{asMoney($total)}}</b></td></tr>
+   <tr>
+          <td colspan="3"></td>
+            <td><strong>Cumulative Expenses :</strong></td>
+            <td align = "right"><strong>{{asMoney($total_expenses_todate)}}</strong></td>
+        </tr>
+
+         <tr>
+          <td colspan="3"></td>
+            <td><strong>Cumulative Net Profit :</strong></td>
+            <td align = "right"><strong>{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount - $total_sales_todate->total_purchase - $total_expenses_todate)}}</strong></td>
+        </tr>
 </table>
 <br><br>
 

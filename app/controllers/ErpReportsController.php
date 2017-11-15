@@ -82,11 +82,23 @@ public function kenya($id){
 
         $expenses = Expense::whereBetween('date', array(Input::get("from"), Input::get("to")))->get();
 
+        
+        $total_sales_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                        
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))  
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))
+                ->first();
+
+        $total_expenses_todate = Expense::whereBetween('date', array(Input::get("from"), Input::get("to")))->sum("amount");
+
         $organization = Organization::find(1);
 
-        $pdf = PDF::loadView('erpreports.expensesReport', compact('expenses', 'organization','from','to'))->setPaper('a4');
+        $pdf = PDF::loadView('erpreports.expensesReport', compact('expenses', 'organization','from','to','total_sales_todate','total_expenses_todate'))->setPaper('a4');
 
-        Audit::logaudit('Client', 'viewed expenses report', 'viewed expenses report in the system');
+        Audit::logaudit('Expense', 'viewed expenses report', 'viewed expenses report in the system');
     
         return $pdf->stream('Expense List.pdf');
         
