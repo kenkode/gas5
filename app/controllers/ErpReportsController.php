@@ -1779,6 +1779,128 @@ public function net(){
     return $send_mail;
     }
 
+    public function sendMail_expenses(){
+
+        $fileName = 'Expense Report.pdf';
+
+        $filePath = 'app/views/temp/';
+
+        $time = strtotime(date('Y-m-d').' 8:01:00');
+        $time1 = strtotime(date('Y-m-d').' 19:59:59');
+        $time2 = strtotime(date('Y-m-01').' 00:00:00');
+     
+
+        $sdate = date('Y-m-d H:i:s',$time);
+
+        $stime = date('Y-m-d H:i:s',$time1);
+        $stime1 = date('Y-m-d H:i:s',$time2);
+
+        $from = $sdate;
+        $to= $stime;
+
+
+    $total_sales_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                      
+                ->whereBetween('erporders.created_at', array($stime1, $stime))  
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
+                ->first();
+
+    $total_expenses_todate = Expense::whereBetween('created_at', array($stime1, $stime))->sum("amount");
+
+
+        $expenses = Expense::whereBetween('created_at', array($from, $to))->get();
+
+        $organization = Organization::find(1);
+
+        $pdf = PDF::loadView('erpreports.dailyExpensesReport', compact('expenses', 'organization','from','to', 'total_sales_todate','total_expenses_todate'))->setPaper('a4');   
+        
+
+    $pdf->save($filePath.$fileName);
+
+    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    {   
+    $message->from('info@gx.co.ke', 'Gas Express');
+
+    
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Expenses Report!');
+
+
+
+    
+    $message->attach($filePath.$fileName);
+
+    
+});
+
+   unlink($filePath.$fileName);
+   echo 'Expenses Report Successfully Sent!';
+    return $send_mail;
+        
+    }
+
+    public function sendMail_morning_expenses(){
+
+        $fileName = 'Expense Report.pdf';
+
+        $filePath = 'app/views/temp/';
+
+        $time = strtotime(date('Y-m-d').' 20:00:00');
+        $time1 = strtotime(date('Y-m-d').' 8:00:00');
+        $time2 = strtotime(date('Y-m-01').' 00:00:00');
+
+        $sdate = date('Y-m-d H:i:s',$time);
+
+        $stime = date('Y-m-d H:i:s',$time1);
+        $stime1 = date('Y-m-d H:i:s',$time2);
+
+        $from = $sdate;
+        $to= $stime;
+
+        $expenses = Expense::whereBetween('created_at', array($from, $to))->get();
+
+        $total_sales_todate = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->where('erporders.type','=','sales')    
+                ->where('erporders.status','!=','cancelled')                      
+                ->whereBetween('erporders.created_at', array($stime1, $stime))  
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales, COALESCE(SUM(client_discount/quantity),0) as total_dicount,COALESCE(SUM(quantity*purchase_price),0) as total_purchase'))               
+                ->first();
+
+    $total_expenses_todate = Expense::whereBetween('created_at', array($stime1, $stime))->sum("amount");
+
+        $organization = Organization::find(1);
+
+        $pdf = PDF::loadView('erpreports.dailyExpensesReport', compact('expenses', 'organization','from','to', 'total_sales_todate','total_expenses_todate'))->setPaper('a4');   
+        
+
+    $pdf->save($filePath.$fileName);
+
+    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    {   
+    $message->from('info@gx.co.ke', 'Gas Express');
+
+    
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Expenses Report!');
+
+
+
+    
+    $message->attach($filePath.$fileName);
+
+    
+});
+
+   unlink($filePath.$fileName);
+   echo 'Expenses Report Successfully Sent!';
+    return $send_mail;
+        
+    }
+
+
 public function sendMail_net(){
         
     $fileName = 'Net Profit Report.pdf';
@@ -2203,7 +2325,7 @@ public function sendMail_net(){
     return $send_mail;
     }
 
-    public function sendMail_expenses(){
+    /*public function sendMail_expenses(){
         
     $fileName = 'Expenses Report.pdf';
 
@@ -2246,7 +2368,7 @@ public function sendMail_net(){
    unlink($filePath.$fileName);
    echo 'Expenses Report Successfully Sent!';
     return $send_mail;
-    }
+    }*/
 
 
 

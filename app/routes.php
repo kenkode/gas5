@@ -4057,11 +4057,12 @@ Route::get('api/getmax', function(){
 Route::get('email/send', 'ErpReportsController@sendMail');
 Route::get('email/send_sales', 'ErpReportsController@sendMail_sales');
 Route::get('email/send_morning_sales', 'ErpReportsController@sendMail_morning_sales');
+Route::get('email/send_expenses', 'ErpReportsController@sendMail_expenses');
+Route::get('email/send_morning_expenses', 'ErpReportsController@sendMail_morning_expenses');
 Route::get('email/send_net', 'ErpReportsController@sendMail_net');
 Route::get('email/send_morning_net', 'ErpReportsController@sendMail_morning_net');
 Route::get('email/send_sales_summary', 'ErpReportsController@sendMail_sales_summary');
 Route::get('email/send_purchases', 'ErpReportsController@sendMail_purchases');
-Route::get('email/send_expenses', 'ErpReportsController@sendMail_expenses');
 Route::get('email/send_payments', 'ErpReportsController@sendMail_payments');
 Route::get('email/send_morning_payments', 'ErpReportsController@sendMail_morning_payments');
 Route::get('email/send_stock', 'ErpReportsController@sendMail_stock');
