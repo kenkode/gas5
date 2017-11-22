@@ -19,4 +19,16 @@ public static $messages = array(
 		return $this->hasMany('Employee');
 	}
 
+	public function bankbranch(){
+
+		return $this->hasMany('BBranch');
+	}
+
+	public static function getName($id){
+	        if($id > 0){
+			$bank = Bank::find($id);
+	        return $bank->bank_name;
+	        }
+	}
+
 }

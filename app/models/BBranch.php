@@ -23,4 +23,14 @@ public static $messages = array(
 		return $this->hasMany('Employee');
 	}
 
+    public function bank(){
+         return $this->belongsTo('Bank');
+    }
+
+    public static function getName($id){
+        if($id > 0){
+		$bbranch = BBranch::find($id);
+        return $bbranch->bank_branch_name;
+    }
+	}
 }

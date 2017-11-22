@@ -1,5 +1,24 @@
 @extends('layouts.organization')
 @section('content')
+
+{{HTML::script('media/jquery-1.8.0.min.js') }}
+
+<script type="text/javascript">
+$(document).ready(function() {
+$('#bank_id').change(function(){
+        $.get("{{ url('api/getbankbranches')}}", 
+        { option: $(this).val() }, 
+        function(data) {
+            $('#bbranch_id').empty(); 
+            $('#bbranch_id').append("<option>----------------select Bank Branch--------------------</option>");
+            $.each(data, function(key, element) {
+            $('#bbranch_id').append("<option value='" + key +"'>" + element + "</option>");
+            });
+        });
+    });
+});
+</script>
+
 <br/><br/>
 
 <div class="row">
@@ -194,7 +213,7 @@
        
                     <div class="form-group">
                         <label>Bank</label>
-                        <select name="bank_id" class="form-control">
+                        <select name="bank_id" id="bank_id" class="form-control">
                             <option></option>
                             @foreach($banks_db as $bank)
                             <option value="{{ $bank->id }}"<?= ($organization->bank_id==$bank->id)?'selected="selected"':''; ?>> {{ $bank->bank_name }}</option>
@@ -207,7 +226,7 @@
                       
                      <div class="form-group">
                         <label >Bank Branch</label>
-                        <select name="bbranch_id" class="form-control">
+                        <select name="bbranch_id" id="bbranch_id" class="form-control">
                             <option></option>
                             @foreach($bbranches_db as $bbranch)
                             <option value="{{$bbranch->id }}"<?= ($organization->bank_branch_id==$bbranch->id)?'selected="selected"':''; ?>> {{ $bbranch->bank_branch_name }}</option>
@@ -216,6 +235,7 @@
                         </select>
                 
                     </div>
+
 
         <div class="form-group">
             <label > Bank Account Number</label>

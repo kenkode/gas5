@@ -142,6 +142,16 @@ $('.datepicker21').datepicker({
 });
 </script>
 
+<script type="text/javascript">
+$(function(){
+$('.datepicker22').datepicker({
+    format: "yyyy-mm-dd",
+    startDate: '+0d',
+    autoclose: true
+});
+});
+</script>
+
 
 
 <script language="javascript" type="text/javascript"> 

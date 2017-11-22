@@ -78,7 +78,7 @@ request.send();
                         <label for="username">Date</label>
                         <div class="right-inner-addon ">
                         <i class="glyphicon glyphicon-calendar"></i>
-                        <input class="form-control datepicker"  readonly="readonly" placeholder="" type="text" name="date" id="date" value="{{date('Y-M-d')}}">
+                        <input class="form-control"  readonly="readonly" placeholder="" type="text" name="date" id="date" value="{{date('Y-M-d')}}">
                         </div>
           </div>
 
@@ -105,7 +105,13 @@ request.send();
             </select>
         </div>
 
-        
+        <div class="form-group">
+                        <label for="username">Credit Period</label>
+                        <div class="right-inner-addon ">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                        <input class="form-control datepicker22"  readonly="readonly" placeholder="" type="text" name="credit_period" id="credit_period" value="{{date('Y-M-d')}}">
+                        </div>
+          </div>
 
         <div class="form-actions form-group">
         

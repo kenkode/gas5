@@ -82,6 +82,9 @@ function asMoney($value) {
        <td>Contact Person Phone Number</td><td>{{$client->contact_person_phone}}</td>
      </tr>
      <tr>
+       <td>Credit Limit</td><td>{{number_format($client->credit_limit,2)}}</td>
+     </tr>
+     <tr>
        <td>Type</td><td>{{$client->type}}</td>
      </tr>
 

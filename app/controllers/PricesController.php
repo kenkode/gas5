@@ -203,9 +203,11 @@ class PricesController extends \BaseController {
 
 		$client = Client::find($client);
 
-		$notification = Notification::where('confirmation_code',$key)->first();
-		$notification->is_read = 1;
-		$notification->update();
+		$notifications = Notification::where('confirmation_code',$key)->get();
+	    foreach ($notifications as $notification) {
+	    $notification->is_read = 1;
+	    $notification->update();
+	    }
 
 		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->username.' in the system');
 
@@ -261,9 +263,11 @@ class PricesController extends \BaseController {
         $client = Client::find(Input::get('client'));
         $user = DB::table("users")->where("id",Input::get('confirmer'))->first();
 
-        $notification = Notification::where('confirmation_code',Input::get('key'))->first();
-		$notification->is_read = 1;
-		$notification->update();
+        $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
+	    foreach ($notifications as $notification) {
+	    $notification->is_read = 1;
+	    $notification->update();
+	    }
 
 		Audit::logaudit('Prices', 'approved client discount price updated', 'approved client discount price updated for client '.$client->name.' item '.$i->item_make.' updated by user '.$user->username.' in the system');
 

@@ -61,6 +61,11 @@
             <input class="form-control" placeholder="" type="text" name="mobile_phone" id="mobile_phone" value="{{$client->contact_person_phone}}">
         </div>
 
+        <div class="form-group">
+            <label for="username">Credit Limit:</label>
+            <input class="form-control" placeholder="" type="text" name="credit_limit" id="credit_limit" value="{{$client->credit_limit}}">
+        </div>
+
         <!-- <div class="form-group">
         	<label for="username">Type</label><span style="color:red">*</span> :
            <select name="type" class="form-control" required>

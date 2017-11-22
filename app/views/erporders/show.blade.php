@@ -60,7 +60,7 @@ $(document).ready(function(){
 
 <br><div class="row">
     <div class="col-lg-12">
-  <h4><font color='green'>Sales Order : {{$order->order_number}} &emsp;| &emsp;&emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}} </font> </h4>
+  <h4><font color='green'>Sales Order : {{$order->order_number}} &emsp;| &emsp;&emsp;Client: {{$order->client->name}}  &emsp; |&emsp; Date: {{$order->date}} &emsp; |&emsp; Status: {{$order->status}}<br><br>Credit Period: {{$order->credit_period}} </font> </h4>
 
 <hr>
 </div>  

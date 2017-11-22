@@ -23,6 +23,7 @@ Route::get('/', function()
     }
 
 
+
 	if (Confide::user()) {
 
    
@@ -33,7 +34,11 @@ Route::get('/', function()
         }
 });
 
-
+Route::get('api/getbankbranches', function(){
+    $id = Input::get('option');
+    $bbranch = Bank::find($id)->bankbranch;
+    return $bbranch->lists('bank_branch_name', 'id');
+});
 
 Route::get('/dashboard', function()
 {
@@ -2427,6 +2432,7 @@ Route::post('erporders/create', function(){
     'order_number' => array_get($data, 'order_number'), 
     'client' => $client,
     'date' => array_get($data, 'date'),
+    'credit_period' => array_get($data, 'credit_period'),
     'payment_type' => array_get($data, 'payment_type'),
     'percentage_discount' => array_get($data, 'percentage_discount')
 
@@ -2711,9 +2717,11 @@ Route::get('confirmstock/{id}/{name}/{confirmer}/{key}', function($id,$name,$con
   $order->status = 'delivered';
   $order->update();*/
 
-  $notification = Notification::where('confirmation_code',$key)->first();
-  $notification->is_read = 1;
-  $notification->update();
+  $notifications = Notification::where('confirmation_code',$key)->get();
+    foreach ($notifications as $notification) {
+    $notification->is_read = 1;
+    $notification->update();
+    }
 
   return "<strong><span style='color:green'>Stock for item ".$name." confirmed as received!</span></strong>";
 }else{
@@ -2785,9 +2793,11 @@ Route::post('notificationconfirmstock', function(){
   $order->status = 'delivered';
   $order->update();*/
 
-    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notifications = Notification::where('confirmation_code',$key)->get();
+    foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
+    }
 
   Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item.' quantity received '.Input::get("quantity").' from supplier '.Input::get("client").' received by user '.$user->username.' in the system');
 
@@ -2796,9 +2806,11 @@ Route::post('notificationconfirmstock', function(){
 
 Route::post('notificationcheckexpense', function(){
 
-    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
+    foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
+    }
 
   $username = Confide::user()->username;
 
@@ -2851,9 +2863,11 @@ Route::post('notificationapproveexpense', function(){
   $u = DB::table("users")->where("id",Input::get("receiver"))->first();
   $c = DB::table("users")->where("id",Input::get("checker"))->first();
 
-  $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+  $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
+    foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
+    }
 
   Audit::logaudit('Expenses', 'approved an expense', 'approved expense '.Input::get('name').' created by user '.$u->username.' and checked by '.$c->username.' in the system');
 
@@ -2971,6 +2985,7 @@ Route::post('erporder/commit', function(){
   $order->order_number = array_get($erporder, 'order_number');
   $order->client()->associate(array_get($erporder, 'client'));
   $order->date = date('Y-m-d', strtotime(array_get($erporder, 'date')));
+  $order->credit_period = date('Y-m-d', strtotime(array_get($erporder, 'credit_period')));
   $order->status = 'new';
   $order->discount_amount = array_get($total, 'discount');
   $order->type = 'sales';  
@@ -3262,9 +3277,11 @@ $order = Erporder::findorfail($id);
   $order->status = 'cancelled';
   $order->update();
 
-    $notification = Notification::where('confirmation_code',$key)->first();
+    $notifications = Notification::where('confirmation_code',$key)->get();
+    foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
+    }
 
   Audit::logaudit('Approve Cancel Sale Order', 'approved cancellation of sale order', 'approved cancellation of sale order '.$order->order_number.' in the system');
 
@@ -3303,9 +3320,11 @@ Route::post('payment/approvepayment', function(){
         $p->confirmation_code = Input::get("key");
         $p->update();
 
-    $notification = Notification::where('confirmation_code',Input::get("key"))->first();
+    $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
+    foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
+    }
 
 return Redirect::to('notifications/index')->withFlashMessage('Successfully approved payment!');
 
@@ -3436,9 +3455,11 @@ Route::get('erppurchases/show/{id}', function($id){
 
 Route::get('erppurchases/notifyshow/{key}/{user}/{id}', function($key,$user,$id){
 
-    $notification = Notification::where('confirmation_code',$key)->first();
+    $notifications = Notification::where('confirmation_code',$key)->get();
+    foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
+    }
 
     return Redirect::to('erppurchases/show/'.$id);
   

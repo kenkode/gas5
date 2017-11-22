@@ -224,9 +224,11 @@ class ItemsController extends \BaseController {
 
 		Audit::logaudit('Items', 'approved an item', 'approved update for item '.$name.' updated by user '.$user->username.' in the system');
 
-		$notification = Notification::where('confirmation_code',$key)->first();
-		$notification->is_read = 1;
-		$notification->update();
+		$notifications = Notification::where('confirmation_code',$key)->get();
+	    foreach ($notifications as $notification) {
+	    $notification->is_read = 1;
+	    $notification->update();
+	    }
 
 		return "<strong><span style='color:green'>Item update for ".$name." successfully approved!</span></strong>";
 	}else{
@@ -274,9 +276,11 @@ class ItemsController extends \BaseController {
 
 		$user = DB::table("users")->where('id',$receiver)->first();
 
-		$notification = Notification::where('confirmation_code',Input::get('key'))->first();
-		$notification->is_read = 1;
-		$notification->update();
+		$notifications = Notification::where('confirmation_code',Input::get("key"))->get();
+	    foreach ($notifications as $notification) {
+	    $notification->is_read = 1;
+	    $notification->update();
+	    }
 
         Audit::logaudit('Items', 'approved an item', 'approved update for item '.Input::get('name').' updated by user '.$user->username.' in the system');
 

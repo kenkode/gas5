@@ -133,6 +133,11 @@ if($(this).val() == "CREDIT"){
             <input class="form-control" placeholder="" type="text" name="mobile_phone" id="mobile_phone" value="{{{ Input::old('address') }}}" required>
         </div>
 
+        <div class="form-group">
+            <label for="username">Credit Limit:</label><span style="color:red">*</span>
+            <input class="form-control" placeholder="" type="text" name="credit_limit" id="credit_limit" value="{{{ Input::old('credit_limit') }}}" required>
+        </div>
+
         <!-- <div class="form-group">
           <label for="username">Type</label><span style="color:red">*</span> :
            <select name="type" class="form-control" required>

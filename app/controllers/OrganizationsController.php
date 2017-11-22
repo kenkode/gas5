@@ -21,10 +21,11 @@ class OrganizationsController extends \BaseController {
 		$banks_db = DB::table('banks')
 		->get();
 
-		$bbranches_db = DB::table('bank_branches')
-		->get();
-		$organization = DB::table('organizations')->where('id', '=', 1)->first();
 
+		$organization = DB::table('organizations')->where('id', '=', 1)->first();
+        $bbranches_db = DB::table('bank_branches')
+		->where('bank_id',$organization->bank_id)
+		->get();
 		Audit::logaudit('Organization', 'viewed organization details', 'viewed organization details in the system');
 
 		return View::make('organizations.index', compact('organization','banks','bbranches','banks_db','bbranches_db'));
