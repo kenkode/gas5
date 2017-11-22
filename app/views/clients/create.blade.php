@@ -134,7 +134,7 @@ if($(this).val() == "CREDIT"){
         </div>
 
         <div class="form-group">
-            <label for="username">Credit Limit:</label><span style="color:red">*</span>
+            <label for="username">Credit Limit:</label>
             <input class="form-control" placeholder="" type="text" name="credit_limit" id="credit_limit" value="{{{ Input::old('credit_limit') }}}" required>
         </div>
 
