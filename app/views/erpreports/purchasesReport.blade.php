@@ -155,7 +155,7 @@ function asMoney($value) {
         <td> {{ $purchases->item }}</td>
         <td align = "center"> {{ $purchases->quantity }}</td>
         <td align = "right"> {{asMoney($purchases->price)}}</td>
-        <td align = "right"> {{ asMoney($purchases->price * $purchases->quantity)}}</td>
+        <td align = "right"> {{ asMoney($purchases->price * $purchases->quantity * $purchases->size)}}</td>
          
         
         </tr>

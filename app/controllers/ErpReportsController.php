@@ -668,7 +668,7 @@ public function net(){
                     ->whereNotNull('erporders.authorized_by')
                     ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
                     ->orderBy('erporders.order_number', 'Desc')
-                    ->select('clients.name as client','items.item_make as item','quantity','clients.address as address',
+                    ->select('clients.name as client','items.item_make as item','items.item_size as size','quantity','clients.address as address',
                       'clients.phone as phone','clients.email as email','erporders.id as id','erporders.status',
                       'discount_amount','erporders.date','erporders.order_number as order_number','price','description','erporders.type')
                     ->get();
