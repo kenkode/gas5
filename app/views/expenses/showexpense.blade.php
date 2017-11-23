@@ -40,8 +40,13 @@
         </div>
 
         <div class="form-group">
-            <label for="username">Account <span style="color:red">*</span> :</label>
-            <input class="form-control" placeholder="" type="text" name="acc" id="acc" value="{{$acc->name}}" required>
+            <label for="username">Credit Account <span style="color:red">*</span> :</label>
+            <input class="form-control" placeholder="" type="text" name="credit" id="credit" value="{{$creditacc->name}}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Debit Account <span style="color:red">*</span> :</label>
+            <input class="form-control" placeholder="" type="text" name="debit" id="debit" value="{{$debitacc->name}}" required>
         </div>
 
          <div class="form-group">
@@ -50,7 +55,8 @@
         </div>
 
 
-        <input class="form-control" placeholder="" type="hidden" name="account" id="account" value="{{$account}}" required>
+        <input class="form-control" placeholder="" type="hidden" name="credit_account" id="credit_account" value="{{$credit}}" required>
+        <input class="form-control" placeholder="" type="hidden" name="debit_account" id="debit_account" value="{{$debit}}" required>
         <input class="form-control" placeholder="" type="hidden" name="receiver" id="receiver" value="{{$receiver}}" required>
         <input class="form-control" placeholder="" type="hidden" name="confirmer" id="confirmer" value="{{$confirmer}}" required>
         <input class="form-control" placeholder="" type="hidden" name="checker" id="checker" value="{{$checker}}" required>

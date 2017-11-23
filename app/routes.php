@@ -2748,31 +2748,33 @@ Route::get('notificationshowstock/{id}/{client}/{erporder_id}/{confirmer}/{key}'
 }
 });
 
-Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{account}/{receiver}/{confirmer}/{key}', function($name,$type,$amount,$date,$account,$receiver,$confirmer,$key){
+Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{credit}/{debit}/{receiver}/{confirmer}/{key}', function($name,$type,$amount,$date,$credit,$debit,$receiver,$confirmer,$key){
   $expense = Expense::where('confirmation_code',$key)->count();
   if($expense == 0){
   $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
   $notification->is_read = 1;
   $notification->update();
 
-  $acc = Account::find($account);
+  $creditacc = Account::find($credit);
+  $debitacc  = Account::find($debit);
 
-  return View::make('expenses.checkexpense', compact('name','type','amount','date','account','receiver','confirmer','key','acc'));
+  return View::make('expenses.checkexpense', compact('name','type','amount','date','credit','debit','receiver','confirmer','key','creditacc','debitacc'));
 }else{
   return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already checked!");
 }
 });
 
-Route::get('notificationshowapproveexpense/{name}/{type}/{amount}/{date}/{account}/{checker}/{confirmer}/{receiver}/{key}', function($name,$type,$amount,$date,$account,$checker,$confirmer,$receiver,$key){
+Route::get('notificationshowapproveexpense/{name}/{type}/{amount}/{date}/{credit}/{debit}/{checker}/{confirmer}/{receiver}/{key}', function($name,$type,$amount,$date,$credit,$debit,$checker,$confirmer,$receiver,$key){
   $expense = Expense::where('approve_code',$key)->count();
   if($expense == 0){
   $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
   $notification->is_read = 1;
   $notification->update();
 
-  $acc = Account::find($account);
+  $creditacc = Account::find($credit);
+  $debitacc = Account::find($debit);
 
-  return View::make('expenses.showexpense', compact('name','type','amount','date','account','receiver','confirmer','checker','key','acc'));
+  return View::make('expenses.showexpense', compact('name','type','amount','date','credit','debit','receiver','confirmer','checker','key','creditacc','debitacc'));
 }else{
   return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already approved!");
 }
@@ -2827,7 +2829,7 @@ Route::post('notificationcheckexpense', function(){
 
     foreach ($users as $user) {
 
-    Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"approve expense","notificationshowapproveexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('account')."/".Confide::user()->id."/".$user->id."/".Input::get("receiver")."/".$key,$key);
+    Notification::notifyUser($user->id,"Hello, Please approve expense inserted for item ".Input::get('name'),"approve expense","notificationshowapproveexpense/".Input::get('name')."/".Input::get('type')."/".Input::get('amount')."/".date("Y-m-d",strtotime(Input::get('date')))."/".Input::get('credit_account')."/".Input::get('debit_account')."/".Confide::user()->id."/".$user->id."/".Input::get("receiver")."/".$key,$key);
       }
    Audit::logaudit('Expenses', 'checked an expense', 'checked expense '.Input::get('name').' created by user '.$u->username.' in the system');
 
@@ -2842,7 +2844,8 @@ Route::post('notificationapproveexpense', function(){
     $expense->type = Input::get('type');
     $expense->amount = Input::get('amount');    
     $expense->date = date("Y-m-d",strtotime(Input::get('date')));
-    $expense->account_id = Input::get('account');
+    $expense->credit_id = Input::get('credit_account');
+    $expense->debit_id = Input::get('debit_account');
     $expense->receiver_id = Input::get("receiver");
     $expense->confirmed_id = Input::get("confirmer");
     $expense->check_id = Input::get("checker");
@@ -2850,9 +2853,22 @@ Route::post('notificationapproveexpense', function(){
     $expense->save();
 
         DB::table('accounts')
-            ->join('expenses','accounts.id','=','expenses.account_id')
-            ->where('accounts.id', Input::get('account'))
+            ->join('expenses','accounts.id','=','expenses.credit_id')
+            ->where('accounts.id', Input::get('credit_account'))
             ->decrement('accounts.balance', Input::get('amount'));
+
+            $data = array(
+      'date' => date("Y-m-d"), 
+      'debit_account' => Input::get('debit_account'),
+      'credit_account' => Input::get('credit_account'),
+      'expense_id' => $expense->id,
+      'description' => "Expense",
+      'amount' => Input::get('amount'),
+      'initiated_by' => Confide::user()->username
+    );
+
+    $journal = new Journal;
+    $journal->journal_expenseentry($data);
 
             $user = DB::table('users')->where('id',Input::get("receiver"))->first();
 
