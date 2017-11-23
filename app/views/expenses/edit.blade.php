@@ -44,14 +44,26 @@
         </div>
 
         <div class="form-group">
-            <label for="username">Account</label><span style="color:red">*</span> :
-           <select name="account" class="form-control" required>
-                           <option></option>
+            <label for="username">Credit Account</label><span style="color:red">*</span> :
+           <select name="credit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
                            @foreach($accounts as $account)
-                            <option value="{{$account->id }}"<?= ($expense->account_id==$account->id)?'selected="selected"':''; ?>> {{ $account->name }}</option>
+                            <option value="{{$account->id}}"<?= ($expense->credit_id==$account->id)?'selected="selected"':''; ?>>{{$account->name}}</option>
                            @endforeach
                         </select>
-        </div>
+        </div> 
+
+        <div class="form-group">
+            <label for="username">Debit Account</label><span style="color:red">*</span> :
+           <select name="debit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
+                           @foreach($accounts as $account)
+                            <option value="{{$account->id}}"<?= ($expense->debit_id==$account->id)?'selected="selected"':''; ?>>{{$account->name}}</option>
+                           @endforeach
+                        </select>
+        </div>      
 
          <div class="form-group">
                         <label for="username">Date</label><span style="color:red">*</span> :

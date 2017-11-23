@@ -160,8 +160,13 @@ if($(this).val()){
 
 
         <div class="form-group">
-            <label for="username">Account</label><span style="color:red">*</span> :
-           <input class="form-control" placeholder="" readonly="readonly" type="text" name="credit_account" id="credit_account" value="{{$account->name}}">
+            <label for="username">Credit Account</label><span style="color:red">*</span> :
+           <input class="form-control" placeholder="" readonly="readonly" type="text" name="credit_account" id="credit_account" value="{{$credit->name}}">
+        </div>   
+
+        <div class="form-group">
+            <label for="username">Debit Account</label><span style="color:red">*</span> :
+           <input class="form-control" placeholder="" readonly="readonly" type="text" name="debit_account" id="debit_account" value="{{$debit->name}}">
         </div>       
 
         

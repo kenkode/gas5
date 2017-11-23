@@ -2793,7 +2793,7 @@ Route::post('notificationconfirmstock', function(){
   $order->status = 'delivered';
   $order->update();*/
 
-    $notifications = Notification::where('confirmation_code',$key)->get();
+    $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
     foreach ($notifications as $notification) {
     $notification->is_read = 1;
     $notification->update();
@@ -3299,12 +3299,13 @@ $notification = Notification::where('confirmation_code',$key)->where('user_id',$
 
     $payment = Payment::find($id);
     $erporder = Erporder::find($payment->erporder_id);
-    $account = Account::find($payment->account_id);
+    $credit = Account::find($payment->credit_id);
+    $debit = Account::find($payment->debit_id);
     $paymentmethod = Paymentmethod::find($payment->paymentmethod_id);
 
     if($payment->confirmation_code != $key){
 
-    return View::make('payments.showpayment', compact('id','key','user','preparedby','payment','erporder','account','paymentmethod'));
+    return View::make('payments.showpayment', compact('id','key','user','preparedby','payment','erporder','credit','debit','paymentmethod'));
   }else{
     return Redirect::to('notifications/index')->withDeleteMessage('Item has already been approved!');
   }
@@ -3319,6 +3320,19 @@ Route::post('payment/approvepayment', function(){
         $p->is_approved = 1;
         $p->confirmation_code = Input::get("key");
         $p->update();
+
+        $data = array(
+      'date' => date("Y-m-d"), 
+      'debit_account' => $p->debit_id,
+      'credit_account' => $p->credit_id,
+      'payment_id' => $p->id,
+      'description' => "Payment from a customer",
+      'amount' => $p->amount_paid,
+      'initiated_by' => Confide::user()->username
+    );
+
+    $journal = new Journal;
+    $journal->journal_paymententry($data);
 
     $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
     foreach ($notifications as $notification) {
@@ -3930,7 +3944,7 @@ Route::get('api/salesdropdown', function(){
                              ->groupBy('erporders.id')
                              ->havingRaw('balance > 0 or balance is null')
                              ->where('erporders.status','new')
-                             ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'), DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)) FROM payments t WHERE t.erporder_id=erporders.id and t.client_id='.$id.') AS balance'), DB::raw('(SELECT sum(discount) FROM prices p WHERE p.item_id=erporderitems.item_id and p.client_id='.$id.') AS discount'), DB::raw('sum(price * quantity) AS total'))
+                             ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'), DB::raw('CONCAT(order_number," : ",item_make," (Actual amount: ") AS erporder'), DB::raw('(SELECT (sum(price * quantity) - sum(amount_paid)- sum(client_discount/quantity)) FROM payments t WHERE t.erporder_id=erporderitems.erporder_id and t.client_id='.$id.') AS balance'), DB::raw('(SELECT sum(client_discount/quantity)) AS discount'), DB::raw('sum(price * quantity) AS total'))
                    ->get('erporder', 'id', 'discount','total');
 
 
@@ -4004,12 +4018,12 @@ Route::get('api/totalsales', function(){
     $id = explode(" : ",Input::get('option'));
     $price = Erporderitem::where('erporder_id',$id[0])->select(DB::raw('sum(price * quantity) AS total'))->first();
     $payment = Payment::where('erporder_id',$id[0])->sum('amount_paid');
-    $discount = Erporder::join('prices','erporders.client_id','=','prices.client_id')
-                  ->where('erporders.id',$id[0])
+    $p = Erporderitem::where('erporder_id',$id[0])
                   ->where('item_id',$id[1])
-                  ->sum('discount');
+                  ->select(DB::raw('sum(client_discount/quantity) AS discount'))
+                  ->first();
     //dd($price);
-    return ($price->total ) - $payment - $discount;
+    return ($price->total) - $payment - $p->discount;
 });
 
 

@@ -192,15 +192,26 @@ if($(this).val()){
 
 
         <div class="form-group">
-            <label for="username">Account</label><span style="color:red">*</span> :
-           <select name="account" class="form-control" required>
+            <label for="username">Credit Account</label><span style="color:red">*</span> :
+           <select name="credit_account" class="form-control" required>
                           <option></option>>
                            <option>...............................Select Account...........................</option>
                            @foreach($accounts as $account)
                             <option value="{{$account->id}}">{{$account->name}}</option>
                            @endforeach
                         </select>
-        </div>       
+        </div> 
+
+        <div class="form-group">
+            <label for="username">Debit Account</label><span style="color:red">*</span> :
+           <select name="debit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
+                           @foreach($accounts as $account)
+                            <option value="{{$account->id}}">{{$account->name}}</option>
+                           @endforeach
+                        </select>
+        </div>   
 
         
             <input class="form-control" placeholder="" type="hidden" readonly="readonly" name="received_by" id="received_by" value="{{{ Confide::user()->username}}}">

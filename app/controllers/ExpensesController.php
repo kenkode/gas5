@@ -79,15 +79,31 @@ class ExpensesController extends \BaseController {
 		$expense->type = Input::get('type');
 		$expense->amount = Input::get('amount');		
 		$expense->date = date("Y-m-d",strtotime(Input::get('date')));
-		$expense->account_id = Input::get('account');
+		$expense->credit_id = Input::get('credit_account');
+		$expense->debit_id = Input::get('debit_account');
+		$expense->credit_journal_id = 0;
+		$expense->debit_journal_id = 0;
 		$expense->receiver_id = Confide::user()->id;
         $expense->confirmed_id = Confide::user()->id;
 		$expense->save();
 
         DB::table('accounts')
-            ->join('expenses','accounts.id','=','expenses.account_id')
-            ->where('accounts.id', Input::get('account'))
+            ->join('expenses','accounts.id','=','expenses.credit_id')
+            ->where('accounts.id', Input::get('credit_account'))
             ->decrement('accounts.balance', Input::get('amount'));
+
+        $data = array(
+			'date' => date("Y-m-d"), 
+			'debit_account' => Input::get('debit_account'),
+			'credit_account' => Input::get('credit_account'),
+			'expense_id' => $expense->id,
+			'description' => "Expense",
+			'amount' => Input::get('amount'),
+			'initiated_by' => Confide::user()->username
+		);
+
+		$journal = new Journal;
+		$journal->journal_expenseentry($data);
 
         Audit::logaudit('Expenses', 'created an expense', 'created expense '.Input::get('name').' in the system');
 
@@ -156,9 +172,25 @@ class ExpensesController extends \BaseController {
 		$expense->type = Input::get('type');
 		$expense->amount = Input::get('amount');
 		$expense->date = date("Y-m-d",strtotime(Input::get('date')));
-		$expense->account_id = Input::get('account');
+		$expense->credit_id = Input::get('credit_account');
+		$expense->debit_id = Input::get('debit_account');
 
 		$expense->update();
+
+        $data = array(
+			'date' => date("Y-m-d"), 
+			'old_debit_account' => $expense->debit_journal_id,
+			'old_credit_account' => $expense->credit_journal_id,
+			'debit_account' => Input::get('debit_account'),
+			'expense_id' => $expense->id,
+			'credit_account' => Input::get('credit_account'),
+			'description' => "Expense",
+			'amount' => Input::get('amount'),
+			'initiated_by' => Confide::user()->username
+		);
+
+		$journal = new Journal;
+		$journal->journal_editexpenseentry($data);
 
 		Audit::logaudit('Expenses', 'updated an expense', 'updated expense '.Input::get('name').' in the system');
 
@@ -178,6 +210,16 @@ class ExpensesController extends \BaseController {
         return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
         }else{
         $expense = Expense::find($id);
+
+        if($expense->credit_journal_id > 0){
+        $credit = Journal::find($expense->credit_journal_id);
+		$credit->void = 1;
+		$credit->update();
+
+		$debit  = Journal::find($expense->debit_journal_id);
+        $debit->void = 1;
+		$debit->update();
+	    }
 
 		Expense::destroy($id);
 

@@ -45,9 +45,21 @@
         </div>
 
         <div class="form-group">
-            <label for="username">Account</label><span style="color:red">*</span> :
-           <select name="account" class="form-control" required>
-                           <option>.............................Select Account Name........................</option>
+            <label for="username">Credit Account</label><span style="color:red">*</span> :
+           <select name="credit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
+                           @foreach($accounts as $account)
+                            <option value="{{$account->id}}">{{$account->name}}</option>
+                           @endforeach
+                        </select>
+        </div> 
+
+        <div class="form-group">
+            <label for="username">Debit Account</label><span style="color:red">*</span> :
+           <select name="debit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
                            @foreach($accounts as $account)
                             <option value="{{$account->id}}">{{$account->name}}</option>
                            @endforeach

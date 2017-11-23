@@ -48,9 +48,41 @@
         </div>
         @endif
         <div class="form-group">
+            <label for="username">Payment Method</label><span style="color:red">*</span> :
+           <select name="paymentmethod" class="form-control" required>
+                          <option></option>
+                           <option>......................Select Payment Method......................</option>
+                           @foreach($paymentmethods as $paymentmethod)
+                            <option value="{{$paymentmethod->id}}"<?= ($payment->paymentmethod_id==$paymentmethod->id)?'selected="selected"':''; ?>>{{$paymentmethod->name}}</option>
+                           @endforeach
+                        </select>
+        </div> 
+        <div class="form-group">
             <label for="username">Amount Paid<span style="color:red">*</span> :</label>
             <input class="form-control" placeholder="" type="text" name="amount" id="amount" value="{{$payment->amount_paid}}" required>
         </div>
+
+        <div class="form-group">
+            <label for="username">Credit Account</label><span style="color:red">*</span> :
+           <select name="credit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
+                           @foreach($accounts as $account)
+                            <option value="{{$account->id}}"<?= ($payment->credit_id==$account->id)?'selected="selected"':''; ?>>{{$account->name}}</option>
+                           @endforeach
+                        </select>
+        </div> 
+
+        <div class="form-group">
+            <label for="username">Debit Account</label><span style="color:red">*</span> :
+           <select name="debit_account" class="form-control" required>
+                          <option></option>>
+                           <option>...............................Select Account...........................</option>
+                           @foreach($accounts as $account)
+                            <option value="{{$account->id}}"<?= ($payment->debit_id==$account->id)?'selected="selected"':''; ?>>{{$account->name}}</option>
+                           @endforeach
+                        </select>
+        </div>      
 
        <!--  <div class="form-group">
             <label for="username">Receipt Number :</label>

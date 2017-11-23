@@ -80,6 +80,8 @@ class PaymentsController extends \BaseController {
 
 		//$erporder = Erporder::find(Input::get('order'));
 
+        
+
 		$payment = new Payment;
         if(Input::get('type') === 'Customer'){
 		$client = Client::findOrFail(Input::get('order'));
@@ -98,7 +100,10 @@ class PaymentsController extends \BaseController {
 	    }
 		$payment->amount_paid = Input::get('amountdue');
 		$payment->paymentmethod_id = Input::get('paymentmethod');
-		$payment->account_id = Input::get('account');
+		$payment->credit_id = Input::get('credit_account');
+		$payment->debit_id = Input::get('debit_account');
+		$payment->credit_journal_id = 0;
+		$payment->debit_journal_id = 0;
 		$payment->prepared_by = Confide::user()->id;
 		$payment->payment_date = date("Y-m-d",strtotime(Input::get('pay_date')));
 		$prepared_by = Confide::user()->id;
@@ -179,6 +184,19 @@ class PaymentsController extends \BaseController {
         $p->confirmed_id = Confide::user()->id;
         $p->is_approved = 1;
         $p->update();
+
+        $data = array(
+			'date' => date("Y-m-d"), 
+			'debit_account' => Input::get('debit_account'),
+			'credit_account' => Input::get('credit_account'),
+			'payment_id' => $id,
+			'description' => "Payment from a customer",
+			'amount' => Input::get('amountdue'),
+			'initiated_by' => Confide::user()->username
+		);
+
+		$journal = new Journal;
+		$journal->journal_paymententry($data);
 
         Audit::logaudit('Payments', 'created payment', 'created payment for client '.$client->name.', order number '.$order_number.', amount '.Input::get('amountdue').' in the system');
 
@@ -265,8 +283,9 @@ class PaymentsController extends \BaseController {
                              ->first();
 		//$erporders = Erporder::all();
 		$erporderitems = Erporderitem::all();
-
-		return View::make('payments.edit', compact('payment','erporder','erporderitems'));
+		$accounts = Account::all();
+        $paymentmethods = Paymentmethod::all();
+		return View::make('payments.edit', compact('payment','erporder','erporderitems','accounts','paymentmethods'));
 	}
 
 	/**
@@ -288,11 +307,29 @@ class PaymentsController extends \BaseController {
 
 		//$payment->erporder_id = Input::get('order');
 		$payment->amount_paid = Input::get('amount');
+		$payment->credit_id = Input::get('credit_account');
+		$payment->debit_id = Input::get('debit_account');
+		$payment->paymentmethod_id = Input::get('paymentmethod');
 		//$payment->balance = Input::get('balance');
 		//$payment->paymentmethod_id = Input::get('paymentmethod');
 		//$payment->received_by = Input::get('received_by');
 		//$payment->payment_date = date("Y-m-d",strtotime(Input::get('pay_date')));
 		$payment->update();
+
+		$data = array(
+			'date' => date("Y-m-d"), 
+			'old_debit_account' => $payment->debit_journal_id,
+			'old_credit_account' => $payment->credit_journal_id,
+			'debit_account' => Input::get('debit_account'),
+			'payment_id' => $payment->id,
+			'credit_account' => Input::get('credit_account'),
+			'description' => "Payment from a customer",
+			'amount' => Input::get('amount'),
+			'initiated_by' => Confide::user()->username
+		);
+
+		$journal = new Journal;
+		$journal->journal_editentry($data);
 
 		$erporder = Erporder::find(Input::get('order'));
 		$client = Client::find($payment->client_id);
@@ -319,9 +356,22 @@ class PaymentsController extends \BaseController {
 		$payment = Payment::findOrFail($id);
 		$erporder = Erporder::find($payment->erporder_id);
 		$client = Client::find($erporder->client_id);
+		
+		if($payment->credit_journal_id > 0){
+		$credit = Journal::find($payment->credit_journal_id);
+		$credit->void = 1;
+		$credit->update();
+
+		$debit  = Journal::find($payment->debit_journal_id);
+        $debit->void = 1;
+		$debit->update();
+	    }
+
 		Payment::destroy($id);
 
-		Audit::logaudit('Payments', 'deleted payment', 'deleted payment for client '.$client->name.', order number '.$$erporder->order_number.', amount '.$payment->amount_paid.' in the system');
+
+
+		Audit::logaudit('Payments', 'deleted payment', 'deleted payment for client '.$client->name.', order number '.$erporder->order_number.', amount '.$payment->amount_paid.' in the system');
 
 		return Redirect::route('payments.index')->withDeleteMessage('Payment successfully deleted!');
 	}
