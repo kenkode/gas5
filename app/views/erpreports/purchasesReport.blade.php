@@ -142,7 +142,7 @@ function asMoney($value) {
       @foreach($purchases as $purchases)
       
       <?php
-      $total = $total + ($purchases->price * $purchases->quantity)
+      $total = $total + ($purchases->price * $purchases->quantity * $purchases->size)
 
       ?>
 
