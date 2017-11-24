@@ -17,6 +17,10 @@
                     </li>
 
                     <li>
+                        <a href="{{ URL::to('erpReports/selectReceivablesPeriod') }}"><i class="glyphicon glyphicon-file fa-fw"></i> Receivables</a>
+                    </li>
+
+                    <li>
                         <a href="{{ URL::to('erpReports/selectPurchasesPeriod') }}"><i class="glyphicon glyphicon-file fa-fw"></i> Purchases</a>
                     </li>  
 

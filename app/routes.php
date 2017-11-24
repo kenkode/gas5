@@ -1552,9 +1552,11 @@ Route::get('erpReports/delivery_note/{id}', 'ErpReportsController@delivery_note'
 
 
 Route::post('erpReports/sales', 'ErpReportsController@sales');
+Route::post('erpReports/receivables', 'ErpReportsController@receivables');
 Route::post('erpReports/net', 'ErpReportsController@net');
 Route::get('erpReports/sales_summary', 'ErpReportsController@sales_Summary');
 Route::get('erpReports/selectSalesPeriod', 'ErpReportsController@selectSalesPeriod');
+Route::get('erpReports/selectReceivablesPeriod', 'ErpReportsController@selectReceivablesPeriod');
 Route::get('erpReports/selectNetPeriod', 'ErpReportsController@selectNetPeriod');
 Route::get('erpReports/selectSalesComparisonPeriod', 'ErpReportsController@selectSalesComparisonPeriod');
 Route::post('erpReports/getComparisonReport', 'ErpReportsController@getSalesComparison');
@@ -4108,6 +4110,8 @@ Route::get('api/getmax', function(){
 Route::get('email/send', 'ErpReportsController@sendMail');
 Route::get('email/send_sales', 'ErpReportsController@sendMail_sales');
 Route::get('email/send_morning_sales', 'ErpReportsController@sendMail_morning_sales');
+Route::get('email/send_receivables', 'ErpReportsController@sendMail_receivables');
+Route::get('email/send_morning_receivables', 'ErpReportsController@sendMail_morning_receivables');
 Route::get('email/send_expenses', 'ErpReportsController@sendMail_expenses');
 Route::get('email/send_morning_expenses', 'ErpReportsController@sendMail_morning_expenses');
 Route::get('email/send_net', 'ErpReportsController@sendMail_net');
