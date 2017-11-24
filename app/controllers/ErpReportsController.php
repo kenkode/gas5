@@ -1963,7 +1963,7 @@ public function net(){
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@gx.co.ke', 'Gas Express');
-    $message->to('accounts@gx.co.ke', 'Vic Bett')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Receivables Report!');
+    $message->to('accounts@gx.co.ke', 'Vic Bett')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Receivables Report!');
     //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
 
