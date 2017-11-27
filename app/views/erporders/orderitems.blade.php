@@ -20,12 +20,12 @@ $(document).ready(function() {
         $.get("{{ url('api/getmax')}}", 
         { option: $(this).val() }, 
         function(data) {
-            console.log(data);
+            //console.log(data);
             $("#qty").val(data);
 
             $("#quantity").on("keydown keyup", function() {
              var rem = $("#qty").val()-$("#quantity").val();
-             console.log(rem);
+             //console.log(rem);
              if(rem<0){
                 alert('We only have ' + data + ' of this item in stock');
                 $(this).val(0);
@@ -44,6 +44,20 @@ $(document).ready(function() {
 
 <script type="text/javascript">
 $(document).ready(function() {
+
+    $('#sub').click(function(){
+        $.get("{{ url('api/checkcredit')}}", 
+        { total: $('#total').val()}, 
+        function(data) {
+            alert(data);
+            if(data<0){
+                alert('Client Credit Limit Exceeded!');
+                return false;
+             }else{
+                return true;
+             }
+        });
+    });
   
     $('#item').change(function(){
       
@@ -51,7 +65,7 @@ $(document).ready(function() {
         { option: $(this).val(),
           client: $('#clientid').val()}, 
         function(data) {
-            console.log('hi');
+            //console.log('hi');
                 $('#percentage_discount').val(data);
             });
         });
@@ -61,7 +75,7 @@ $(document).ready(function() {
 
 <br><div class="row">
     <div class="col-lg-12">
-  <h4><font color='green'>Sales Order : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}} </font></h4>
+  <h4><font color='green'>Sales Order : {{Session::get('erporder')['order_number']}} &nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Client: {{Session::get('erporder')['client']['name']}}  &nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Date: {{Session::get('erporder')['date']}}&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp;&nbsp; Credit Remaining: KES {{number_format(Session::get('erporder')['credit_remaining'],2)}} </font></h4>
 
 <hr>
 </div>  
@@ -128,7 +142,7 @@ $(document).ready(function() {
 
       <div class="form-group ">
             
-            <input type="image" name="submit" src="{{asset('images/Add-icon.png')}}" alt="Submit" width="15%">
+            <input type="image" name="submit" id="sub" src="{{asset('images/Add-icon.png')}}" alt="Submit" width="15%">
         </div>
 
 </div>
@@ -146,8 +160,12 @@ $(document).ready(function() {
             @endforeach
         </div>
         @endif
-
-
+        
+        @if ($message != "")
+        <div class="alert alert-danger">
+        {{ $message }}
+        </div>
+        @endif
         <br>
 
     <table class="table table-condensed table-bordered">
@@ -177,7 +195,7 @@ $(document).ready(function() {
             <?php
             $discount_amount = $orderitem['discount_amount'];            
             $total_amount = $orderitem['price'] * $orderitem['quantity'];
-            $amount = $orderitem['price'] * $orderitem['quantity']-$discount_amount * $orderitem['quantity'];
+            $amount = $orderitem['price'] * $orderitem['quantity']-$discount_amount;
             /*$total_amount = $amount * $orderitem['duration'];*/
             $total = $total + $amount;
             
@@ -191,7 +209,7 @@ $(document).ready(function() {
             <td>{{$orderitem['quantity']}}</td>
             <td>{{asMoney($orderitem['price'])}}</td>  
             <td>{{asMoney($total_amount)}}</td>
-            <td id="tid">{{asMoney($discount_amount * $orderitem['quantity'])}}</td>
+            <td id="tid">{{asMoney($discount_amount)}}</td>
             <td>{{asMoney($amount)}}</td>
             <td>
                 <div class="btn-group">
@@ -225,6 +243,11 @@ $(document).ready(function() {
    </div>
 
 </div>
+
+<?php
+Session::put( 'currenttotal', $total);
+?>
+
 
 <br>
 <form method="post" action="{{URL::to('erporder/commit')}}">

@@ -2417,9 +2417,28 @@ if (! Entrust::can('create_quotation') ) // Checks the current user
 
 Route::post('erporders/create', function(){
 
-  $data = Input::all();
 
+  $data = Input::all();
+  $total = 0;
+  $totalpayment = 0;
+  $totaldiscount = 0;
   $client = Client::findOrFail(array_get($data, 'client'));
+  $erps = Erporder::where("client_id",$client->id)->where('erporders.status','!=','cancelled')->get();
+  //$id = Input::get('option');
+  foreach($erps as $erp){
+    $price = Erporderitem::where('erporder_id',$erp->id)->select(DB::raw('sum(price * quantity) AS total'))->first();
+    $total = $total + $price->total;
+    $payment = Payment::where('erporder_id',$erp->id)->sum('amount_paid');
+    $totalpayment = $totalpayment + $payment;
+    $p = Erporderitem::where('erporder_id',$erp->id)
+                  ->select(DB::raw('sum(client_discount/quantity) AS discount'))
+                  ->first();
+
+    $totaldiscount = $totaldiscount + $p->discount;
+    }
+    //dd($price);
+    $remainder = $total - $totalpayment - $totaldiscount;
+    $credit_remaining = $client->credit_limit - $remainder;
 
 /*
   $erporder = array(
@@ -2436,8 +2455,8 @@ Route::post('erporders/create', function(){
     'date' => array_get($data, 'date'),
     'credit_period' => array_get($data, 'credit_period'),
     'payment_type' => array_get($data, 'payment_type'),
-    'percentage_discount' => array_get($data, 'percentage_discount')
-
+    'percentage_discount' => array_get($data, 'percentage_discount'),
+    'credit_remaining'=>$credit_remaining
     )
     );
   Session::put('orderitems', []);
@@ -2459,8 +2478,9 @@ Route::post('erporders/create', function(){
   $items = Item::all();
   $locations = Location::all();
   $taxes = Tax::all();
+  $message = "";
 
-  return View::make('erporders.orderitems', compact('erporder', 'items', 'locations', 'taxes','orderitems'));
+  return View::make('erporders.orderitems', compact('erporder', 'items', 'locations', 'taxes','orderitems','message'));
 
 });
 
@@ -2581,6 +2601,20 @@ Route::post('orderitems/create', function(){
   $item_id = $item->id;
   $location = Input::get('location');
   $discount_amount = Input::get('percentage_discount');
+  $total = $price * $quantity - $discount_amount;
+
+  $check = Session::get('erporder')['credit_remaining'] - Session::get('currenttotal') - $total;
+
+  if($check < 0){
+  $orderitems = Session::get('orderitems');
+
+  $items = Item::all();
+  $locations = Location::all();
+  $taxes = Tax::all();
+  $message = "Credit limit exceeded";
+
+  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems','message'));
+  }else{
 
    Session::push('orderitems', [
       'itemid' => $item_id,
@@ -2596,12 +2630,14 @@ Route::post('orderitems/create', function(){
 
   $orderitems = Session::get('orderitems');
 
-   $items = Item::all();
+  $items = Item::all();
   $locations = Location::all();
   $taxes = Tax::all();
 
-  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems'));
+  $message = "";
 
+  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems','message'));
+}
 });
 
 
@@ -3631,8 +3667,8 @@ Route::get('orderitems/remove/{count}', function($count){
   $items = Item::all();
   $locations = Location::all();
   $taxes = Tax::all();
-
-  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems'));
+  $message = "";
+  return View::make('erporders.orderitems', compact('items', 'locations', 'taxes','orderitems','message'));
 });
 
 
@@ -3641,8 +3677,8 @@ Route::get('orderitems/remove/{count}', function($count){
  */
 Route::get('orderitems/edit/{count}', function($count){
   $editItem = Session::get('orderitems')[$count];
-
-  return View::make('erporders.edit', compact('editItem', 'count'));
+  $message = "";
+  return View::make('erporders.edit', compact('editItem', 'count','message'));
 });
 
 Route::post('orderitems/edit/{count}', function($sesItemID){
@@ -3870,10 +3906,11 @@ Route::post('erpquotations/edit/{id}', function($id){
 
 
 
+Route::get('api/checkcredit', function(){
+    $total = Input::get('total');
 
-
-
-
+    return Session::get('erporder')['credit_remaining'] - str_replace(',','',$total);
+});
 
 
 Route::get('api/getrate', function(){
@@ -3978,7 +4015,7 @@ Route::get('api/getpurchaseorders', function(){
     Erporder::join('erporderitems','erporders.id','=','erporderitems.erporder_id')
                    ->join('items','erporderitems.item_id','=','items.id')
                    ->where('client_id',$id)
-                   ->where('erporders.status','new')
+                   ->where('erporders.status','!=','cancelled')
                    ->whereNotNull('authorized_by')
                    ->select('erporders.id',  DB::raw('CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity,")") AS erporder'))
                    ->lists('erporder', 'id');
@@ -3987,7 +4024,7 @@ Route::get('api/getpurchaseorders', function(){
       $nostockerps =  Erporderitem::join('items','erporderitems.item_id','=','items.id')
                    ->join('erporders','erporderitems.erporder_id','=','erporders.id')
                    ->where('client_id',$id)
-                   ->where('erporders.status','new')
+                   ->where('erporders.status','!=','cancelled')
                    ->whereNotNull('authorized_by')
                    ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'),  DB::raw('CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity,")") AS erporder'))
                    ->whereNotExists(function($query)
@@ -4005,7 +4042,7 @@ Route::get('api/getpurchaseorders', function(){
                   // ->join($temptable, 'items.id', '=', 's.itm_id') 
                  //  ->join("stocks","erporders.id","=","stocks.item_id")
                    ->where('client_id',$id)
-                   ->where('erporders.status','new')
+                   ->where('erporders.status','!=','cancelled')
                    ->whereNotNull('authorized_by')
                    ->havingRaw('balance > 0')
                    ->select(DB::raw('CONCAT(erporders.id," : ",items.id) AS id'), DB::raw('(SELECT quantity-sum(quantity_in) FROM stocks t WHERE t.itm_id=erporderitems.item_id and t.item_id=erporders.id) AS balance'),DB::raw('(SELECT CONCAT(order_number," : ",item_make ," (Remaining qty: ", quantity-sum(quantity_in),")") as erporder FROM stocks t WHERE t.itm_id=erporderitems.item_id and t.item_id=erporders.id) AS erporder'))
@@ -4034,9 +4071,11 @@ Route::get('api/total', function(){
 Route::get('api/totalsales', function(){
     //$id = Input::get('option');
     $id = explode(" : ",Input::get('option'));
-    $price = Erporderitem::where('erporder_id',$id[0])->select(DB::raw('sum(price * quantity) AS total'))->first();
+    $price = Erporderitem::join('erporders','erporderitems.erporder_id','=','erporders.id')->where('erporder_id',$id[0])->where('erporders.status','!=','cancelled')->select(DB::raw('sum(price * quantity) AS total'))->first();
     $payment = Payment::where('erporder_id',$id[0])->sum('amount_paid');
-    $p = Erporderitem::where('erporder_id',$id[0])
+    $p = Erporderitem::join('erporders','erporderitems.erporder_id','=','erporders.id')
+                  ->where('erporder_id',$id[0])
+                  ->where('erporders.status','!=','cancelled')
                   ->where('item_id',$id[1])
                   ->select(DB::raw('sum(client_discount/quantity) AS discount'))
                   ->first();

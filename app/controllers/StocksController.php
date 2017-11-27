@@ -88,7 +88,7 @@ class StocksController extends \BaseController {
                    ->where('stocks.item_id',$id[0])
                    ->where('stocks.itm_id',$id[1])
                    ->where('erporderitems.item_id',$id[1])
-                   ->where('erporders.status','new')
+                   ->where('erporders.status','!=','cancelled')
                    ->whereNotNull('authorized_by')
                    ->select(DB::raw('(quantity-sum(quantity_in)) AS total'))
                    ->first();
@@ -105,7 +105,7 @@ class StocksController extends \BaseController {
                    ->join('items','erporderitems.item_id','=','items.id')
                    ->where('erporders.id',$id[0])
                    ->where('erporderitems.item_id',$id[1])
-                   ->where('erporders.status','new')
+                   ->where('erporders.status','!=','cancelled')
                    ->whereNotNull('authorized_by')
                    ->first();
         $total = $ord->quantity;
