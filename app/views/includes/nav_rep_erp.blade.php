@@ -21,6 +21,10 @@
                     </li>
 
                     <li>
+                        <a href="{{ URL::to('erpReports/selectOverduePeriod') }}"><i class="glyphicon glyphicon-file fa-fw"></i> Overdues</a>
+                    </li>
+
+                    <li>
                         <a href="{{ URL::to('erpReports/selectPurchasesPeriod') }}"><i class="glyphicon glyphicon-file fa-fw"></i> Purchases</a>
                     </li>  
 

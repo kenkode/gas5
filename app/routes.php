@@ -1530,7 +1530,8 @@ if (! Entrust::can('view_erp_reports') ) // Checks the current user
 
 Route::get('erpReports/clients', 'ErpReportsController@clients');
 Route::get('erpReports/selectClientsPeriod', 'ErpReportsController@selectClientsPeriod');
-
+Route::get('erpReports/selectOverduePeriod', 'ErpReportsController@selectOverduePeriod');
+Route::post('erpReports/overdue', 'ErpReportsController@overdues');
 
 
 
@@ -3271,6 +3272,24 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
   
 });
 
+Route::get('erporder/editcreditperiod/{id}', function($id){
+  $order = Erporder::findorfail($id);
+
+  return View::make('erporders.editcreditperiod',compact('order'));
+  
+});
+
+Route::post('erporder/updatecreditperiod/{id}', function($id){
+
+  $order = Erporder::findorfail($id);
+
+  $order->credit_period = Input::get("credit_period");
+  $order->update();
+
+  return Redirect::to('erporders/show/'.$id)->withFlashMessage("Credit Period Successfully Updated");
+  
+});
+
 Route::get('approve/cancel/{id}', function($id){
 
 $order = Erporder::findorfail($id);
@@ -4149,6 +4168,8 @@ Route::get('api/getmax', function(){
 Route::get('email/send', 'ErpReportsController@sendMail');
 Route::get('email/send_sales', 'ErpReportsController@sendMail_sales');
 Route::get('email/send_morning_sales', 'ErpReportsController@sendMail_morning_sales');
+Route::get('email/send_overtimes', 'ErpReportsController@sendMail_overdues');
+Route::get('email/send_morning_overtimes', 'ErpReportsController@sendMail_morning_overdues');
 Route::get('email/send_receivables', 'ErpReportsController@sendMail_receivables');
 Route::get('email/send_morning_receivables', 'ErpReportsController@sendMail_morning_receivables');
 Route::get('email/send_expenses', 'ErpReportsController@sendMail_expenses');

@@ -35,7 +35,13 @@
             <a href="{{ URL::to('erpReports/selectSalesPeriod') }}">Sales Summary</a>
        </li>    
              
+       <li>
+            <a href="{{ URL::to('erpReports/selectReceivablesPeriod') }}">Receivables</a>
+       </li>
 
+       <li>
+            <a href="{{ URL::to('erpReports/selectOverduePeriod') }}">Overdues</a>
+       </li> 
        <li>
          <a href="{{ URL::to('erpReports/selectSalesComparisonPeriod') }}">Monthly Sales Comparison</a>
        </li>

@@ -576,6 +576,51 @@ public function receivables(){
   
 }
 
+public function overdues(){
+
+    $from = Input::get("from");
+    $to= Input::get("to");
+
+    //return $from.' - '.$to;
+
+    $receivable = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->join('clients', 'erporders.client_id', '=', 'clients.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                ->where('erporders.payment_type', 'credit')
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'),DB::raw('COALESCE(SUM(erporderitems.client_discount/quantity),0) as total_discount'))
+                
+                ->first();
+                //return $sales;
+    
+
+    $overdue = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->join('clients', 'erporders.client_id', '=', 'clients.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                ->where('erporders.payment_type', 'credit')
+                ->where('credit_period','<',Input::get("to"))
+                ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'),DB::raw('COALESCE(SUM(erporderitems.client_discount/quantity),0) as total_discount'))
+                
+                ->first();
+
+ $organization = Organization::find(1);
+
+        $pdf = PDF::loadView('erpreports.overdues', compact('sales', 'receivable','overdue','organization','from','to'))->setPaper('a4', 'landscape');
+
+        Audit::logaudit('Overdues', 'viewed overdue order report', 'viewed overdue order report in the system');
+    
+        return $pdf->stream('Overdue Report.pdf');
+
+  
+}
+
 public function net(){
 
     $from = Input::get("from");
@@ -1593,6 +1638,10 @@ public function net(){
         return View::make('erpreports.selectPurchasesPeriod',compact('purchases'));
     }
 
+    public function selectOverduePeriod()
+    {
+        return View::make('erpreports.selectOverduePeriod');
+    }
 
     public function selectClientsPeriod()
     {
@@ -1864,7 +1913,7 @@ public function net(){
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@gx.co.ke', 'Gas Express');
-    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('accounts@gx.co.ke', 'Vic Bett')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Sales Report!');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('accounts@gx.co.ke', 'Vic Bett')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Sales Report!');
     $message->attach($filePath.$fileName);
 
     
@@ -1872,6 +1921,149 @@ public function net(){
 
    unlink($filePath.$fileName);
    echo 'Sales Report Successfully Sent!';
+    return $send_mail;
+    }
+
+    public function sendMail_overdues(){
+        
+    $fileName = 'Overdue Report.pdf';
+
+    $filePath = 'app/views/temp/';
+
+
+    $time = strtotime(date('Y-m-d').' 8:01:00');
+    $time1 = strtotime(date('Y-m-d').' 19:59:59');
+    $time2 = strtotime(date('Y-m-01').' 00:00:00');
+
+    $sdate = date('Y-m-d H:i:s',$time);
+
+    $stime = date('Y-m-d H:i:s',$time1);
+    $stime1 = date('Y-m-d H:i:s',$time2);
+
+    $from = $sdate;
+    $to= $stime;
+
+    //echo $from.' - '.$to;
+
+    $receivable = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->join('clients', 'erporders.client_id', '=', 'clients.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                ->where('erporders.payment_type', 'credit')
+                ->whereBetween('erporders.created_at', array($sdate, $stime))
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'),DB::raw('COALESCE(SUM(erporderitems.client_discount/quantity),0) as total_discount'))
+                
+                ->first();
+                //return $sales;
+    
+
+    $overdue = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->join('clients', 'erporders.client_id', '=', 'clients.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                ->where('erporders.payment_type', 'credit')
+                ->where('credit_period','<',date('Y-m-d'))
+                ->whereBetween('erporders.created_at', array($sdate, $stime))
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'),DB::raw('COALESCE(SUM(erporderitems.client_discount/quantity),0) as total_discount'))
+                
+                ->first();
+
+
+   
+    $organization = Organization::find(1);
+
+    $pdf = PDF::loadView('erpreports.dailyOverdueReport', compact('overdue', 'receivable','organization','from','to'))->setPaper('a4', 'landscape');
+
+    //return $pdf->stream('Sales Reports');
+
+    $pdf->save($filePath.$fileName);
+
+    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    {   
+    $message->from('info@gx.co.ke', 'Gas Express');
+    $message->to('accounts@gx.co.ke', 'Vic Bett')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Overdue Report!');
+    //$message->to('chrispus.cheruiyot@lixnet.net', 'Crispus Chevarvar')->subject('Daily Sales Report!');
+    $message->attach($filePath.$fileName);
+
+    
+});
+
+   unlink($filePath.$fileName);
+   echo 'Overdue Report Successfully Sent!';
+    return $send_mail;
+    }
+
+    public function sendMail_morning_overdues(){
+        
+    $fileName = 'Overdue Report.pdf';
+
+    $filePath = 'app/views/temp/';
+
+
+    $time = strtotime(date('Y-m-d').' 20:00:00');
+    $time1 = strtotime(date('Y-m-d').' 8:00:00');
+    $time2 = strtotime(date('Y-m-01').' 00:00:00');
+
+    $sdate = date('Y-m-d H:i:s',$time);
+
+    $stime = date('Y-m-d H:i:s',$time1);
+    $stime1 = date('Y-m-d H:i:s',$time2);
+
+    $from = $sdate;
+    $to= $stime;
+
+
+   $receivable = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->join('clients', 'erporders.client_id', '=', 'clients.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                ->where('erporders.payment_type', 'credit')
+                ->whereBetween('erporders.created_at', array($sdate, $stime))
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'),DB::raw('COALESCE(SUM(erporderitems.client_discount/quantity),0) as total_discount'))
+                
+                ->first();
+                //return $sales;
+    
+
+    $overdue = DB::table('erporders')
+                ->join('erporderitems', 'erporders.id', '=', 'erporderitems.erporder_id')
+                ->join('items', 'erporderitems.item_id', '=', 'items.id')
+                ->join('clients', 'erporders.client_id', '=', 'clients.id')
+                ->where('erporders.type','=','sales')
+                ->where('erporders.status','!=','cancelled') 
+                ->where('erporders.payment_type', 'credit')
+                ->where('credit_period','<',date('Y-m-d'))
+                ->whereBetween('erporders.created_at', array($sdate, $stime))
+                ->select(DB::raw('COALESCE(SUM(quantity*price),0) as total_sales'),DB::raw('COALESCE(SUM(erporderitems.client_discount/quantity),0) as total_discount'))
+                
+                ->first();
+
+    $organization = Organization::find(1);
+
+    $pdf = PDF::loadView('erpreports.dailyOverdueReport', compact('overdue', 'receivable','organization','from','to'))->setPaper('a4', 'landscape');
+
+    //return $pdf->stream('Sales Reports');
+
+
+    $pdf->save($filePath.$fileName);
+
+    $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
+    {   
+    $message->from('info@gx.co.ke', 'Gas Express');
+    $message->to('accounts@gx.co.ke', 'Vic Bett')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Overdue Report!');
+    $message->attach($filePath.$fileName);
+
+    
+});
+
+   unlink($filePath.$fileName);
+   echo 'Overdue Report Successfully Sent!';
     return $send_mail;
     }
 
@@ -2369,7 +2561,7 @@ public function sendMail_net(){
     $send_mail = Mail::send('emails.welcome', array('key' => 'value'), function($message) use ($filePath,$fileName)
     {   
     $message->from('info@gx.co.ke', 'Gas Express');
-    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Crispus Cheruiyot')->subject('Daily Net Profit Report!');
+    $message->to('victor.kotonya@gx.co.ke', 'Victor Kotonya')->cc('victor.kotonya@gmail.com', 'Victor Kotonya')->cc('chrispus.cheruiyot@lixnet.net', 'Crispus Cheruiyot')->cc('wangoken2@gmail.com', 'Ken Wango')->subject('Daily Net Profit Report!');
     $message->attach($filePath.$fileName);
 
     

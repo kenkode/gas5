@@ -57,6 +57,20 @@ $(document).ready(function(){
             <div class="alert alert-danger">{{ Session::get('warning') }}</div>
         @endif
 
+        @if (Session::has('flash_message'))
+
+      <div class="alert alert-success">
+      {{ Session::get('flash_message') }}
+     </div>
+    @endif
+
+    @if (Session::has('delete_message'))
+
+      <div class="alert alert-danger">
+      {{ Session::get('delete_message') }}
+     </div>
+    @endif
+
 
 <br><div class="row">
     <div class="col-lg-12">
@@ -98,11 +112,12 @@ $(document).ready(function(){
                  @if(Entrust::can('approve_cancel_sale_order') && $order->is_pending != null)
                  <a href="{{URL::to('approve/cancel/'.$order->id)}}" class="btn btn-danger">Approve Cancel Sale Order </a>
                  @endif
-          
+                 <a href="{{URL::to('erporder/editcreditperiod/'.$order->id)}}" class="btn btn-info">Update Credit Period </a>
             </div>
         </form>
     </div>
 </div>
+
 
 <div class="row">
     <div class="col-lg-12">
