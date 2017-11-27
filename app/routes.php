@@ -2803,6 +2803,20 @@ Route::get('notificationshowexpense/{name}/{type}/{amount}/{date}/{credit}/{debi
 }
 });
 
+
+Route::get('notificationdeleteexpense/{name}/{type}/{amount}/{id}/{receiver}/{confirmer}/{key}', function($name,$type,$amount,$id,$receiver,$confirmer,$key){
+  $expense = Expense::where('id',$id)->count();
+  if($expense > 0){
+  $notification = Notification::where('confirmation_code',$key)->where('user_id',$confirmer)->first();
+  $notification->is_read = 1;
+  $notification->update();
+
+  return View::make('expenses.deleteexpense', compact('name','type','amount','id','receiver','confirmer','key'));
+}else{
+  return Redirect::to('notifications/index')->withDeleteMessage("Expense for item ".$name." already deleted!");
+}
+});
+
 Route::get('notificationshowapproveexpense/{name}/{type}/{amount}/{date}/{credit}/{debit}/{checker}/{confirmer}/{receiver}/{key}', function($name,$type,$amount,$date,$credit,$debit,$checker,$confirmer,$receiver,$key){
   $expense = Expense::where('approve_code',$key)->count();
   if($expense == 0){
@@ -2843,6 +2857,32 @@ Route::post('notificationconfirmstock', function(){
   Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item.' quantity received '.Input::get("quantity").' from supplier '.Input::get("client").' received by user '.$user->username.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
+});
+
+Route::post('notificationapprovedeleteexpense', function(){
+  $expense = Expense::find(Input::get("id"));
+
+    if($expense->credit_journal_id > 0){
+    $credit = Journal::find($expense->credit_journal_id);
+    $credit->void = 1;
+    $credit->update();
+
+    $debit  = Journal::find($expense->debit_journal_id);
+        $debit->void = 1;
+    $debit->update();
+      }
+
+    Expense::destroy(Input::get("id"));
+
+    Audit::logaudit('Expenses', 'approved deletion of an expense', 'approved deletion of expense '.$expense->name.' from the system');
+
+    $notifications = Notification::where('confirmation_code',Input::get("key"))->get();
+    foreach ($notifications as $notification) {
+    $notification->is_read = 1;
+    $notification->update();
+    }
+
+  return Redirect::to('notifications/index')->withFlashMessage("Expense ".$expense->name." successfully deleted!");
 });
 
 Route::post('notificationcheckexpense', function(){

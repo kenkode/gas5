@@ -86,6 +86,8 @@
                     <li><a href="{{URL::to($notification->link)}}">Check Expense</a></li>
                     @elseif($notification->type == 'approve expense')
                     <li><a href="{{URL::to($notification->link)}}">Approve Expense</a></li>
+                    @elseif($notification->type == 'delete expense')
+                    <li><a href="{{URL::to($notification->link)}}">Delete Expense</a></li>
                     @endif
                     <li><a href="{{URL::to('notifications/markasread/'.$notification->id)}}">Mark As Read</a></li>
                   </ul>
@@ -126,6 +128,8 @@
                     <li><a href="{{URL::to($notification->link)}}">Check Expense</a></li>
                     @elseif($notification->type == 'approve expense')
                     <li><a href="{{URL::to($notification->link)}}">Approve Expense</a></li>
+                    @elseif($notification->type == 'delete expense')
+                    <li><a href="{{URL::to($notification->link)}}">Delete Expense</a></li>
                     @endif
                   </ul>
               </div>

@@ -207,7 +207,27 @@ class ExpensesController extends \BaseController {
 	{
 		if (! Entrust::can('delete_expense') ) // Checks the current user
         {
-        return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');
+        /*return Redirect::to('dashboard')->with('notice', 'you do not have access to this resource. Contact your system admin');*/
+        $username = Confide::user()->username;
+
+        $expense = Expense::find($id);
+
+		$users = DB::table('roles')
+		->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
+		->join('users', 'assigned_roles.user_id', '=', 'users.id')
+		->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
+		->select("users.id","email","username")
+		->where("permission_id",108)->get();
+
+        $key = md5(uniqid());
+
+		foreach ($users as $user) {
+
+		Notification::notifyUser($user->id,"Hello, Please approve deletion for this expense item ".$expense->name,"delete expense","notificationdeleteexpense/".$expense->name."/".$expense->type."/".$expense->amount."/".$id."/".Confide::user()->id."/".$user->id."/".$key,$key);
+     	}
+     	Audit::logaudit('Expenses', 'delete an expense', 'deleted expense '.Input::get('name').' in the system and awaiting approval');
+
+     	return Redirect::to('expenses')->with('notice', 'Admin approval is needed to delete this expense');
         }else{
         $expense = Expense::find($id);
 
