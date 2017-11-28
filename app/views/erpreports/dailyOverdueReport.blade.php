@@ -126,8 +126,11 @@ function asMoney($value) {
       ?>
       
        <h1 style="font-size: 36px" align="center"><strong>Overdue</strong></h1>
+       @if($totalreceivable == 0)
+       <h1 style="font-size: 36px" align="center">{{number_format(0,2)}}</h1>
+       @else
        <h1 style="font-size: 36px" align="center">{{number_format($totaloverdue/$totalreceivable,2)}}</h1>
-
+       @endif
 <br><br>
 
    

@@ -4208,8 +4208,8 @@ Route::get('api/getmax', function(){
 Route::get('email/send', 'ErpReportsController@sendMail');
 Route::get('email/send_sales', 'ErpReportsController@sendMail_sales');
 Route::get('email/send_morning_sales', 'ErpReportsController@sendMail_morning_sales');
-Route::get('email/send_overtimes', 'ErpReportsController@sendMail_overdues');
-Route::get('email/send_morning_overtimes', 'ErpReportsController@sendMail_morning_overdues');
+Route::get('email/send_overdues', 'ErpReportsController@sendMail_overdues');
+Route::get('email/send_morning_overdues', 'ErpReportsController@sendMail_morning_overdues');
 Route::get('email/send_receivables', 'ErpReportsController@sendMail_receivables');
 Route::get('email/send_morning_receivables', 'ErpReportsController@sendMail_morning_receivables');
 Route::get('email/send_expenses', 'ErpReportsController@sendMail_expenses');
