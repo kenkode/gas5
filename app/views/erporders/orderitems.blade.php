@@ -193,7 +193,7 @@ $(document).ready(function() {
         @foreach($orderitems as $orderitem)
 
             <?php
-            $discount_amount = $orderitem['discount_amount'];            
+            $discount_amount = $orderitem['discount_amount'] * $orderitem['quantity'];            
             $total_amount = $orderitem['price'] * $orderitem['quantity'];
             $amount = $orderitem['price'] * $orderitem['quantity']-$discount_amount;
             /*$total_amount = $amount * $orderitem['duration'];*/
