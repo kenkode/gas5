@@ -3370,6 +3370,13 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
   $order->status = 'cancelled';
   $order->update();
 
+  $erporderitems = Erporderitem::where('erporder_id',$order->id)->get();
+  $location = Location::find(1);
+
+  foreach ($erporderitems as $erporderitem) {
+  Stock::addStock($order->client_id, $erporderitem->item_id, $order->id, $location, $erporderitem->quantity, date("Y-m-d"));
+  }
+
   Audit::logaudit('Cancel Sale Order', 'cancelled sale order', 'cancelled sale order, order number '.$order->order_number.' in the system');
 
   return Redirect::to('salesorders');
@@ -3389,6 +3396,13 @@ $order = Erporder::findorfail($id);
   $order->is_pending = null;
   $order->status = 'cancelled';
   $order->update();
+
+  $erporderitems = Erporderitem::where('erporder_id',$order->id)->get();
+  $location = Location::find(1);
+
+  foreach ($erporderitems as $erporderitem) {
+  Stock::addStock($order->client_id, $erporderitem->item_id, $order->id, $location, $erporderitem->quantity, date("Y-m-d"));
+  }
 
     $notifications = Notification::where('confirmation_code',$key)->get();
     foreach ($notifications as $notification) {
