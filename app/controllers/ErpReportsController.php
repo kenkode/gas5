@@ -453,7 +453,7 @@ public function kenya($id){
                 //->where('erporders.client_id', 17)
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.item_size as size,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -521,7 +521,7 @@ public function receivables(){
                 ->where('erporders.payment_type', 'credit')
                 ->whereBetween('erporders.date', array(Input::get("from"), Input::get("to")))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.item_size as size,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -1766,7 +1766,7 @@ public function net(){
                 ->where('erporders.status','!=','cancelled') 
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.item_size as size,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -1860,7 +1860,7 @@ public function net(){
                 ->where('erporders.status','!=','cancelled') 
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.item_size as size,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -2098,7 +2098,7 @@ public function net(){
                 ->where('erporders.payment_type','=','credit') 
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.item_size as size,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 
@@ -2196,7 +2196,7 @@ public function net(){
                 ->where('erporders.payment_type','=','credit') 
                 ->whereBetween('erporders.created_at', array($sdate, $stime))
                 ->orderBy('erporders.order_number', 'Desc')
-                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.id as itemid,quantity,clients.address as address,
+                ->select(DB::raw('erporders.id,clients.name as client,clients.id as clientid,(erporderitems.client_discount/quantity) as client_discount,items.item_make as item,items.item_size as size,items.id as itemid,quantity,clients.address as address,
                   clients.phone as phone,clients.email as email,clients.category as category,erporders.id as id,erporders.status,purchase_price,
                   erporders.date,erporders.order_number as order_number,price,description,erporders.type'))
                 

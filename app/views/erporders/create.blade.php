@@ -1,4 +1,7 @@
 @extends('layouts.erp')
+
+{{HTML::script('media/jquery-1.8.0.min.js') }}
+
 @section('content')
 
 <br><div class="row">
@@ -106,10 +109,15 @@ request.send();
         </div>
 
         <div class="form-group">
-                        <label for="username">Credit Period</label>
+            <label for="username">Credit Period:</label>
+            <input type="text" name="period" id="period" value="{{{Input::old('period')}}}" class="form-control">
+        </div>
+
+        <div class="form-group">
+                        <label for="username">End Credit Period</label>
                         <div class="right-inner-addon ">
                         <i class="glyphicon glyphicon-calendar"></i>
-                        <input class="form-control datepicker22"  readonly="readonly" placeholder="" type="text" name="credit_period" id="credit_period" value="{{date('Y-M-d')}}">
+                        <input class="form-control"  readonly="readonly" placeholder="" type="text" name="credit_period" id="credit_period" >
                         </div>
           </div>
 
@@ -125,5 +133,60 @@ request.send();
   </div>
 
 </div>
+
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+
+    $('#period').keyup(function(){
+    //alert($('#weekends').val());
+    
+       var date = new Date($("#date").val()),
+           days = parseInt($("#period").val(), 10);
+
+        date.setDate(date.getDate());
+
+        if(!isNaN(date.getTime())){
+            date.setDate(date.getDate() + days);
+
+            $("#credit_period").val(formatDate(date));
+        } 
+         
+      });
+
+    $('#date').change(function(){
+    //alert($('#weekends').val());
+    
+       var date = new Date($("#date").val()),
+           days = parseInt($("#period").val(), 10);
+
+        date.setDate(date.getDate());
+
+        if(!isNaN(date.getTime())){
+            date.setDate(date.getDate() + days);
+
+            $("#credit_period").val(formatDate(date));
+        } 
+         
+      });
+
+    function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+      
+       
+
+    });
+
+    </script>
 
 @stop

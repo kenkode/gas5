@@ -124,7 +124,8 @@ function asMoney($value) {
         <th width='20'><strong># </strong></th>
         <th><strong>Order Number </strong></th>
         <th><strong>Customer Name </strong></th>
-        <th><strong>Item Name </strong></th>
+        <th><strong>Name </strong></th>
+        <th><strong>Size(KG) </strong></th>
         <th align="center"><strong>Quantity </strong></th>
         <th align="right"><strong>Purchase Price/Item </strong></th>
         <th align="right"><strong>Selling Price/Item </strong></th>
@@ -135,7 +136,7 @@ function asMoney($value) {
       </tr>
 
      
-      <?php $i =1; $total = 0; $discount=0; $profit=0; $purchase=0;?>
+      <?php $i =1; $totalsize = 0; $total = 0; $discount=0; $profit=0; $purchase=0;?>
       @foreach($sales as $sales)
       
       <?php
@@ -144,6 +145,7 @@ function asMoney($value) {
       $discount = $discount + $sales->client_discount;
       $profit = $profit + (($sales->price * $sales->quantity)-($sales->client_discount)) - ($sales->purchase_price * $sales->quantity);
       $purchase = $purchase + ($sales->purchase_price * $sales->quantity);
+      $totalsize = $totalsize + $sales->size;
       ?>
 
       <tr>
@@ -153,6 +155,7 @@ function asMoney($value) {
         <td> {{ $sales->order_number }}</td>
         <td> {{ $sales->client }}</td>
         <td> {{ $sales->item }}</td>
+        <td> {{ $sales->size }}</td>
         <td align = "center"> {{ $sales->quantity }}</td>
         <td align = "right"> {{asMoney($sales->purchase_price)}}</td>
         <td align = "right"> {{asMoney($sales->price)}}</td>
@@ -172,6 +175,7 @@ function asMoney($value) {
             <td></td>
             <td></td>
             <td></td>
+            <td><strong>{{asMoney($totalsize)}}</strong></td>
             <td></td>
             <td></td>
             <td></td>
@@ -191,12 +195,14 @@ function asMoney($value) {
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
             <td align = "right" colspan="3"><strong>Cumulative Sales :</strong></td>
             <td align = "right"><strong>{{asMoney($total_sales_todate->total_sales - $total_sales_todate->total_dicount)}}</strong></td>
         </tr>
 
          <tr>
           <td></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>

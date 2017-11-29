@@ -44,20 +44,6 @@ $(document).ready(function() {
 
 <script type="text/javascript">
 $(document).ready(function() {
-
-    $('#sub').click(function(){
-        $.get("{{ url('api/checkcredit')}}", 
-        { total: $('#total').val()}, 
-        function(data) {
-            alert(data);
-            if(data<0){
-                alert('Client Credit Limit Exceeded!');
-                return false;
-             }else{
-                return true;
-             }
-        });
-    });
   
     $('#item').change(function(){
       
