@@ -3344,7 +3344,7 @@ if (! Entrust::can('cancel_sale_order') ) // Checks the current user
         ->join('assigned_roles', 'roles.id', '=', 'assigned_roles.role_id')
         ->join('users', 'assigned_roles.user_id', '=', 'users.id')
         ->join('permission_role', 'roles.id', '=', 'permission_role.role_id') 
-        ->where("permission_id",140)
+        ->where("permission_id",138)
         ->select("users.id","email","username")
         ->get();
 
