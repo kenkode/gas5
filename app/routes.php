@@ -2854,7 +2854,7 @@ Route::post('notificationconfirmstock', function(){
     $notification->update();
     }
 
-  Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item.' quantity received '.Input::get("quantity").' from supplier '.Input::get("client").' received by user '.$user->username.' in the system');
+  Audit::logaudit('Stocks', 'approve stocks', 'approved stock for item '.$item->item_make.' quantity received '.Input::get("quantity").' from supplier '.Input::get("client").' received by user '.$user->username.' in the system');
 
   return Redirect::to('notifications/index')->withFlashMessage("Stock for item ".Input::get('item')." confirmed as received!");
 });
