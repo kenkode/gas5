@@ -2740,7 +2740,7 @@ public function sendMail_net(){
 
     
      
-     $message->to('wangoken2@gmail.com', 'Victor Kotonya')->subject('Daily Summary Report');
+    // $message->to('wangoken2@gmail.com', 'Victor Kotonya')->subject('Daily Summary Report');
 
     
     $message->attach($filePath.$fileName);
