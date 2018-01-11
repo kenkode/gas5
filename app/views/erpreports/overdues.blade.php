@@ -126,7 +126,7 @@ function asMoney($value) {
       ?>
       
        <h1 style="font-size: 36px" align="center"><strong>Overdue</strong></h1>
-       <h1 style="font-size: 36px" align="center">{{number_format($totaloverdue/$totalreceivable,2)}}</h1>
+       <h1 style="font-size: 36px" align="center">{{round($totaloverdue/$totalreceivable,2)}}</h1>
 
 <br><br>
 
