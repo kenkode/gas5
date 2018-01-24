@@ -176,7 +176,12 @@ img#watermark{
 
           <?php
 
-            $amount = $orderitem['price'] * $orderitem['quantity'] * $orderitem->item->item_size;
+            $amount = 0;
+            if($orderitem->item->item_size != 0){
+            $amount = $orderitem->item->item_size * $orderitem['price'] * $orderitem['quantity'];
+            }else{
+            $amount = $orderitem['price'] * $orderitem['quantity'];  
+            } 
             /*$total_amount = $amount * $orderitem['duration'];*/
             $total = $total + $amount;
 
@@ -188,8 +193,11 @@ img#watermark{
             
             <td>{{ $orderitem->quantity}}</td>
             <td>{{ asMoney($orderitem->price)}}</td>
-            
+             @if($orderitem->item->item_size != 0)
              <td> {{asMoney($orderitem->price * $orderitem->quantity * $orderitem->item->item_size)}}</td>
+             @else
+             <td> {{asMoney($orderitem->price * $orderitem->quantity)}}</td>
+             @endif
           </tr>
 
 
