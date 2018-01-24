@@ -170,8 +170,12 @@ $(document).ready(function(){
         @foreach($order->erporderitems as $orderitem)
 
             <?php
-
+            $amount = 0;
+            if($orderitem->item->item_size != 0){
             $amount = $orderitem->item->item_size * $orderitem['price'] * $orderitem['quantity'];
+            }else{
+            $amount = $orderitem['price'] * $orderitem['quantity'];  
+            } 
             /*$total_amount = $amount * $orderitem['duration'];*/
             $total = $total + $amount;
             ?>
